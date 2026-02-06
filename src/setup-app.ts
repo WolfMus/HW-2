@@ -6,7 +6,11 @@ import { HttpStatus } from "./core/types/types";
 export const setupApp = (app: Express) => {
   app.use(express.json());
 
-  app.delete("/testing/all-data", (req,res) => {
+  app.get('', (req,res) => {
+    res.status(200).send('Hello world!');
+  })
+
+  app.delete("/testing/all-data", (req, res) => {
     db.blogs = [];
     res.status(HttpStatus.NoContent).send(db.blogs);
   })
@@ -28,21 +32,30 @@ export const setupApp = (app: Express) => {
     },
   );
 
-  // //creates new blog
-  // app.post("/blogs", (req: Request, res: Response) => {
-  //   // 2) создаем новый блог
-  //   const newBlog: BlogViewModel = {
-  //     id: new Date().toDateString(),
-  //     name: req.body.name,
-  //     description: req.body.description,
-  //     websiteUrl: req.body.websiteUrl,
-  //   };
+  //creates new blog
+  app.post("/blogs", (req: Request, res: Response) => {
+    // 1) проверяем на валидацию
+    // 2) создаем новый блог
+    const newBlog: BlogViewModel = {
+      id: new Date().toDateString(),
+      name: req.body.name,
+      description: req.body.description,
+      websiteUrl: req.body.websiteUrl,
+    };
 
-  //   // 3) добавляем новый блог в БД
-  //   db.blogs.push(newBlog);
-  //   res.status(HttpStatus.Created).send(newBlog);
-  // });
+    // 3) добавляем новый блог в БД
+    db.blogs.push(newBlog);
+    res.status(HttpStatus.Created).send(newBlog);
+  });
 
+  //deletes blog by id 
+  app.delete("/blogs/:blogsId", (req: Request, res: Response) => {
+    const newBlogsArray = db.blogs.filter(b => b.id !== req.params.blogsId);
+    if (newBlogsArray === db.blogs) {
+      return res.status(HttpStatus.NotFound)
+    }
+    res.sendStatus(HttpStatus.NoContent)
+  })
   
 
   return app;
