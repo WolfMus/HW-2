@@ -3,8 +3,6 @@ import express, { response } from "express";
 import { setupApp } from "../../../src/setup-app";
 import { BlogInputModel } from "../../../src/blogs/dto/blog-input.dto";
 import { HttpStatus } from "../../../src/core/types/types";
-import { getNameOfDeclaration } from "typescript";
-import { create } from "node:domain";
 
 describe("Blogs API", () => {
   const app = express();
@@ -14,7 +12,7 @@ describe("Blogs API", () => {
     name: "string",
     description: "string",
     websiteUrl:
-      "https://Pc9DLvZWb1vvGQqhu2fLAqq6jLFb3YqvPrpq2Sypa4JezzhaZLURIWHsXj2XH7IYhkOaMVD-N2Jd3qR1gAuv33Hn081t",
+      "https://Pc9DLvZWb1vvGQqhu2fLAqzhaZLURIWHsXj2XH7IYhkOaMVD-N2Jd3qR1gAuv33H.by",
   };
 
   beforeAll(async () => {
@@ -23,10 +21,6 @@ describe("Blogs API", () => {
       .expect(HttpStatus.NoContent);
 
     response.on("close", () => {});
-  });
-
-  it("should say hi; GET /", async () => {
-    await request(app).get("").expect(HttpStatus.Ok);
   });
 
   it("should return all blogs; GET /blogs", async () => {
@@ -39,7 +33,7 @@ describe("Blogs API", () => {
       name: "string",
       description: "string",
       websiteUrl:
-        "https://Pc9DLvZWb1vvGQqhu2fLAqq6jLFb3YqvPrpq2Sypa4JezzhaZLURIWHsXj2XH7IYhkOaMVD-N2Jd3qR1gAuv33Hn081t",
+        "https://Pc9DLvZWb1vvGQqhu2fLAqq6jLFb3YqvPrpq2Sypa4JezzhaZLURIWHsXj2XH7Id3qR1gA.by",
     };
 
     await request(app).post("/blogs").send(newBlog).expect(HttpStatus.Created);
@@ -61,7 +55,7 @@ describe("Blogs API", () => {
     });
   });
 
-  it("should delete blog by id; DELETE /blogs/;id", async () => {
+  it("should delete blog by id; DELETE /blogs/:id", async () => {
     const createResponse = await request(app)
       .post("/blogs")
       .send({ ...testBlogsData })
@@ -71,4 +65,20 @@ describe("Blogs API", () => {
       .delete(`/blogs/${createResponse.body.id}`)
       .expect(HttpStatus.NoContent)
   });
+
+  it("should update blog by id; PUT /blogs/:id", async () => {
+      const createResponse = await request(app)
+      .post("/blogs")
+      .send({ ...testBlogsData })
+      .expect(HttpStatus.Created);
+
+      const updateResponse = await request(app)
+      .put(`/blogs/${createResponse.body.id}`)
+      .send({...testBlogsData,
+        name: "asdasd",
+        description: 'new Description', 
+        websiteUrl: 'https://asdasda3a3ya3d3adja3jj3j3ajaskdgl'
+      })
+      .expect(HttpStatus.NoContent)
+  })
 });

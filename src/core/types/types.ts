@@ -1,3 +1,5 @@
+import { Request } from "express";
+
 export enum HttpStatus {
   Ok = 200,
   Created = 201,
@@ -10,3 +12,7 @@ export enum HttpStatus {
 
   InternalServerError = 500,
 }
+
+export type RequestWithParams<T> = Request<T,{},{},{}>;
+export type RequestWithBody<T> = Request<{},{},T,{}>;
+export type RequestWithParamsAndBody<T,B> = Request<T,{},B,{}>;
