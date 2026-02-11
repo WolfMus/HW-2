@@ -4,13 +4,13 @@ import {
   RequestWithParamsAndBody,
 } from "../../../core/types/types";
 import { BlogViewModel } from "../../types/blogs";
-import { db } from "../../../db/in-memory.db";
+import { blogsRepository } from "../../repositories/blogs.repository";
 
 export function getBlogHandler(
   req: RequestWithParamsAndBody<{ blogsId: string }, BlogViewModel>,
   res: Response<BlogViewModel>,
 ) {
-  const blog = db.blogs.find((b) => b.id === req.params.blogsId);
+  const blog = blogsRepository.findById(req.params.blogsId);
   if (!blog) {
     return res.sendStatus(HttpStatus.NotFound);
   }
