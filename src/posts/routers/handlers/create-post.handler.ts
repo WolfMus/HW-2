@@ -5,6 +5,8 @@ import { postInputDtoValidation } from "../../validation/postInputDtoValidation"
 import { createErrorMessage } from "../../../core/types/createErrorMessage";
 import { db } from "../../../db/in-memory.db";
 import { PostViewModel } from "../../types/posts";
+import { blogsRepository } from "../../../blogs/repositories/blogs.repository";
+import { postsRepository } from "../../repository/posts.repository";
 
 export function createPostHandler(
   req: RequestWithBody<PostInputModel>,
@@ -16,18 +18,19 @@ export function createPostHandler(
     return res.status(HttpStatus.BadRequest).send(createErrorMessage(errors));
   }
 
-  const blog = db.blogs.find((b) => b.id === req.body.blogId);
-  if (blog === undefined) {
+  const id = req.body.blogId;
+  const blog = blogsRepository.findById(id);
+  if (!blog) {
     return res.status(HttpStatus.BadRequest).send({
       errorMessage: {
-        message: "blogId not found",
+        message: "BlogId not found",
         field: "blogId",
       },
     });
   }
 
   const newPost: PostViewModel = {
-    id: String(db.posts.length + 1),
+    id: String(db.posts.length ? Number(db.posts[db.posts.length - 1]!.id) + 1 : 1),
     title: req.body.title,
     shortDescription: req.body.shortDescription,
     content: req.body.content,
@@ -35,6 +38,6 @@ export function createPostHandler(
     blogName: blog.name,
   };
 
-  db.posts.push(newPost);
+  postsRepository.create(newPost);
   return res.status(HttpStatus.Created).send(newPost);
 }

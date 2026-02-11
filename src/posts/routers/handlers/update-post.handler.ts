@@ -4,6 +4,8 @@ import { PostInputModel } from "../../dto/posts-input.dto";
 import { postInputDtoValidation } from "../../validation/postInputDtoValidation";
 import { createErrorMessage } from "../../../core/types/createErrorMessage";
 import { db } from "../../../db/in-memory.db";
+import { postsRepository } from "../../repository/posts.repository";
+import { blogsRepository } from "../../../blogs/repositories/blogs.repository";
 
 export function updatePostHandler (
       req: RequestWithParamsAndBody<{ postId: string }, PostInputModel>,
@@ -17,15 +19,20 @@ export function updatePostHandler (
           .send(createErrorMessage(errors));
       }
 
-      const post = db.posts.find((p) => p.id === req.params.postId);
+      const id = req.params.postId;
+      const body = req.body;
+
+      const blog = blogsRepository.findById(body.blogId)
+      if (!blog) {
+        return res.sendStatus(HttpStatus.NotFound);
+      }
+
+      const post = postsRepository.findById(id);
       if (!post) {
         return res.sendStatus(HttpStatus.NotFound);
       }
 
-      post.title = req.body.title;
-      post.shortDescription = req.body.shortDescription;
-      post.content = req.body.content;
-      post.blogId = req.params.postId;
+      postsRepository.update(post, body);
 
       return res.sendStatus(HttpStatus.NoContent);
     }
