@@ -1,5 +1,6 @@
 import express from "express";
 import { setupApp } from "./setup-app";
+import 'dotenv/config'
  
 // создание приложения
 export const app = express();

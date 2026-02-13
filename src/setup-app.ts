@@ -1,9 +1,7 @@
 import express, { Express } from "express";
-import { db } from "./db/in-memory.db";
-import { HttpStatus } from "./core/types/types";
 import { blogsRouter } from "./blogs/routers/blogs.routers";
 import { postsRouters } from "./posts/routers/posts.routers";
-import { BLOGS_PATH, POSTS_PATH, TESTING_PATH } from "./core/types/paths/paths";
+import { BLOGS_PATH, POSTS_PATH, TESTING_PATH } from "./core/paths/paths";
 import { testingRouter } from "./testing/testing.routers";
 
 

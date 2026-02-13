@@ -8,8 +8,8 @@ export const blogsRepository = {
         return db.blogs;
     },
 
-    findById(reqId: string): BlogViewModel | null {
-        return db.blogs.find((b) => b.id === reqId) ?? null;
+    findById(id: string): BlogViewModel | null {
+        return db.blogs.find((b) => b.id === id) ?? null;
     },
 
     create(newBlog: BlogViewModel): BlogViewModel {

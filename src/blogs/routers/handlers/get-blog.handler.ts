@@ -7,10 +7,10 @@ import { BlogViewModel } from "../../types/blogs";
 import { blogsRepository } from "../../repositories/blogs.repository";
 
 export function getBlogHandler(
-  req: RequestWithParamsAndBody<{ blogsId: string }, BlogViewModel>,
+  req: RequestWithParamsAndBody<{ id: string }, BlogViewModel>,
   res: Response<BlogViewModel>,
 ) {
-  const blog = blogsRepository.findById(req.params.blogsId);
+  const blog = blogsRepository.findById(req.params.id);
   if (!blog) {
     return res.sendStatus(HttpStatus.NotFound);
   }

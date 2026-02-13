@@ -4,7 +4,7 @@ import { setupApp } from "../../../src/setup-app";
 import { BlogInputModel } from "../../../src/blogs/dto/blog-input.dto";
 import { HttpStatus } from "../../../src/core/types/types";
 import { PostInputModel } from "../../../src/posts/dto/posts-input.dto";
-import { BLOGS_PATH, POSTS_PATH, TESTING_PATH } from "../../../src/core/types/paths/paths";
+import { BLOGS_PATH, POSTS_PATH, TESTING_PATH } from "../../../src/core/paths/paths";
 
 describe("Blogs API", () => {
   const app = express();

@@ -2,11 +2,11 @@ import { Request, Response } from "express";
 import { HttpStatus, RequestWithBody } from "../../../core/types/types";
 import { PostInputModel } from "../../dto/posts-input.dto";
 import { postInputDtoValidation } from "../../validation/postInputDtoValidation";
-import { createErrorMessage } from "../../../core/types/createErrorMessage";
 import { db } from "../../../db/in-memory.db";
 import { PostViewModel } from "../../types/posts";
 import { blogsRepository } from "../../../blogs/repositories/blogs.repository";
 import { postsRepository } from "../../repository/posts.repository";
+import { createErrorMessage } from "../../../core/middlewares/validation/input-validation-result.middleware";
 
 export function createPostHandler(
   req: RequestWithBody<PostInputModel>,
