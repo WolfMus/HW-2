@@ -3,10 +3,10 @@ import { HttpStatus, RequestWithParams } from "../../../core/types/types";
 import { postsRepository } from "../../repository/posts.repository";
 
 export function deletePostHandler(
-  req: RequestWithParams<{ postId: string }>,
+  req: RequestWithParams<{ id: string }>,
   res: Response,
 ) {
-  const id = req.params.postId;
+  const id = req.params.id;
 
   const post = postsRepository.findById(id);
   if (!post) {

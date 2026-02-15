@@ -7,8 +7,8 @@ export const postsRepository = {
     return db.posts;
   },
 
-  findById(postId: string): PostViewModel | null {
-    const post = db.posts.find((p) => p.id === postId) ?? null;
+  findById(id: string): PostViewModel | null {
+    const post = db.posts.find((p) => p.id === id) ?? null;
     return post;
   },
 
@@ -25,8 +25,8 @@ export const postsRepository = {
     return;
   },
 
-  delete(postId: string): void {
-    db.posts.filter((p) => p.id !== postId);
+  delete(id: string): void {
+    db.posts.filter((p) => p.id !== id);
     return;
   },
 };

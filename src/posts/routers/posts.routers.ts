@@ -4,12 +4,15 @@ import { getPostListHandler } from "./handlers/get-post-list.handler";
 import { createPostHandler } from "./handlers/create-post.handler";
 import { updatePostHandler } from "./handlers/update-post.handler";
 import { deletePostHandler } from "./handlers/delete-post.handler";
+import { postInputDtoValidation } from "../validation/postInputDtoValidation.middleware";
+import { inputValidationResultMiddleware } from "../../core/middlewares/validation/input-validation-result.middleware";
+import { idValidation } from "../../core/middlewares/validation/params-id.validation-middleware";
 
 export const postsRouters = Router({});
 
 postsRouters
   .get("", getPostListHandler)
-  .get("/:postId", getPostHandler)
-  .post("", createPostHandler)
-  .put("/:postId", updatePostHandler)
-  .delete("/:postId", deletePostHandler)
+  .get("/:id", idValidation, inputValidationResultMiddleware, getPostHandler)
+  .post("", postInputDtoValidation, inputValidationResultMiddleware, createPostHandler)
+  .put("/:id", idValidation, postInputDtoValidation, inputValidationResultMiddleware, updatePostHandler)
+  .delete("/:id", idValidation, inputValidationResultMiddleware, deletePostHandler)

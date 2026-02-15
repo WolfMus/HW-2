@@ -3,8 +3,8 @@ import { HttpStatus, RequestWithParams } from "../../../core/types/types";
 import { db } from "../../../db/in-memory.db";
 import { postsRepository } from "../../repository/posts.repository";
 
-export function getPostHandler (req: RequestWithParams<{ postId: string }>, res: Response) {
-    const id = req.params.postId;
+export function getPostHandler (req: RequestWithParams<{ id: string }>, res: Response) {
+    const id = req.params.id;
     const post = postsRepository.findById(id);
 
     if (!post) {
