@@ -5,10 +5,14 @@ import { BlogInputModel } from "../../../src/blogs/dto/blog-input.dto";
 import { HttpStatus } from "../../../src/core/types/types";
 import { PostInputModel } from "../../../src/posts/dto/posts-input.dto";
 import { BLOGS_PATH, POSTS_PATH, TESTING_PATH } from "../../../src/core/paths/paths";
+import { clearDb } from "../../utils/clear-db";
+import { generateAdminAuthToken } from "../../utils/generate-admin-auth-token";
 
 describe("Blogs API", () => {
   const app = express();
   setupApp(app);
+
+  const adminToken = generateAdminAuthToken();
 
   const testBlogsData: BlogInputModel = {
     name: "string",
@@ -25,16 +29,14 @@ describe("Blogs API", () => {
   };
 
   beforeAll(async () => {
-    const response = await request(app)
-      .delete(`${TESTING_PATH}/all-data`)
-      .expect(HttpStatus.NoContent);
-
-    response.on("close", () => {});
+    const response = clearDb;
+    // response.on("close", () => {});
   });
 
   it("should return all blogs; GET /blogs", async () => {
     await request(app)
       .get(BLOGS_PATH)
+      .set("Authorization", adminToken)
       .expect(HttpStatus.Ok);
   });
 
@@ -49,6 +51,7 @@ describe("Blogs API", () => {
 
     await request(app)
       .post(BLOGS_PATH)
+      .set("Authorization", adminToken)
       .send(newBlog)
       .expect(HttpStatus.Created);
   });
@@ -56,6 +59,7 @@ describe("Blogs API", () => {
   it("should return blog by id; GET /blogs/:id", async () => {
     const createResponse = await request(app)
       .post(BLOGS_PATH)
+      .set("Authorization", adminToken)
       .send({ ...testBlogsData })
       .expect(HttpStatus.Created);
 

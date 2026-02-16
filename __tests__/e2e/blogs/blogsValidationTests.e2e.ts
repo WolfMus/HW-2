@@ -27,7 +27,7 @@ describe("Blogs API", () => {
     await request(app).get("/blogs").expect(HttpStatus.Ok);
   });
 
-  it("shouldn't create blog with incorrect name; POST /blogs", async () => {
+  it("❌ should NOT create blog with incorrect name; POST /blogs", async () => {
     const newBlog: BlogInputModel = {
       ...testBlogsData,
       name: null,
@@ -39,7 +39,7 @@ describe("Blogs API", () => {
       .expect(HttpStatus.BadRequest);
   });
 
-  it("shouldn't create blog with incorrect description; POST /blogs", async () => {
+  it("❌ shouldn't create blog with incorrect description; POST /blogs", async () => {
     const newBlog: BlogInputModel = {
       ...testBlogsData,
       description: null,
@@ -51,7 +51,7 @@ describe("Blogs API", () => {
       .expect(HttpStatus.BadRequest);
   });
 
-  it("shouldn't create blog with incorrect websiteUrl; POST /blogs", async () => {
+  it("❌ shouldn't create blog with incorrect websiteUrl; POST /blogs", async () => {
     const newBlog: BlogInputModel = {
       ...testBlogsData,
       websiteUrl:

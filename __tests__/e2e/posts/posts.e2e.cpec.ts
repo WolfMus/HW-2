@@ -3,6 +3,7 @@ import express from "express";
 import { setupApp } from "../../../src/setup-app";
 import { PostInputModel } from "../../../src/posts/dto/posts-input.dto";
 import { HttpStatus } from "../../../src/core/types/types";
+import { clearDb } from "../../utils/clear-db";
 
 describe("Posts API", () => {
   const app = express();
@@ -16,11 +17,7 @@ describe("Posts API", () => {
   };
 
   beforeAll(async () => {
-    const response = await request(app)
-      .delete("/testing/all-data")
-      .expect(HttpStatus.NoContent);
-
-    response.on("close", () => {});
+    const response = clearDb;
   });
 
   it("should return all posts; GET /posts", async () => {
