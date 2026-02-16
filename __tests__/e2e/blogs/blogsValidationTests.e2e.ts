@@ -3,10 +3,13 @@ import express, { response } from "express";
 import { setupApp } from "../../../src/setup-app";
 import { BlogInputModel } from "../../../src/blogs/dto/blog-input.dto";
 import { HttpStatus } from "../../../src/core/types/types";
+import { generateAdminAuthToken } from "../../utils/generate-admin-auth-token";
 
 describe("Blogs API", () => {
   const app = express();
   setupApp(app);
+
+  const adminToken = generateAdminAuthToken();
 
   const testBlogsData: BlogInputModel = {
     name: "string",
@@ -35,6 +38,7 @@ describe("Blogs API", () => {
 
     await request(app)
       .post("/blogs")
+      .set("Authorization", adminToken)
       .send(newBlog)
       .expect(HttpStatus.BadRequest);
   });
@@ -47,6 +51,7 @@ describe("Blogs API", () => {
 
     await request(app)
       .post("/blogs")
+      .set("Authorization", adminToken)
       .send(newBlog)
       .expect(HttpStatus.BadRequest);
   });
@@ -60,6 +65,7 @@ describe("Blogs API", () => {
 
     await request(app)
       .post("/blogs")
+      .set("Authorization", adminToken)
       .send(newBlog)
       .expect(HttpStatus.BadRequest);
   });

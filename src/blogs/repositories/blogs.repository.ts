@@ -32,13 +32,8 @@ export const blogsRepository = {
         return;
     },
 
-    delete(blogId: string): void {
-        const initialLength = db.blogs.length;
-        db.blogs = db.blogs.filter((b) => b.id !== blogId);
-
-        if (initialLength === db.blogs.length) {
-            throw new Error("Id not found");
-        }
+    delete(id: string): void {
+        db.blogs = db.blogs.filter((b) => b.id !== id);
 
         return
     }

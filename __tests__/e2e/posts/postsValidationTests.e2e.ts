@@ -20,7 +20,7 @@ describe("Posts API validation tests", () => {
     await clearDb(app);
   })
 
-  it("should not create new post; POST /:posts", async () => {
+  it("❌ should not create new post; POST /:posts", async () => {
     await request(app)
         .post(POSTS_PATH)
         .send({})
@@ -37,7 +37,7 @@ describe("Posts API validation tests", () => {
         })
         .expect(HttpStatus.BadRequest)
 
-    expect(invalidDataSet1.body.errorMessages).toHaveLength(4)
+    expect(invalidDataSet1.body.errorsMessages).toHaveLength(4)
 
     const invalidDataSet2 = await request(app)
         .post(POSTS_PATH)
@@ -50,7 +50,7 @@ describe("Posts API validation tests", () => {
         })
         .expect(HttpStatus.BadRequest)
 
-        expect(invalidDataSet2.body.errorMessages).toHaveLength(4)
+        expect(invalidDataSet2.body.errorsMessages).toHaveLength(4)
 
     const invalidDataSet3 = await request(app)
         .post(POSTS_PATH)
@@ -62,8 +62,15 @@ describe("Posts API validation tests", () => {
             blogId: "string"
         })
         .expect(HttpStatus.BadRequest)
-
-        expect(invalidDataSet3.body.errorMessages).toHaveLength(4)
+        
+        expect(invalidDataSet3.body.errorsMessages).toHaveLength(4)
+    })
+    
+    it("❌ Should not return post by incorrect id; GET /POSTS/:id", async () => {
+        await request(app)
+        .get(`${POSTS_PATH}/344`)
+        .set("Authorization", adminToken)
+        .expect(HttpStatus.NotFound)
   })
 
 

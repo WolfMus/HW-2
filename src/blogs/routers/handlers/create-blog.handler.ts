@@ -11,11 +11,6 @@ export function createBlogHandler(
   req: RequestWithBody<BlogInputModel>,
   res: Response,
 ) {
-  // const errors = blogInputDtoValidation(req.body);
-
-  // if (errors.length > 0) {
-  //   res.status(HttpStatus.BadRequest).send(createErrorMessage(errors));
-  // }
 
   const newBlog: BlogViewModel = {
     id: String(db.blogs.length ? Number(db.blogs[db.blogs.length - 1]!.id) + 1 : 1),

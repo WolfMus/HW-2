@@ -33,14 +33,13 @@ describe("Blogs API", () => {
     // response.on("close", () => {});
   });
 
-  it("should return all blogs; GET /blogs", async () => {
+  it("✅ should return all blogs; GET /blogs", async () => {
     await request(app)
       .get(BLOGS_PATH)
-      .set("Authorization", adminToken)
       .expect(HttpStatus.Ok);
   });
 
-  it("should create blog; POST /blogs", async () => {
+  it("✅ should create blog; POST /blogs", async () => {
     const newBlog: BlogInputModel = {
       ...testBlogsData,
       name: "string",
@@ -56,7 +55,7 @@ describe("Blogs API", () => {
       .expect(HttpStatus.Created);
   });
 
-  it("should return blog by id; GET /blogs/:id", async () => {
+  it("✅ should return blog by id; GET /blogs/:id", async () => {
     const createResponse = await request(app)
       .post(BLOGS_PATH)
       .set("Authorization", adminToken)
@@ -73,25 +72,29 @@ describe("Blogs API", () => {
     });
   });
 
-  it("should delete blog by id; DELETE /blogs/:id", async () => {
+  it("✅ should delete blog by id; DELETE /blogs/:id", async () => {
     const createResponse = await request(app)
       .post(BLOGS_PATH)
+      .set("Authorization", adminToken)
       .send({ ...testBlogsData })
       .expect(HttpStatus.Created);
 
     const getResponse = await request(app)
       .delete(`${BLOGS_PATH}/${createResponse.body.id}`)
+      .set("Authorization", adminToken)
       .expect(HttpStatus.NoContent);
   });
 
-  it("should update blog by id; PUT /blogs/:id", async () => {
+  it("✅ should update blog by id; PUT /blogs/:id", async () => {
     const createResponse = await request(app)
       .post(BLOGS_PATH)
+      .set("Authorization", adminToken)
       .send({ ...testBlogsData })
       .expect(HttpStatus.Created);
 
     const updateResponse = await request(app)
       .put(`${BLOGS_PATH}/${createResponse.body.id}`)
+      .set("Authorization", adminToken)
       .send({
         ...testBlogsData,
         name: "asdasd",
@@ -101,24 +104,28 @@ describe("Blogs API", () => {
       .expect(HttpStatus.NoContent);
   });
 
-  it("should create new post; POST /posts", async () => {
+  it("✅ should create new post; POST /posts", async () => {
     const createBlog = await request(app)
       .post(BLOGS_PATH)
+      .set("Authorization", adminToken)
       .send({ ...testBlogsData });
 
     const createPost = await request(app)
       .post(POSTS_PATH)
+      .set("Authorization", adminToken)
       .send({ ...testPostsData })
       .expect(HttpStatus.Created);
   });
 
-  it("should return post by id; GET /posts/:postId", async () => {
+  it("✅ should return post by id; GET /posts/:postId", async () => {
     const createBlog = await request(app)
       .post(BLOGS_PATH)
+      .set("Authorization", adminToken)
       .send({ ...testBlogsData });
 
     const createPost = await request(app)
       .post(POSTS_PATH)
+      .set("Authorization", adminToken)
       .send({ ...testPostsData });
 
     const getResponse = await request(app)
@@ -126,31 +133,43 @@ describe("Blogs API", () => {
       .expect(HttpStatus.Ok);
   });
 
-  it("should delete post by id; DELETE /posts/:postId", async () => {
+  it("✅ should delete post by id; DELETE /posts/:postId", async () => {
     const createBlog = await request(app)
       .post(BLOGS_PATH)
-      .send({ ...testBlogsData });
+      .set("Authorization", adminToken)
+      .send({ ...testBlogsData })
+      .expect(HttpStatus.Created)
 
     const createPost = await request(app)
       .post(POSTS_PATH)
-      .send({ ...testPostsData });
+      .set("Authorization", adminToken)
+      .send({ ...testPostsData })
+      .expect(HttpStatus.Created)
+
+    const checkPost = await request(app)
+      .get(`${POSTS_PATH}/${createPost.body.id}`)
+      .expect(HttpStatus.Ok)
 
     const deletePost = await request(app)
       .delete(`${POSTS_PATH}/${createPost.body.id}`)
+      .set("Authorization", adminToken)
       .expect(HttpStatus.NoContent);
   });
 
-  it("should update post by id with InputModel; PUT /posts/:postId", async () => {
+  it("✅ should update post by id with InputModel; PUT /posts/:postId", async () => {
     const createBlog = await request(app)
       .post(BLOGS_PATH)
+      .set("Authorization", adminToken)
       .send({ ...testBlogsData });
 
     const createPost = await request(app)
       .post(POSTS_PATH)
+      .set("Authorization", adminToken)
       .send({ ...testPostsData });
 
     const updatePost = await request(app)
       .put(`${POSTS_PATH}/${createPost.body.id}`)
+      .set("Authorization", adminToken)
       .send({...testPostsData})
       .expect(HttpStatus.NoContent)
   });

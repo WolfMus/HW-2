@@ -26,7 +26,8 @@ export const postsRepository = {
   },
 
   delete(id: string): void {
-    db.posts.filter((p) => p.id !== id);
+    const index = db.posts.findIndex(p => p.id === id)
+    db.posts.splice(index, 1)
     return;
   },
 };

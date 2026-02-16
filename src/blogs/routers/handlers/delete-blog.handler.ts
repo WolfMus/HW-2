@@ -1,6 +1,5 @@
 import { Response } from "express";
 import { HttpStatus, RequestWithParams } from "../../../core/types/types";
-import { db } from "../../../db/in-memory.db";
 import { blogsRepository } from "../../repositories/blogs.repository";
 
   export function deleteBlogHandler(req: RequestWithParams<{ id: string }>, res: Response) {

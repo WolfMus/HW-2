@@ -12,6 +12,10 @@ export function updateBlogHandler(
 ) {
   
   const id = String(req.params.id);
+  const blog = blogsRepository.findById(id);
+  if (!blog) {
+    return res.sendStatus(HttpStatus.NotFound);
+  }
   const body = req.body;
 
   blogsRepository.update(id, body);
