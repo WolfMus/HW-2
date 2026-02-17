@@ -4,6 +4,7 @@ import { setupApp } from "../../../src/setup-app";
 import { BlogInputModel } from "../../../src/blogs/dto/blog-input.dto";
 import { HttpStatus } from "../../../src/core/types/types";
 import { generateAdminAuthToken } from "../../utils/generate-admin-auth-token";
+import { clearDb } from "../../utils/clear-db";
 
 describe("Blogs API", () => {
   const app = express();
@@ -19,11 +20,7 @@ describe("Blogs API", () => {
   };
 
   beforeAll(async () => {
-    const response = await request(app)
-      .delete("/testing/all-data")
-      .expect(HttpStatus.NoContent);
-
-    response.on("close", () => {});
+    await clearDb(app)
   });
 
   it("should return all blogs; GET /blogs", async () => {

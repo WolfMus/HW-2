@@ -29,7 +29,7 @@ describe("Blogs API", () => {
   };
 
   beforeAll(async () => {
-    const response = clearDb;
+    await clearDb(app);
     // response.on("close", () => {});
   });
 
