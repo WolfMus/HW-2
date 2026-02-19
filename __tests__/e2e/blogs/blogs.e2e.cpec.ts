@@ -7,6 +7,8 @@ import { PostInputModel } from "../../../src/posts/dto/posts-input.dto";
 import { BLOGS_PATH, POSTS_PATH, TESTING_PATH } from "../../../src/core/paths/paths";
 import { clearDb } from "../../utils/clear-db";
 import { generateAdminAuthToken } from "../../utils/generate-admin-auth-token";
+import { runDb } from "../../../src/db/mongo.db";
+import { SETTINGS } from "../../../src/core/settings/settings";
 
 describe("Blogs API", () => {
   const app = express();
@@ -29,8 +31,8 @@ describe("Blogs API", () => {
   };
 
   beforeAll(async () => {
+    await runDb(SETTINGS.MONGO_URL);
     await clearDb(app);
-    // response.on("close", () => {});
   });
 
   it("✅ should return all blogs; GET /blogs", async () => {

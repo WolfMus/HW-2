@@ -5,6 +5,8 @@ import { BlogInputModel } from "../../../src/blogs/dto/blog-input.dto";
 import { HttpStatus } from "../../../src/core/types/types";
 import { generateAdminAuthToken } from "../../utils/generate-admin-auth-token";
 import { clearDb } from "../../utils/clear-db";
+import { SETTINGS } from "../../../src/core/settings/settings";
+import { runDb } from "../../../src/db/mongo.db";
 
 describe("Blogs API", () => {
   const app = express();
@@ -20,6 +22,7 @@ describe("Blogs API", () => {
   };
 
   beforeAll(async () => {
+    await runDb(SETTINGS.MONGO_URL)
     await clearDb(app)
   });
 

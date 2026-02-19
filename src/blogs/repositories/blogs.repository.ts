@@ -1,15 +1,21 @@
 import { BlogViewModel } from "../types/blogs";
 import { db } from "../../db/in-memory.db";
 import { BlogInputModel } from "../dto/blog-input.dto";
+import { blogsCollection } from "../../db/mongo.db";
+import { WithId } from "mongodb";
 
 export const blogsRepository = {
 
     async findAll(): Promise<BlogViewModel[]> {
-        return db.blogs;
+        return blogsCollection.find().toArray();
     },
 
-    async findById(id: string): Promise<BlogViewModel | null> {
-        return db.blogs.find((b) => b.id === id) ?? null;
+    async findById(id: string): Promise<WithId<BlogViewModel> | null> {
+        const blog = db.blogs.find((b) => b.id === id);
+        if (!blog) {
+            throw new Error("Blog not exist");
+        }
+        return blog;
     },
 
     async create(newBlog: BlogViewModel): Promise<BlogViewModel> {

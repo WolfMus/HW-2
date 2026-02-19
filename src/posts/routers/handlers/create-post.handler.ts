@@ -6,12 +6,12 @@ import { PostViewModel } from "../../types/posts";
 import { blogsRepository } from "../../../blogs/repositories/blogs.repository";
 import { postsRepository } from "../../repository/posts.repository";
 
-export function createPostHandler(
+export async function createPostHandler(
   req: RequestWithBody<PostInputModel>,
   res: Response,
 ) {
   const id = req.body.blogId;
-  const blog = blogsRepository.findById(id);
+  const blog = await blogsRepository.findById(id);
 
   if (!blog) {
     return res.status(HttpStatus.BadRequest).send({
