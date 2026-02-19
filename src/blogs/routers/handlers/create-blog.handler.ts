@@ -7,7 +7,7 @@ import { BlogViewModel } from "../../types/blogs";
 import { db } from "../../../db/in-memory.db";
 import { blogsRepository } from "../../repositories/blogs.repository";
 
-export function createBlogHandler(
+export async function createBlogHandler(
   req: RequestWithBody<BlogInputModel>,
   res: Response,
 ) {
@@ -19,6 +19,6 @@ export function createBlogHandler(
     websiteUrl: req.body.websiteUrl,
   };
 
-  blogsRepository.create(newBlog);
+  await blogsRepository.create(newBlog);
   return res.status(HttpStatus.Created).send(newBlog);
 }

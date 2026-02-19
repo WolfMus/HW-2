@@ -6,18 +6,18 @@ import {
 import { BlogInputModel } from "../../dto/blog-input.dto";
 import { blogsRepository } from "../../repositories/blogs.repository";
 
-export function updateBlogHandler(
+export async function updateBlogHandler(
   req: RequestWithParamsAndBody<{ id: string }, BlogInputModel>,
   res: Response,
 ) {
   
   const id = String(req.params.id);
-  const blog = blogsRepository.findById(id);
+  const blog = await blogsRepository.findById(id);
   if (!blog) {
     return res.sendStatus(HttpStatus.NotFound);
   }
   const body = req.body;
 
-  blogsRepository.update(id, body);
+  await blogsRepository.update(id, body);
   res.sendStatus(HttpStatus.NoContent);
 }

@@ -4,21 +4,21 @@ import { BlogInputModel } from "../dto/blog-input.dto";
 
 export const blogsRepository = {
 
-    findAll(): BlogViewModel[] {
+    async findAll(): Promise<BlogViewModel[]> {
         return db.blogs;
     },
 
-    findById(id: string): BlogViewModel | null {
+    async findById(id: string): Promise<BlogViewModel | null> {
         return db.blogs.find((b) => b.id === id) ?? null;
     },
 
-    create(newBlog: BlogViewModel): BlogViewModel {
+    async create(newBlog: BlogViewModel): Promise<BlogViewModel> {
         db.blogs.push(newBlog);
 
         return newBlog
     },
 
-    update(id: string, dto: BlogInputModel): void {
+    async update(id: string, dto: BlogInputModel): Promise<void> {
         const updatedBlog = db.blogs.find((b) => b.id === id);
 
         if (!updatedBlog) {
@@ -32,7 +32,7 @@ export const blogsRepository = {
         return;
     },
 
-    delete(id: string): void {
+    async delete(id: string): Promise<void> {
         db.blogs = db.blogs.filter((b) => b.id !== id);
 
         return

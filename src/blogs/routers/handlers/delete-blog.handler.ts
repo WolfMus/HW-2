@@ -2,14 +2,14 @@ import { Response } from "express";
 import { HttpStatus, RequestWithParams } from "../../../core/types/types";
 import { blogsRepository } from "../../repositories/blogs.repository";
 
-  export function deleteBlogHandler(req: RequestWithParams<{ id: string }>, res: Response) {
+  export async function deleteBlogHandler(req: RequestWithParams<{ id: string }>, res: Response) {
       const id = String(req.params.id);
-      const blog = blogsRepository.findById(id);
+      const blog = await blogsRepository.findById(id);
 
       if (!blog) {
         return res.sendStatus(HttpStatus.NotFound);
       }
 
-      blogsRepository.delete(id);
+      await blogsRepository.delete(id);
       return res.sendStatus(HttpStatus.NoContent);
   }
