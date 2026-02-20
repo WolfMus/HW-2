@@ -4,11 +4,19 @@ import { setupApp } from "../../../src/setup-app";
 import { BlogInputModel } from "../../../src/blogs/dto/blog-input.dto";
 import { HttpStatus } from "../../../src/core/types/types";
 import { PostInputModel } from "../../../src/posts/dto/posts-input.dto";
-import { BLOGS_PATH, POSTS_PATH, TESTING_PATH } from "../../../src/core/paths/paths";
+import {
+  BLOGS_PATH,
+  POSTS_PATH,
+  TESTING_PATH,
+} from "../../../src/core/paths/paths";
 import { clearDb } from "../../utils/clear-db";
 import { generateAdminAuthToken } from "../../utils/generate-admin-auth-token";
 import { runDb } from "../../../src/db/mongo.db";
 import { SETTINGS } from "../../../src/core/settings/settings";
+import { getBlogsDto } from "../../utils/blogs/get-blogs-dto";
+import { createBlog } from "../../utils/blogs/create-blog";
+import { Post } from "../../../src/posts/types/posts";
+import { getBlogById } from "../../utils/blogs/get-blog-id";
 
 describe("Blogs API", () => {
   const app = express();
@@ -35,41 +43,33 @@ describe("Blogs API", () => {
     await clearDb(app);
   });
 
-  it("✅ should return all blogs; GET /blogs", async () => {
-    await request(app)
-      .get(BLOGS_PATH)
-      .expect(HttpStatus.Ok);
-  });
-
   it("✅ should create blog; POST /blogs", async () => {
     const newBlog: BlogInputModel = {
-      ...testBlogsData,
-      name: "string",
-      description: "string",
-      websiteUrl:
-        "https://Pc9DLvZWb1vvGQqhu2fLAqq6jLFb3YqvPrpq2Sypa4JezzhaZLURIWHsXj2XH7Id3qR1gA.by",
+      ...getBlogsDto(),
+      name: 'blablabla',
     };
 
-    await request(app)
-      .post(BLOGS_PATH)
-      .set("Authorization", adminToken)
-      .send(newBlog)
-      .expect(HttpStatus.Created);
+    await createBlog(app, newBlog)
   });
 
-  it("✅ should return blog by id; GET /blogs/:id", async () => {
-    const createResponse = await request(app)
-      .post(BLOGS_PATH)
+  it("✅ should return all blogs; GET /blogs", async () => {
+    await createBlog(app);
+    await createBlog(app);
+
+    await request(app)
+      .get(BLOGS_PATH)
       .set("Authorization", adminToken)
-      .send({ ...testBlogsData })
-      .expect(HttpStatus.Created);
-
-    const getResponse = await request(app)
-      .get(`${BLOGS_PATH}/${createResponse.body.id}`)
       .expect(HttpStatus.Ok);
+  });
 
-    expect(getResponse.body).toEqual({
-      ...createResponse.body,
+
+  it("✅ should return blog by id; GET /blogs/:id", async () => {
+    const createdBlog = await createBlog(app)
+
+    const findBlogId = await getBlogById(app, createdBlog.id);
+
+    expect(findBlogId).toEqual({
+      ...createdBlog,
       id: expect.any(String),
     });
   });
@@ -140,17 +140,17 @@ describe("Blogs API", () => {
       .post(BLOGS_PATH)
       .set("Authorization", adminToken)
       .send({ ...testBlogsData })
-      .expect(HttpStatus.Created)
+      .expect(HttpStatus.Created);
 
     const createPost = await request(app)
       .post(POSTS_PATH)
       .set("Authorization", adminToken)
       .send({ ...testPostsData })
-      .expect(HttpStatus.Created)
+      .expect(HttpStatus.Created);
 
     const checkPost = await request(app)
       .get(`${POSTS_PATH}/${createPost.body.id}`)
-      .expect(HttpStatus.Ok)
+      .expect(HttpStatus.Ok);
 
     const deletePost = await request(app)
       .delete(`${POSTS_PATH}/${createPost.body.id}`)
@@ -172,7 +172,7 @@ describe("Blogs API", () => {
     const updatePost = await request(app)
       .put(`${POSTS_PATH}/${createPost.body.id}`)
       .set("Authorization", adminToken)
-      .send({...testPostsData})
-      .expect(HttpStatus.NoContent)
+      .send({ ...testPostsData })
+      .expect(HttpStatus.NoContent);
   });
 });

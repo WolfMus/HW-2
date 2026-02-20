@@ -8,7 +8,7 @@ export const postsRepository = {
     return postsCollection.find().toArray();
   },
 
-  async findById(id: string): Promise<WithId<Post>> {
+  async findById(id: string): Promise<WithId<Post> | null> {
     const post = postsCollection.findOne({_id: new Object(id)});
     return post;
   },

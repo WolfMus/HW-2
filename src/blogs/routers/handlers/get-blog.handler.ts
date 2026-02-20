@@ -8,7 +8,7 @@ import { blogsRepository } from "../../repositories/blogs.repository";
 
 export async function getBlogHandler(
   req: RequestWithParamsAndBody<{ id: string }, Blog>,
-  res: Response<Blog>,
+  res: Response,
 ) {
   try {
 
