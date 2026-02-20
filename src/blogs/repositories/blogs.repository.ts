@@ -1,9 +1,7 @@
 import { Blog } from "../types/blogs";
-import { db } from "../../db/in-memory.db";
 import { BlogInputModel } from "../dto/blog-input.dto";
 import { blogsCollection } from "../../db/mongo.db";
 import { ObjectId, WithId } from "mongodb";
-import { HttpStatus } from "../../core/types/types";
 
 export const blogsRepository = {
   async findAll(): Promise<Blog[]> {

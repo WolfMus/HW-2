@@ -4,24 +4,22 @@ import { PostInputModel } from "../../dto/posts-input.dto";
 import { postsRepository } from "../../repository/posts.repository";
 import { blogsRepository } from "../../../blogs/repositories/blogs.repository";
 
-export function updatePostHandler (
+export async function updatePostHandler (
       req: RequestWithParamsAndBody<{ id: string }, PostInputModel>,
       res: Response,
     ) {
-      const id = req.params.id;
-      const body = req.body;
+      try {
 
-      const blog = blogsRepository.findById(body.blogId)
-      if (!blog) {
-        return res.sendStatus(HttpStatus.NotFound);
+        const blog = await blogsRepository.findById(req.body.blogId)
+        if (!blog) {
+          return res.sendStatus(HttpStatus.NotFound);
+        }
+        
+        await postsRepository.update(req.params.id, req.body);
+        
+        return res.sendStatus(HttpStatus.NoContent);
+
+      } catch (e: unknown) {
+        res.sendStatus(HttpStatus.InternalServerError);
       }
-
-      const post = postsRepository.findById(id);
-      if (!post) {
-        return res.sendStatus(HttpStatus.NotFound);
-      }
-
-      postsRepository.update(post, body);
-
-      return res.sendStatus(HttpStatus.NoContent);
     }

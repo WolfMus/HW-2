@@ -1,33 +1,45 @@
-import { db } from "../../db/in-memory.db";
+import { ObjectId, WithId } from "mongodb";
+import { postsCollection } from "../../db/mongo.db";
 import { PostInputModel } from "../dto/posts-input.dto";
-import { PostViewModel } from "../types/posts";
+import { Post } from "../types/posts";
 
 export const postsRepository = {
-  findAll(): PostViewModel[] {
-    return db.posts;
+  async findAll(): Promise<Post[]> {
+    return postsCollection.find().toArray();
   },
 
-  findById(id: string): PostViewModel | null {
-    const post = db.posts.find((p) => p.id === id) ?? null;
+  async findById(id: string): Promise<WithId<Post>> {
+    const post = postsCollection.findOne({_id: new Object(id)});
     return post;
   },
 
-  create(newPost: PostViewModel): PostViewModel {
-    db.posts.push(newPost);
-    return newPost;
+  async create(newPost: Post): Promise<WithId<Post>> {
+    const createdPost = await postsCollection.insertOne(newPost);
+    return {...newPost, _id: createdPost.insertedId};
   },
 
-  update(post: PostViewModel, body: PostInputModel): void {
-    post.title = body.title;
-    post.shortDescription = body.shortDescription;
-    post.content = body.content;
-
+  async update(id: string, body: PostInputModel): Promise<void> {
+    const updatedPost = await postsCollection.updateOne(
+      {_id: new ObjectId(id)},
+      {
+        $set: {
+          title: body.title,
+          shortDescription: body.shortDescription,
+          content: body.content,
+          blogId: body.blogId,
+        }
+      } )
+      if (updatedPost.matchedCount < 1) {
+        throw new Error('Post not exist')
+      }
     return;
   },
 
-  delete(id: string): void {
-    const index = db.posts.findIndex(p => p.id === id)
-    db.posts.splice(index, 1)
-    return;
+  async delete(id: string): Promise<void> {
+    const deletedPost = await postsCollection.deleteOne({_id: new ObjectId(id)})
+    if (deletedPost.deletedCount < 1) {
+      throw new Error('Post not exist')
+    }
+    return
   },
 };
