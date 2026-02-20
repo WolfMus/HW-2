@@ -10,14 +10,18 @@ export async function updateBlogHandler(
   req: RequestWithParamsAndBody<{ id: string }, BlogInputModel>,
   res: Response,
 ) {
-  
-  const id = String(req.params.id);
-  const blog = await blogsRepository.findById(id);
-  if (!blog) {
-    return res.sendStatus(HttpStatus.NotFound);
-  }
-  const body = req.body;
+  try {
+    const id = req.params.id;
+    const blog = await blogsRepository.findById(id);
 
-  await blogsRepository.update(id, body);
-  res.sendStatus(HttpStatus.NoContent);
+    if (!blog) {
+      return res.sendStatus(HttpStatus.NotFound);
+    }
+
+    await blogsRepository.update(id, req.body);
+    res.sendStatus(HttpStatus.NoContent);
+    
+  } catch (e: unknown) {
+    res.sendStatus(HttpStatus.InternalServerError);
+  }
 }
