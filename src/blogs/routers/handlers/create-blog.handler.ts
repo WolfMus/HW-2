@@ -20,9 +20,7 @@ export async function createBlogHandler(
     };
 
     const createdBlog = await blogsRepository.create(newBlog);
-    console.log(createdBlog)
     const blogToViewModel = mapToBlogViewModel(createdBlog);
-    console.log(blogToViewModel)
     res.status(HttpStatus.Created).send(blogToViewModel);
 
   } catch (e: unknown) {
