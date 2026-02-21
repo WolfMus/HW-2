@@ -5,8 +5,8 @@ import { BlogViewModel } from "../../types/BlogViewModel";
 export function mapToBlogViewModel(newBlog: WithId<Blog>): BlogViewModel {
   return {
     id: newBlog._id.toString(),
-    name: "string",
-    description: "string",
-    websiteUrl: "string",
+    name: newBlog.name,
+    description: newBlog.description,
+    websiteUrl: newBlog.websiteUrl,
   };
 }

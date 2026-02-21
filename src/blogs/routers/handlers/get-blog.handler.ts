@@ -5,19 +5,29 @@ import {
 } from "../../../core/types/types";
 import { Blog } from "../../types/blogs";
 import { blogsRepository } from "../../repositories/blogs.repository";
+import { mapToBlogViewModel } from "../mappers/mapToBlogViewModel";
+import { createErrorMessage } from "../../../core/middlewares/validation/input-validation-result.middleware";
 
 export async function getBlogHandler(
   req: RequestWithParamsAndBody<{ id: string }, Blog>,
   res: Response,
 ) {
   try {
+    const id = req.params.id;
+    const blog = await blogsRepository.findById(id)
 
-    const blog = await blogsRepository.findById(req.params.id);
     if (!blog) {
-      return res.sendStatus(HttpStatus.NotFound);
+      res.status(HttpStatus.NotFound)
+      .send(
+        createErrorMessage([{ 
+          message: "Blog not found", 
+          field: 'id',
+        }])
+      )
+      return;
     }
 
-    return res.status(HttpStatus.Ok).send(blog);
+    return res.status(HttpStatus.Ok).send(mapToBlogViewModel(blog));
     
   } catch (e: unknown) {
     res.sendStatus(HttpStatus.InternalServerError);

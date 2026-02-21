@@ -2,6 +2,8 @@ import { Blog } from "../types/blogs";
 import { BlogInputModel } from "../dto/blog-input.dto";
 import { blogsCollection } from "../../db/mongo.db";
 import { ObjectId, WithId } from "mongodb";
+import { mapToBlogViewModel } from "../routers/mappers/mapToBlogViewModel";
+import { BlogViewModel } from "../types/BlogViewModel";
 
 export const blogsRepository = {
   async findAll(): Promise<WithId<Blog>[]> {
@@ -9,11 +11,7 @@ export const blogsRepository = {
   },
 
   async findById(id: string): Promise<WithId<Blog> | null> {
-    const blog = blogsCollection.findOne({ _id: new Object(id) });
-    if (!blog) {
-      throw new Error("Blog not exist");
-    }
-    return blog;
+    return await blogsCollection.findOne({ _id: new ObjectId(id) });
   },
 
   async create(newBlog: Blog): Promise<WithId<Blog>> {
@@ -23,6 +21,7 @@ export const blogsRepository = {
   },
 
   async update(id: string, dto: BlogInputModel): Promise<void> {
+    console.log('---RECIEVED DTO---', dto)
     const updatedResult = await blogsCollection.updateOne(
       { _id: new ObjectId(id) },
       {
@@ -38,7 +37,7 @@ export const blogsRepository = {
         throw new Error ("Blog not exist");
     }
 
-    return
+    return;
   },
 
   async delete(id: string): Promise<void> {

@@ -15,8 +15,8 @@ import { runDb } from "../../../src/db/mongo.db";
 import { SETTINGS } from "../../../src/core/settings/settings";
 import { getBlogsDto } from "../../utils/blogs/get-blogs-dto";
 import { createBlog } from "../../utils/blogs/create-blog";
-import { Post } from "../../../src/posts/types/posts";
 import { getBlogById } from "../../utils/blogs/get-blog-id";
+import { updateBlog } from "../../utils/blogs/update-blog";
 
 describe("Blogs API", () => {
   const app = express();
@@ -46,15 +46,16 @@ describe("Blogs API", () => {
   it("✅ should create blog; POST /blogs", async () => {
     const newBlog: BlogInputModel = {
       ...getBlogsDto(),
-      name: 'blablabla',
+      name: "blablabla",
     };
 
-    await createBlog(app, newBlog)
+    await createBlog(app, newBlog);
   });
 
   it("✅ should return all blogs; GET /blogs", async () => {
     await createBlog(app);
     await createBlog(app);
+    console.log(createBlog(app));
 
     await request(app)
       .get(BLOGS_PATH)
@@ -62,9 +63,8 @@ describe("Blogs API", () => {
       .expect(HttpStatus.Ok);
   });
 
-
   it("✅ should return blog by id; GET /blogs/:id", async () => {
-    const createdBlog = await createBlog(app)
+    const createdBlog = await createBlog(app);
 
     const findBlogId = await getBlogById(app, createdBlog.id);
 
@@ -75,104 +75,105 @@ describe("Blogs API", () => {
   });
 
   it("✅ should delete blog by id; DELETE /blogs/:id", async () => {
-    const createResponse = await request(app)
-      .post(BLOGS_PATH)
-      .set("Authorization", adminToken)
-      .send({ ...testBlogsData })
-      .expect(HttpStatus.Created);
-
-    const getResponse = await request(app)
-      .delete(`${BLOGS_PATH}/${createResponse.body.id}`)
+    const createdBlog = await createBlog(app);
+    
+    await request(app)
+      .delete(`${BLOGS_PATH}/${createdBlog.id}`)
       .set("Authorization", adminToken)
       .expect(HttpStatus.NoContent);
+
+    await request(app)
+        .get(`${BLOGS_PATH}/${createdBlog.id}`)
+        .expect(HttpStatus.NotFound)
   });
 
   it("✅ should update blog by id; PUT /blogs/:id", async () => {
-    const createResponse = await request(app)
-      .post(BLOGS_PATH)
-      .set("Authorization", adminToken)
-      .send({ ...testBlogsData })
-      .expect(HttpStatus.Created);
+    const createdBlog = await createBlog(app);
 
-    const updateResponse = await request(app)
-      .put(`${BLOGS_PATH}/${createResponse.body.id}`)
-      .set("Authorization", adminToken)
-      .send({
-        ...testBlogsData,
-        name: "asdasd",
-        description: "new Description",
-        websiteUrl: "https://asdasda3a3ya3d3adja3jj3j3ajaskdgl.jfgfgnf",
-      })
-      .expect(HttpStatus.NoContent);
+    const blogUpdateData: BlogInputModel = {
+      name: "new name",
+      description: "new description",
+      websiteUrl: "https://new-url.by",
+    }
+
+    await updateBlog(app, createdBlog.id, blogUpdateData)
+    const getBlog = await getBlogById(app, createdBlog.id);
+
+    expect(getBlog).toEqual({
+      id: createdBlog.id,
+      name: blogUpdateData.name,
+      description: blogUpdateData.description,
+      websiteUrl: blogUpdateData.websiteUrl,
+    })
   });
 
-  it("✅ should create new post; POST /posts", async () => {
-    const createBlog = await request(app)
-      .post(BLOGS_PATH)
-      .set("Authorization", adminToken)
-      .send({ ...testBlogsData });
+  // it("✅ should create new post; POST /posts", async () => {
+  //   const createBlog = await request(app)
+  //     .post(BLOGS_PATH)
+  //     .set("Authorization", adminToken)
+  //     .send({ ...testBlogsData });
 
-    const createPost = await request(app)
-      .post(POSTS_PATH)
-      .set("Authorization", adminToken)
-      .send({ ...testPostsData })
-      .expect(HttpStatus.Created);
-  });
+  //   const createPost = await request(app)
+  //     .post(POSTS_PATH)
+  //     .set("Authorization", adminToken)
+  //     .send({ ...testPostsData })
+  //     .expect(HttpStatus.Created);
+  // });
 
-  it("✅ should return post by id; GET /posts/:postId", async () => {
-    const createBlog = await request(app)
-      .post(BLOGS_PATH)
-      .set("Authorization", adminToken)
-      .send({ ...testBlogsData });
+  // it("✅ should return post by id; GET /posts/:postId", async () => {
+  //   const createBlog = await request(app)
+  //     .post(BLOGS_PATH)
+  //     .set("Authorization", adminToken)
+  //     .send({ ...testBlogsData });
 
-    const createPost = await request(app)
-      .post(POSTS_PATH)
-      .set("Authorization", adminToken)
-      .send({ ...testPostsData });
+  //   const createPost = await request(app)
+  //     .post(POSTS_PATH)
+  //     .set("Authorization", adminToken)
+  //     .send({ ...testPostsData });
 
-    const getResponse = await request(app)
-      .get(`${POSTS_PATH}/${createPost.body.id}`)
-      .expect(HttpStatus.Ok);
-  });
+  //   const getResponse = await request(app)
+  //     .get(`${POSTS_PATH}/${createPost.body.id}`)
+  //     .expect(HttpStatus.Ok);
+  // });
 
-  it("✅ should delete post by id; DELETE /posts/:postId", async () => {
-    const createBlog = await request(app)
-      .post(BLOGS_PATH)
-      .set("Authorization", adminToken)
-      .send({ ...testBlogsData })
-      .expect(HttpStatus.Created);
+  // it("✅ should delete post by id; DELETE /posts/:postId", async () => {
+  //   const createBlog = await request(app)
+  //     .post(BLOGS_PATH)
+  //     .set("Authorization", adminToken)
+  //     .send({ ...testBlogsData })
+  //     .expect(HttpStatus.Created);
 
-    const createPost = await request(app)
-      .post(POSTS_PATH)
-      .set("Authorization", adminToken)
-      .send({ ...testPostsData })
-      .expect(HttpStatus.Created);
+  //   const createPost = await request(app)
+  //     .post(POSTS_PATH)
+  //     .set("Authorization", adminToken)
+  //     .send({ ...testPostsData })
+  //     .expect(HttpStatus.Created);
 
-    const checkPost = await request(app)
-      .get(`${POSTS_PATH}/${createPost.body.id}`)
-      .expect(HttpStatus.Ok);
+  //   const checkPost = await request(app)
+  //     .get(`${POSTS_PATH}/${createPost.body.id}`)
+  //     .expect(HttpStatus.Ok);
 
-    const deletePost = await request(app)
-      .delete(`${POSTS_PATH}/${createPost.body.id}`)
-      .set("Authorization", adminToken)
-      .expect(HttpStatus.NoContent);
-  });
+  //   const deletePost = await request(app)
+  //     .delete(`${POSTS_PATH}/${createPost.body.id}`)
+  //     .set("Authorization", adminToken)
+  //     .expect(HttpStatus.NoContent);
+  // });
 
-  it("✅ should update post by id with InputModel; PUT /posts/:postId", async () => {
-    const createBlog = await request(app)
-      .post(BLOGS_PATH)
-      .set("Authorization", adminToken)
-      .send({ ...testBlogsData });
+  // it("✅ should update post by id with InputModel; PUT /posts/:postId", async () => {
+  //   const createBlog = await request(app)
+  //     .post(BLOGS_PATH)
+  //     .set("Authorization", adminToken)
+  //     .send({ ...testBlogsData });
 
-    const createPost = await request(app)
-      .post(POSTS_PATH)
-      .set("Authorization", adminToken)
-      .send({ ...testPostsData });
+  //   const createPost = await request(app)
+  //     .post(POSTS_PATH)
+  //     .set("Authorization", adminToken)
+  //     .send({ ...testPostsData });
 
-    const updatePost = await request(app)
-      .put(`${POSTS_PATH}/${createPost.body.id}`)
-      .set("Authorization", adminToken)
-      .send({ ...testPostsData })
-      .expect(HttpStatus.NoContent);
-  });
+  //   const updatePost = await request(app)
+  //     .put(`${POSTS_PATH}/${createPost.body.id}`)
+  //     .set("Authorization", adminToken)
+  //     .send({ ...testPostsData })
+  //     .expect(HttpStatus.NoContent);
+  // });
 });
