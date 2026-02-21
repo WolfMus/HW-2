@@ -21,7 +21,6 @@ export async function updatePostHandler (
           );
         }
         await postsRepository.update(req.params.id, req.body);
-        
         return res.sendStatus(HttpStatus.NoContent);
 
       } catch (e: unknown) {

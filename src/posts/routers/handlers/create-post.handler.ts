@@ -14,7 +14,6 @@ export async function createPostHandler(
   try {
 
     const blog = await blogsRepository.findById(req.body.blogId);
-
     if (!blog) {
       return res.status(HttpStatus.BadRequest).send(
         createErrorMessage([

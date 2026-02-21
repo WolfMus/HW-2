@@ -36,9 +36,11 @@ describe("Posts API", () => {
   
   it("✅ should create new post; POST /posts", async () => {
     const blog = await createBlog(app);
-    const newPost: PostInputModel = {
+    const newPost: Post = {
       ...createPostsDto(),
       blogId: blog.id,
+      blogName: blog.name,
+      createdAt: new Date(),
     }
     await createPost(app, newPost)
   });
@@ -109,14 +111,10 @@ describe("Posts API", () => {
     }
 
     const updatedPost = await updatePost(app, createdPost.id, updatePostData);
-
-    console.log("UPDATED POST: ", updatedPost);
-    
-    const getNewPost = await getPostId(app, updatedPost.id);
-    console.log("GET UPDATED POST: ", getNewPost);
+    const getNewPost = await getPostId(app, createdPost.id)
     
     expect(getNewPost).toEqual({
-      ...updatedPost,
+      ...updatePostData,
       id: expect.any(String)
     })
   });
