@@ -15,11 +15,15 @@ export async function createBlogHandler(
       name: req.body.name,
       description: req.body.description,
       websiteUrl: req.body.websiteUrl,
+      createdAt: new Date(),
+      isMembership: false,
     };
 
     const createdBlog = await blogsRepository.create(newBlog);
+    console.log(createdBlog)
     const blogToViewModel = mapToBlogViewModel(createdBlog);
-    return res.status(HttpStatus.Created).send(blogToViewModel);
+    console.log(blogToViewModel)
+    res.status(HttpStatus.Created).send(blogToViewModel);
 
   } catch (e: unknown) {
     res.sendStatus(HttpStatus.InternalServerError);

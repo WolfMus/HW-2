@@ -6,8 +6,6 @@ import { HttpStatus } from "../../../src/core/types/types";
 import { PostInputModel } from "../../../src/posts/dto/posts-input.dto";
 import {
   BLOGS_PATH,
-  POSTS_PATH,
-  TESTING_PATH,
 } from "../../../src/core/paths/paths";
 import { clearDb } from "../../utils/clear-db";
 import { generateAdminAuthToken } from "../../utils/generate-admin-auth-token";
@@ -23,20 +21,6 @@ describe("Blogs API", () => {
   setupApp(app);
 
   const adminToken = generateAdminAuthToken();
-
-  const testBlogsData: BlogInputModel = {
-    name: "string",
-    description: "string",
-    websiteUrl:
-      "https://Pc9DLvZWb1vvGQqhu2fLAqzhaZLURIWHsXj2XH7IYhkOaMVD-N2Jd3qR1gAuv33H.by",
-  };
-
-  const testPostsData: PostInputModel = {
-    title: "string",
-    shortDescription: "string",
-    content: "string",
-    blogId: "1",
-  };
 
   beforeAll(async () => {
     await runDb(SETTINGS.MONGO_URL);
@@ -55,7 +39,6 @@ describe("Blogs API", () => {
   it("✅ should return all blogs; GET /blogs", async () => {
     await createBlog(app);
     await createBlog(app);
-    console.log(createBlog(app));
 
     await request(app)
       .get(BLOGS_PATH)
@@ -104,6 +87,8 @@ describe("Blogs API", () => {
       name: blogUpdateData.name,
       description: blogUpdateData.description,
       websiteUrl: blogUpdateData.websiteUrl,
+      createdAt: createdBlog.createdAt,
+      isMembership: createdBlog.isMembership,
     })
   });
 });

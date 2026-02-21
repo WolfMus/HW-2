@@ -8,5 +8,7 @@ export function mapToBlogViewModel(newBlog: WithId<Blog>): BlogViewModel {
     name: newBlog.name,
     description: newBlog.description,
     websiteUrl: newBlog.websiteUrl,
+    createdAt: newBlog.createdAt,
+    isMembership: newBlog.isMembership,
   };
 }
