@@ -1,6 +1,6 @@
 import { WithId } from "mongodb";
-import { Post } from "../../types/posts";
 import { PostViewModel } from "../../types/postViewModel";
+import { Post } from "../../types/posts";
 
 export function mapToPostViewModel(post: WithId<Post>): PostViewModel {
     return {
@@ -10,5 +10,6 @@ export function mapToPostViewModel(post: WithId<Post>): PostViewModel {
         content: post.content,
         blogId: post.blogId,
         blogName: post.blogName,
+        createdAt: post.createdAt,
     }
 }  

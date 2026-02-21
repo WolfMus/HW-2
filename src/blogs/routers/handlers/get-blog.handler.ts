@@ -1,15 +1,15 @@
 import { Request, Response } from "express";
 import {
   HttpStatus,
+  RequestWithParams,
   RequestWithParamsAndBody,
 } from "../../../core/types/types";
-import { Blog } from "../../types/blogs";
 import { blogsRepository } from "../../repositories/blogs.repository";
 import { mapToBlogViewModel } from "../mappers/mapToBlogViewModel";
 import { createErrorMessage } from "../../../core/middlewares/validation/input-validation-result.middleware";
 
 export async function getBlogHandler(
-  req: RequestWithParamsAndBody<{ id: string }, Blog>,
+  req: RequestWithParams<{ id: string }>,
   res: Response,
 ) {
   try {

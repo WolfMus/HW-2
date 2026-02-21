@@ -7,6 +7,7 @@ import { generateAdminAuthToken } from "../../utils/generate-admin-auth-token";
 import { clearDb } from "../../utils/clear-db";
 import { SETTINGS } from "../../../src/core/settings/settings";
 import { runDb } from "../../../src/db/mongo.db";
+import { BLOGS_PATH } from "../../../src/core/paths/paths";
 
 describe("Blogs API", () => {
   const app = express();
@@ -68,5 +69,11 @@ describe("Blogs API", () => {
       .set("Authorization", adminToken)
       .send(newBlog)
       .expect(HttpStatus.BadRequest);
+  });
+
+    it("❌ shouldn't return blog with incorrect id; POST /blogs:id", async () => {
+    await request(app)
+      .get(`${BLOGS_PATH}/507f1f77bcf86cd799439011`)
+      .expect(HttpStatus.NotFound);
   });
 });

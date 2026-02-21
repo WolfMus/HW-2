@@ -17,7 +17,7 @@ import { body } from "express-validator";
   
   const blogIdValidation = body('blogId')
     .isString().withMessage('Should be a string')
-    .isNumeric().withMessage('Should be a numeric string');
+    .isMongoId().withMessage('Should be a mongodb id')
 
   export const postInputDtoValidation = [
     titleValidation,

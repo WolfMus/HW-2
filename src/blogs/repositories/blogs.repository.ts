@@ -21,7 +21,6 @@ export const blogsRepository = {
   },
 
   async update(id: string, dto: BlogInputModel): Promise<void> {
-    console.log('---RECIEVED DTO---', dto)
     const updatedResult = await blogsCollection.updateOne(
       { _id: new ObjectId(id) },
       {

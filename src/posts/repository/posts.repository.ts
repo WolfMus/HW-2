@@ -9,8 +9,7 @@ export const postsRepository = {
   },
 
   async findById(id: string): Promise<WithId<Post> | null> {
-    const post = postsCollection.findOne({_id: new Object(id)});
-    return post;
+    return await postsCollection.findOne({_id: new ObjectId(id)});
   },
 
   async create(newPost: Post): Promise<WithId<Post>> {
@@ -26,7 +25,7 @@ export const postsRepository = {
           title: body.title,
           shortDescription: body.shortDescription,
           content: body.content,
-          blogId: body.blogId,
+          blogId: body.blogId
         }
       } )
       if (updatedPost.matchedCount < 1) {

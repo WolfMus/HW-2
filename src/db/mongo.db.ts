@@ -20,7 +20,7 @@ export async function runDb(url: string): Promise<void> {
     try {
         await client.connect();
         await db.command({ping: 1});
-        console.log("✅ Connected to the database");
+        // console.log("✅ Connected to the database");
     } catch (e) {
         await client.close();
         throw new Error(`❌ Database not connected: ${e}`)

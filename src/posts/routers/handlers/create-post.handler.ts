@@ -5,38 +5,43 @@ import { Post } from "../../types/posts";
 import { blogsRepository } from "../../../blogs/repositories/blogs.repository";
 import { postsRepository } from "../../repository/posts.repository";
 import { mapToPostViewModel } from "../mapped/mapToPostViewModel";
+import { createErrorMessage } from "../../../core/middlewares/validation/input-validation-result.middleware";
 
 export async function createPostHandler(
   req: RequestWithBody<PostInputModel>,
   res: Response,
 ) {
-
   try {
 
     const blog = await blogsRepository.findById(req.body.blogId);
-    
+
     if (!blog) {
-      return res.status(HttpStatus.BadRequest).send({
-        errorMessage: {
-          message: "BlogId not found",
-          field: "blogId",
-        },
-      });
+      return res.status(HttpStatus.BadRequest).send(
+        createErrorMessage([
+          {
+            message: "BlogId not found",
+            field: "blogId",
+          },
+        ]),
+      );
     }
-    
+
     const newPost: Post = {
       title: req.body.title,
       shortDescription: req.body.shortDescription,
       content: req.body.content,
       blogId: req.body.blogId,
       blogName: blog.name,
+      createdAt: new Date(),
     };
-    
+
     const createdPost = await postsRepository.create(newPost);
-    const mappedPost = mapToPostViewModel(createdPost);
-    return res.status(HttpStatus.Created).send(mappedPost);
+    const postToViewModel = mapToPostViewModel(createdPost);
+
+    res.status(HttpStatus.Created).send(postToViewModel);
 
   } catch (e: unknown) {
+    console.log(e);
     res.sendStatus(HttpStatus.InternalServerError);
   }
 }

@@ -16,9 +16,6 @@ export async function updateBlog(
   const defaultBlogsData: BlogInputModel = getBlogsDto();
   const testBlogsData = { ...defaultBlogsData, ...blogsDto };
 
-  console.log('DTO RECEIVED:', blogsDto); // Что пришло в функцию?
-  console.log('FINAL PAYLOAD:', testBlogsData); // Что уходит на сервер?
-
   await request(app)
     .put(`${BLOGS_PATH}/${blogId}`)
     .set("Authorization", adminToken)
