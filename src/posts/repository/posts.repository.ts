@@ -4,7 +4,7 @@ import { PostInputModel } from "../dto/posts-input.dto";
 import { Post } from "../types/posts";
 
 export const postsRepository = {
-  async findAll(): Promise<Post[]> {
+  async findAll(): Promise<WithId<Post>[]> {
     return postsCollection.find().toArray();
   },
 
@@ -18,6 +18,7 @@ export const postsRepository = {
   },
 
   async update(id: string, body: PostInputModel): Promise<void> {
+     
     const updatedPost = await postsCollection.updateOne(
       {_id: new ObjectId(id)},
       {
