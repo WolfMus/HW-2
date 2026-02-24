@@ -8,8 +8,12 @@ export const blogsRepository = {
     return blogsCollection.find().toArray();
   },
 
-  async findById(id: string): Promise<WithId<Blog> | null> {
-    return await blogsCollection.findOne({ _id: new ObjectId(id) });
+  async findById(id: string): Promise<WithId<Blog>> {
+    const blog =  await blogsCollection.findOne({ _id: new ObjectId(id) });
+        if (!blog) {
+          throw new Error("Blog's not found");
+        }
+    return blog
   },
 
   async create(newBlog: Blog): Promise<WithId<Blog>> {
