@@ -5,6 +5,7 @@ import {
 } from "../../../core/types/types";
 import { mapToBlogViewModel } from "../mappers/mapToBlogViewModel";
 import { blogsServices } from "../../application/blogs-services";
+import { errorsHandler } from "../../../core/errors/errors.handler";
 
 export async function getBlogHandler(
   req: RequestWithParams<{ id: string }>,
@@ -17,7 +18,7 @@ export async function getBlogHandler(
     return res.status(HttpStatus.Ok).send(mapToBlogViewModel(blog));
     
   } catch (e: unknown) {
-    res.sendStatus(HttpStatus.InternalServerError);
+    errorsHandler(e, res);
   }
   
 }

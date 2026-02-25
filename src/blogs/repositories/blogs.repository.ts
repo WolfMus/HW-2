@@ -2,6 +2,7 @@ import { Blog } from "../types/blogs";
 import { BlogInputModel } from "../dto/blog-input.dto";
 import { blogsCollection } from "../../db/mongo.db";
 import { ObjectId, WithId } from "mongodb";
+import { RepositoryNotFoundError } from "../../core/errors/repository-not-found.error";
 
 export const blogsRepository = {
   async findAll(): Promise<WithId<Blog>[]> {
@@ -11,7 +12,7 @@ export const blogsRepository = {
   async findById(id: string): Promise<WithId<Blog>> {
     const blog =  await blogsCollection.findOne({ _id: new ObjectId(id) });
         if (!blog) {
-          throw new Error("Blog's not found");
+          throw new RepositoryNotFoundError("Blog not found", "id");
         }
     return blog
   },
@@ -35,7 +36,7 @@ export const blogsRepository = {
     );
 
     if (updatedResult.matchedCount < 1) {
-        throw new Error ("Blog not exist");
+        throw new RepositoryNotFoundError("Blog not found", "id");
     }
 
     return;
@@ -45,7 +46,7 @@ export const blogsRepository = {
     const deletedResult = await blogsCollection.deleteOne({_id: new ObjectId(id)});
 
     if (deletedResult.deletedCount < 1) {
-        throw new Error ("Blogs wasn't deleted. Blog not exist")
+        throw new RepositoryNotFoundError("Blogs wasn't deleted. Blog not exist", "id");
     }
     return;
   },

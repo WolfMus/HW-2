@@ -5,6 +5,7 @@ import { Blog } from "../../types/blogs";
 import { blogsRepository } from "../../repositories/blogs.repository";
 import { mapToBlogViewModel } from "../mappers/mapToBlogViewModel";
 import { blogsServices } from "../../application/blogs-services";
+import { errorsHandler } from "../../../core/errors/errors.handler";
 
 export async function createBlogHandler(
   req: RequestWithBody<BlogInputModel>,
@@ -17,6 +18,6 @@ export async function createBlogHandler(
     res.status(HttpStatus.Created).send(blogToViewModel);
 
   } catch (e: unknown) {
-    res.sendStatus(HttpStatus.InternalServerError);
+    errorsHandler(e, res);
   }
 }

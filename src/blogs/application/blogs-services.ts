@@ -6,7 +6,7 @@ import { blogsRepository } from "../repositories/blogs.repository";
 
 export const blogsServices = {
   async findMany(): Promise<WithId<Blog>[]> {
-    return blogsCollection.find().toArray();
+    return blogsRepository.findAll();
   },
 
   async findByIdOrFail(id: string): Promise<WithId<Blog>> {
@@ -29,8 +29,6 @@ export const blogsServices = {
   },
 
   async update(id: string, dto: BlogInputModel): Promise<void> {
-    await blogsServices.findByIdOrFail(id);
-
     return await blogsRepository.update(id, dto);
   },
 

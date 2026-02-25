@@ -2,6 +2,7 @@ import { ObjectId, WithId } from "mongodb";
 import { postsCollection } from "../../db/mongo.db";
 import { PostInputModel } from "../dto/posts-input.dto";
 import { Post } from "../types/posts";
+import { RepositoryNotFoundError } from "../../core/errors/repository-not-found.error";
 
 export const postsRepository = {
   async findAll(): Promise<WithId<Post>[]> {
@@ -11,7 +12,7 @@ export const postsRepository = {
   async findById(id: string): Promise<WithId<Post>> {
     const post = await postsCollection.findOne({_id: new ObjectId(id)});
     if (!post) {
-      throw new Error('post not found');
+      throw new RepositoryNotFoundError("Post id not found", "id");
     }
     return post
   },
@@ -34,7 +35,7 @@ export const postsRepository = {
         }
       } )
       if (updatedPost.matchedCount < 1) {
-        throw new Error('Post not exist')
+        throw new RepositoryNotFoundError("Post id not found", "id")
       }
     return;
   },
@@ -42,7 +43,7 @@ export const postsRepository = {
   async delete(id: string): Promise<void> {
     const deletedPost = await postsCollection.deleteOne({_id: new ObjectId(id)})
     if (deletedPost.deletedCount < 1) {
-      throw new Error('Post not exist')
+      throw new RepositoryNotFoundError("Post id not found", "id")
     }
     return
   },

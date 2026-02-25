@@ -4,6 +4,7 @@ import { PostInputModel } from "../../dto/posts-input.dto";
 import { mapToPostViewModel } from "../mapped/mapToPostViewModel";
 import { blogsServices } from "../../../blogs/application/blogs-services";
 import { postsServices } from "../../application/posts-service";
+import { errorsHandler } from "../../../core/errors/errors.handler";
 
 export async function createPostHandler(
   req: RequestWithBody<PostInputModel>,
@@ -19,7 +20,6 @@ export async function createPostHandler(
     res.status(HttpStatus.Created).send(postToViewModel);
 
   } catch (e: unknown) {
-    console.log(e);
-    res.sendStatus(HttpStatus.InternalServerError);
+    errorsHandler(e, res);
   }
 }

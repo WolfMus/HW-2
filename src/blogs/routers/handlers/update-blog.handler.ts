@@ -7,6 +7,7 @@ import { BlogInputModel } from "../../dto/blog-input.dto";
 import { blogsRepository } from "../../repositories/blogs.repository";
 import { createErrorMessage } from "../../../core/middlewares/validation/input-validation-result.middleware";
 import { blogsServices } from "../../application/blogs-services";
+import { errorsHandler } from "../../../core/errors/errors.handler";
 
 export async function updateBlogHandler(
   req: RequestWithParamsAndBody<{ id: string }, BlogInputModel>,
@@ -20,6 +21,6 @@ export async function updateBlogHandler(
     await blogsServices.update(id, body);
     res.sendStatus(HttpStatus.NoContent);
   } catch (e: unknown) {
-    res.sendStatus(HttpStatus.InternalServerError);
+    errorsHandler(e, res);
   }
 }
