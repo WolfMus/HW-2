@@ -1,11 +1,9 @@
 import { Response } from "express";
 import { HttpStatus, RequestWithBody } from "../../../core/types/types";
 import { PostInputModel } from "../../dto/posts-input.dto";
-import { Post } from "../../types/posts";
-import { blogsRepository } from "../../../blogs/repositories/blogs.repository";
-import { postsRepository } from "../../repository/posts.repository";
 import { mapToPostViewModel } from "../mapped/mapToPostViewModel";
-import { createErrorMessage } from "../../../core/middlewares/validation/input-validation-result.middleware";
+import { blogsServices } from "../../../blogs/application/blogs-services";
+import { postsServices } from "../../application/posts-service";
 
 export async function createPostHandler(
   req: RequestWithBody<PostInputModel>,
@@ -13,28 +11,9 @@ export async function createPostHandler(
 ) {
   try {
 
-    const blog = await blogsRepository.findById(req.body.blogId);
-    if (!blog) {
-      return res.status(HttpStatus.BadRequest).send(
-        createErrorMessage([
-          {
-            message: "BlogId not found",
-            field: "blogId",
-          },
-        ]),
-      );
-    }
+    const blog = await blogsServices.findByIdOrFail(req.body.blogId);
 
-    const newPost: Post = {
-      title: req.body.title,
-      shortDescription: req.body.shortDescription,
-      content: req.body.content,
-      blogId: req.body.blogId,
-      blogName: blog.name,
-      createdAt: new Date(),
-    };
-
-    const createdPost = await postsRepository.create(newPost);
+    const createdPost = await postsServices.create(req.body, blog);
     const postToViewModel = mapToPostViewModel(createdPost);
 
     res.status(HttpStatus.Created).send(postToViewModel);

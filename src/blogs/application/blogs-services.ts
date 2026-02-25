@@ -1,7 +1,7 @@
 import { Blog } from "../types/blogs";
 import { BlogInputModel } from "../dto/blog-input.dto";
 import { blogsCollection } from "../../db/mongo.db";
-import { ObjectId, WithId } from "mongodb";
+import { WithId } from "mongodb";
 import { blogsRepository } from "../repositories/blogs.repository";
 
 export const blogsServices = {

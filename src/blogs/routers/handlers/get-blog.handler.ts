@@ -1,11 +1,9 @@
-import { Request, Response } from "express";
+import { Response } from "express";
 import {
   HttpStatus,
   RequestWithParams,
 } from "../../../core/types/types";
-import { blogsRepository } from "../../repositories/blogs.repository";
 import { mapToBlogViewModel } from "../mappers/mapToBlogViewModel";
-import { createErrorMessage } from "../../../core/middlewares/validation/input-validation-result.middleware";
 import { blogsServices } from "../../application/blogs-services";
 
 export async function getBlogHandler(
