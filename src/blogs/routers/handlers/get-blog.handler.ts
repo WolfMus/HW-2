@@ -4,7 +4,7 @@ import {
   RequestWithParams,
 } from "../../../core/types/types";
 import { mapToBlogViewModel } from "../mappers/mapToBlogViewModel";
-import { blogsServices } from "../../application/blogs-services";
+import { blogsServices } from "../../application/blogs.services";
 import { errorsHandler } from "../../../core/errors/errors.handler";
 
 export async function getBlogHandler(

@@ -1,10 +1,8 @@
 import { Response } from "express";
 import { HttpStatus, RequestWithBody } from "../../../core/types/types";
 import { BlogInputModel } from "../../dto/blog-input.dto";
-import { Blog } from "../../types/blogs";
-import { blogsRepository } from "../../repositories/blogs.repository";
 import { mapToBlogViewModel } from "../mappers/mapToBlogViewModel";
-import { blogsServices } from "../../application/blogs-services";
+import { blogsServices } from "../../application/blogs.services";
 import { errorsHandler } from "../../../core/errors/errors.handler";
 
 export async function createBlogHandler(
@@ -16,7 +14,7 @@ export async function createBlogHandler(
     const createdBlog = await blogsServices.create(req.body);
     const blogToViewModel = mapToBlogViewModel(createdBlog);
     res.status(HttpStatus.Created).send(blogToViewModel);
-
+    
   } catch (e: unknown) {
     errorsHandler(e, res);
   }

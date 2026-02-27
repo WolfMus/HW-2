@@ -4,7 +4,7 @@ import {
   RequestWithParamsAndBody,
 } from "../../../core/types/types";
 import { Post } from "../../types/posts";
-import { blogsServices } from "../../../blogs/application/blogs-services";
+import { blogsServices } from "../../../blogs/application/blogs.services";
 import { postsServices } from "../../application/posts-service";
 import { errorsHandler } from "../../../core/errors/errors.handler";
 

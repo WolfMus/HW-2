@@ -3,18 +3,41 @@ import { BlogInputModel } from "../dto/blog-input.dto";
 import { blogsCollection } from "../../db/mongo.db";
 import { ObjectId, WithId } from "mongodb";
 import { RepositoryNotFoundError } from "../../core/errors/repository-not-found.error";
+import { BlogsQueryDtoInput } from "../input/blogs-query.input";
 
 export const blogsRepository = {
-  async findAll(): Promise<WithId<Blog>[]> {
-    return blogsCollection.find().toArray();
+  async findAll(
+    queryDto: BlogsQueryDtoInput,
+  ): Promise<{ items: WithId<Blog>[]; totalCount: number }> {
+
+    const { pageNumber, pageSize, sortBy, sortDirection, searchBlogNameTerm } =
+      queryDto;
+
+    const skip = (pageNumber - 1) * pageSize;
+    const filter: any = {};
+
+    if (searchBlogNameTerm) {
+      filter.name = { $regex: searchBlogNameTerm, $options: 'i' };
+    }
+
+    const items = await blogsCollection
+      .find(filter)
+      .sort({ [sortBy]: sortDirection })
+      .skip(skip)
+      .limit(pageSize)
+      .toArray();
+
+    const totalCount = await blogsCollection.countDocuments(filter);
+
+    return { items, totalCount };
   },
 
   async findById(id: string): Promise<WithId<Blog>> {
-    const blog =  await blogsCollection.findOne({ _id: new ObjectId(id) });
-        if (!blog) {
-          throw new RepositoryNotFoundError("Blog not found", "id");
-        }
-    return blog
+    const blog = await blogsCollection.findOne({ _id: new ObjectId(id) });
+    if (!blog) {
+      throw new RepositoryNotFoundError("Blog not found", "id");
+    }
+    return blog;
   },
 
   async create(newBlog: Blog): Promise<WithId<Blog>> {
@@ -36,17 +59,22 @@ export const blogsRepository = {
     );
 
     if (updatedResult.matchedCount < 1) {
-        throw new RepositoryNotFoundError("Blog not found", "id");
+      throw new RepositoryNotFoundError("Blog not found", "id");
     }
 
     return;
   },
 
   async delete(id: string): Promise<void> {
-    const deletedResult = await blogsCollection.deleteOne({_id: new ObjectId(id)});
+    const deletedResult = await blogsCollection.deleteOne({
+      _id: new ObjectId(id),
+    });
 
     if (deletedResult.deletedCount < 1) {
-        throw new RepositoryNotFoundError("Blogs wasn't deleted. Blog not exist", "id");
+      throw new RepositoryNotFoundError(
+        "Blogs wasn't deleted. Blog not exist",
+        "id",
+      );
     }
     return;
   },
