@@ -5,11 +5,12 @@ import { mapToBlogViewModel } from "../mappers/mapToBlogViewModel";
 import { errorsHandler } from "../../../core/errors/errors.handler";
 import { BlogsQueryDtoInput } from "../../input/blogs-query.input";
 import { mapToBlogsListPaginatedOutput } from "../mappers/mapToBlogsListPaginatedOutput";
+import { matchedData } from "express-validator";
 
 export async function getBlogListHandler(req: Request, res: Response) {
   try {
     
-    const queryInput = req.query as unknown as BlogsQueryDtoInput;
+    const queryInput = matchedData(req.query) as BlogsQueryDtoInput;
 
     const { items, totalCount } = await blogsServices.findMany(queryInput);
     const blogsListOutput = mapToBlogsListPaginatedOutput(items, {
