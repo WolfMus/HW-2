@@ -4,6 +4,7 @@ import { Post } from "../types/posts";
 import { postsRepository } from "../repository/posts.repository";
 import { Blog } from "../../blogs/types/blogs";
 import { PostsQueryDtoInput } from "../input/post-query.input";
+import { PostInputForBlogModel } from "../dto/post-input-for-blog.dto";
 
 export const postsServices = {
   async findAll(queryDto: PostsQueryDtoInput): Promise<{items: WithId<Post>[]; totalCount: number }> {
@@ -14,6 +15,10 @@ export const postsServices = {
     return await postsRepository.findById(id);
   },
 
+  async findByBlogId(id: string, queryDto: PostsQueryDtoInput): Promise<{items: WithId<Post>[]; totalCount: number }> {
+    return await postsRepository.findByBlogId(id, queryDto);
+  },
+
   async create(dto: PostInputModel, blog: WithId<Blog>): Promise<WithId<Post>> {
 
     const newPost: Post = {
@@ -21,6 +26,20 @@ export const postsServices = {
           shortDescription: dto.shortDescription,
           content: dto.content,
           blogId: dto.blogId,
+          blogName: blog.name,
+          createdAt: new Date(),
+        };
+    const createdPost = await postsRepository.create(newPost);
+    return createdPost;
+  },
+
+  async createForBlog(dto: PostInputForBlogModel, blog: WithId<Blog>): Promise<WithId<Post>> {
+
+    const newPost: Post = {
+          title: dto.title,
+          shortDescription: dto.shortDescription,
+          content: dto.content,
+          blogId: blog._id.toString(),
           blogName: blog.name,
           createdAt: new Date(),
         };

@@ -15,15 +15,13 @@ export const blogsRepository = {
       pageSize, 
       sortBy, 
       sortDirection, 
-      searchBlogNameTerm } = queryDto;
-
-    console.log('search term: ', searchBlogNameTerm);
+      searchNameTerm } = queryDto;
 
     const skip = (pageNumber - 1) * pageSize;
     const filter: any = {};
 
-    if (searchBlogNameTerm) {
-      filter.name = { $regex: searchBlogNameTerm, $options: 'i' };
+    if (searchNameTerm) {
+      filter.name = { $regex: searchNameTerm, $options: 'i' };
     }
 
     const sortOrder = sortDirection === 'asc' ? 1 : -1;

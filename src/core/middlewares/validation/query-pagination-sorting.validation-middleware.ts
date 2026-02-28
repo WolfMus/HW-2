@@ -45,7 +45,7 @@ export function paginationAndSortingValidation<T extends string>(sortFieldsEnum:
                 `Sort direction must be one of: ${Object.values(SortDirection).join(', ')}`
             ),           
         
-        query('searchBlogNameTerm')
+        query('searchNameTerm')
             .optional()
             .isString()
             .withMessage('Search term must be a string')

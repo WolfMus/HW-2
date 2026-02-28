@@ -10,18 +10,32 @@ import { blogsInputDtoValidation } from "../validation/blogsInputDtoValidation.m
 import { adminAuthMiddleware } from "../../auth/middleware/super-admin.guard-middleware";
 import { paginationAndSortingValidation } from "../../core/middlewares/validation/query-pagination-sorting.validation-middleware";
 import { BlogSortField } from "../input/blog-sort-field";
+import { postInputDtoValidation } from "../../posts/validation/postInputDtoValidation.middleware";
+import { createPostForBlogHandler } from "./handlers/create-post-for-blog.handler";
+import { PostSortField } from "../../posts/input/post-sort-field";
+import { getPostListForBlogHandler } from "./handlers/get-post-list-for-blog.handler";
 
 export const blogsRouter = Router({});
+blogsRouter.post("/test", (req, res) => res.send("Blogs router works!"));
 
 blogsRouter
 
   .get(
     "",
     paginationAndSortingValidation(BlogSortField),
-    inputValidationResultMiddleware, 
-    getBlogListHandler)
+    inputValidationResultMiddleware,
+    getBlogListHandler,
+  )
 
   .get("/:id", idValidation, inputValidationResultMiddleware, getBlogHandler)
+
+  .get(
+    "/:id/posts",
+    idValidation,
+    paginationAndSortingValidation(PostSortField),
+    inputValidationResultMiddleware,
+    getPostListForBlogHandler,
+  )
 
   .post(
     "",
@@ -29,6 +43,15 @@ blogsRouter
     blogsInputDtoValidation,
     inputValidationResultMiddleware,
     createBlogHandler,
+  )
+
+  .post(
+    "/:id/posts",
+    idValidation,
+    adminAuthMiddleware,
+    postInputDtoValidation,
+    inputValidationResultMiddleware,
+    createPostForBlogHandler,
   )
 
   .put(

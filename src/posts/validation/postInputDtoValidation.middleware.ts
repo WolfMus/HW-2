@@ -16,6 +16,7 @@ import { body } from "express-validator";
     .isLength({min: 1, max: 1000}).withMessage('Should be less than 1000');
   
   const blogIdValidation = body('blogId')
+    .optional()
     .isString().withMessage('Should be a string')
     .isMongoId().withMessage('Should be a mongodb id')
 
