@@ -5,7 +5,7 @@ import { query } from "express-validator";
 // дефолтные значения
 const DEFAULT_PAGE_NUMBER = 1;
 const DEFAULT_PAGE_SIZE = 10;
-const DEFAULT_SORT_BY = 'name';
+const DEFAULT_SORT_BY = 'createdAt';
 const DEFAULT_SORT_DIRECTION = SortDirection.Desc
 
 export const paginationAndSortingDefault: PaginationAndSorting<string> = {
@@ -43,6 +43,12 @@ export function paginationAndSortingValidation<T extends string>(sortFieldsEnum:
             .isIn(Object.values(SortDirection))
             .withMessage(
                 `Sort direction must be one of: ${Object.values(SortDirection).join(', ')}`
-            )
+            ),           
+        
+        query('searchBlogNameTerm')
+            .optional()
+            .isString()
+            .withMessage('Search term must be a string')
+            .trim()
     ]
 }

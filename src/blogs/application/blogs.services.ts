@@ -3,7 +3,6 @@ import { BlogInputModel } from "../dto/blog-input.dto";
 import { WithId } from "mongodb";
 import { blogsRepository } from "../repositories/blogs.repository";
 import { BlogsQueryDtoInput } from "../input/blogs-query.input"
-import  { query } from "express-validator";
 
 export const blogsServices = {
   async findMany(queryDto: BlogsQueryDtoInput): Promise< {items: WithId<Blog>[]; totalCount: number} > {

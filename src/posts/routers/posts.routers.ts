@@ -8,11 +8,13 @@ import { postInputDtoValidation } from "../validation/postInputDtoValidation.mid
 import { inputValidationResultMiddleware } from "../../core/middlewares/validation/input-validation-result.middleware";
 import { idValidation } from "../../core/middlewares/validation/params-id.validation-middleware";
 import { adminAuthMiddleware } from "../../auth/middleware/super-admin.guard-middleware";
+import { paginationAndSortingValidation } from "../../core/middlewares/validation/query-pagination-sorting.validation-middleware";
+import { PostSortField } from "../input/post-sort-field";
 
 export const postsRouters = Router({});
 
 postsRouters
-  .get("", getPostListHandler)
+  .get("",  paginationAndSortingValidation(PostSortField), inputValidationResultMiddleware, getPostListHandler)
   .get("/:id", idValidation, inputValidationResultMiddleware, getPostHandler)
   .post("", adminAuthMiddleware,postInputDtoValidation, inputValidationResultMiddleware, createPostHandler)
   .put("/:id", adminAuthMiddleware, idValidation, postInputDtoValidation, inputValidationResultMiddleware, updatePostHandler)

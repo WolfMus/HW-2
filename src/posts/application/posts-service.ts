@@ -3,10 +3,11 @@ import { PostInputModel } from "../dto/posts-input.dto";
 import { Post } from "../types/posts";
 import { postsRepository } from "../repository/posts.repository";
 import { Blog } from "../../blogs/types/blogs";
+import { PostsQueryDtoInput } from "../input/post-query.input";
 
 export const postsServices = {
-  async findAll(): Promise<WithId<Post>[]> {
-    return await postsRepository.findAll();
+  async findAll(queryDto: PostsQueryDtoInput): Promise<{items: WithId<Post>[]; totalCount: number }> {
+    return await postsRepository.findAll(queryDto);
   },
 
   async findById(id: string): Promise<WithId<Post>> {

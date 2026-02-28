@@ -10,8 +10,14 @@ export const blogsRepository = {
     queryDto: BlogsQueryDtoInput,
   ): Promise<{ items: WithId<Blog>[]; totalCount: number }> {
 
-    const { pageNumber, pageSize, sortBy, sortDirection, searchBlogNameTerm } =
-      queryDto;
+    const { 
+      pageNumber, 
+      pageSize, 
+      sortBy, 
+      sortDirection, 
+      searchBlogNameTerm } = queryDto;
+
+    console.log('search term: ', searchBlogNameTerm);
 
     const skip = (pageNumber - 1) * pageSize;
     const filter: any = {};
@@ -20,9 +26,11 @@ export const blogsRepository = {
       filter.name = { $regex: searchBlogNameTerm, $options: 'i' };
     }
 
+    const sortOrder = sortDirection === 'asc' ? 1 : -1;
+
     const items = await blogsCollection
       .find(filter)
-      .sort({ [sortBy]: sortDirection })
+      .sort({ [sortBy]: sortOrder })
       .skip(skip)
       .limit(pageSize)
       .toArray();
