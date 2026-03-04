@@ -19,7 +19,7 @@ export const postsServices = {
     return await postsRepository.findByBlogId(id, queryDto);
   },
 
-  async create(dto: PostInputModel, blog: WithId<Blog>): Promise<WithId<Post>> {
+  async create(dto: PostInputModel, blog: WithId<Blog>): Promise<string> {
 
     const newPost: Post = {
           title: dto.title,
@@ -29,11 +29,11 @@ export const postsServices = {
           blogName: blog.name,
           createdAt: new Date(),
         };
-    const createdPost = await postsRepository.create(newPost);
-    return createdPost;
+    const createdPostId = await postsRepository.create(newPost);
+    return createdPostId;
   },
 
-  async createForBlog(dto: PostInputForBlogModel, blog: WithId<Blog>): Promise<WithId<Post>> {
+  async createForBlog(dto: PostInputForBlogModel, blog: WithId<Blog>): Promise<string> {
 
     const newPost: Post = {
           title: dto.title,
@@ -43,8 +43,8 @@ export const postsServices = {
           blogName: blog.name,
           createdAt: new Date(),
         };
-    const createdPost = await postsRepository.create(newPost);
-    return createdPost;
+    const createdPostId = await postsRepository.create(newPost);
+    return createdPostId;
   },
 
   async update(id: string, body: PostInputModel): Promise<void> {

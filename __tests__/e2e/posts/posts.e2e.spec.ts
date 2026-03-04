@@ -14,6 +14,7 @@ import { createPostsDto } from "../../utils/posts/create-post-dto";
 import { getPostId } from "../../utils/posts/get-post-by-id";
 import { updatePost } from "../../utils/posts/update-post";
 import { Post } from "../../../src/posts/types/posts";
+import { getBlogById } from "../../utils/blogs/get-blog-id";
 
 describe("Posts API", () => {
   const app = express();
@@ -36,6 +37,7 @@ describe("Posts API", () => {
   
   it("✅ should create new post; POST /posts", async () => {
     const blog = await createBlog(app);
+
     const newPost: Post = {
       ...createPostsDto(),
       blogId: blog.id,

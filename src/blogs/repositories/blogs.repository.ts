@@ -6,50 +6,11 @@ import { RepositoryNotFoundError } from "../../core/errors/repository-not-found.
 import { BlogsQueryDtoInput } from "../input/blogs-query.input";
 
 export const blogsRepository = {
-  async findAll(
-    queryDto: BlogsQueryDtoInput,
-  ): Promise<{ items: WithId<Blog>[]; totalCount: number }> {
 
-    const { 
-      pageNumber, 
-      pageSize, 
-      sortBy, 
-      sortDirection, 
-      searchNameTerm } = queryDto;
-
-    const skip = (pageNumber - 1) * pageSize;
-    const filter: any = {};
-
-    if (searchNameTerm) {
-      filter.name = { $regex: searchNameTerm, $options: 'i' };
-    }
-
-    const sortOrder = sortDirection === 'asc' ? 1 : -1;
-
-    const items = await blogsCollection
-      .find(filter)
-      .sort({ [sortBy]: sortOrder })
-      .skip(skip)
-      .limit(pageSize)
-      .toArray();
-
-    const totalCount = await blogsCollection.countDocuments(filter);
-
-    return { items, totalCount };
-  },
-
-  async findById(id: string): Promise<WithId<Blog>> {
-    const blog = await blogsCollection.findOne({ _id: new ObjectId(id) });
-    if (!blog) {
-      throw new RepositoryNotFoundError("Blog not found", "id");
-    }
-    return blog;
-  },
-
-  async create(newBlog: Blog): Promise<WithId<Blog>> {
+  async create(newBlog: Blog): Promise<string> {
     const insertResult = await blogsCollection.insertOne(newBlog);
 
-    return { ...newBlog, _id: insertResult.insertedId };
+    return insertResult.insertedId.toString();
   },
 
   async update(id: string, dto: BlogInputModel): Promise<void> {

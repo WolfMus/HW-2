@@ -29,7 +29,5 @@ export const adminAuthMiddleware = (req: Request, res: Response, next: NextFunct
         return
     }
 
-    console.log('GUARD ACCEPTED YOUR ACTIONS')
-
     next();
 }

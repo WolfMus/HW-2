@@ -5,15 +5,15 @@ import { blogsRepository } from "../repositories/blogs.repository";
 import { BlogsQueryDtoInput } from "../input/blogs-query.input"
 
 export const blogsServices = {
-  async findMany(queryDto: BlogsQueryDtoInput): Promise< {items: WithId<Blog>[]; totalCount: number} > {
-    return blogsRepository.findAll(queryDto);
-  },
+  // async findMany(queryDto: BlogsQueryDtoInput): Promise< {items: WithId<Blog>[]; totalCount: number} > {
+  //   return blogsRepository.findAll(queryDto);
+  // },
 
-  async findByIdOrFail(id: string): Promise<WithId<Blog>> {
-    return await blogsRepository.findById(id);
-  },
+  // async findByIdOrFail(id: string): Promise<WithId<Blog>> {
+  //   return await blogsRepository.findById(id);
+  // },
 
-  async create(blogDto: BlogInputModel): Promise<WithId<Blog>> {
+  async create(blogDto: BlogInputModel): Promise<string> {
 
     const newBlog: Blog = {
         name: blogDto.name,
@@ -23,9 +23,9 @@ export const blogsServices = {
         isMembership: false,
     };
 
-    const createdBlog = await blogsRepository.create(newBlog);
+    const blogsId = await blogsRepository.create(newBlog);
 
-    return createdBlog
+    return blogsId
   },
 
   async update(id: string, dto: BlogInputModel): Promise<void> {

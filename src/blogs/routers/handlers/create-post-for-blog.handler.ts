@@ -6,6 +6,8 @@ import { blogsServices } from "../../application/blogs.services";
 import { postsServices } from "../../../posts/application/posts-service";
 import { mapToPostViewModel } from "../../../posts/routers/mapped/mapToPostViewModel";
 import { PostInputForBlogModel } from "../../../posts/dto/post-input-for-blog.dto";
+import { blogsQwRepository } from "../../repositories/blogs-query.repository";
+import { postsQwRepository } from "../../../posts/repository/posts-query.repository";
 
 export async function createPostForBlogHandler(
   req: RequestWithParamsAndBody<{ id: string }, PostInputForBlogModel>,
@@ -13,10 +15,11 @@ export async function createPostForBlogHandler(
 ) {
     try {
         const id = req.params.id;
-        const blog = await blogsServices.findByIdOrFail(id);
+        const blog = await blogsQwRepository.findById(id);
 
-        const createdPost = await postsServices.createForBlog(req.body, blog);
-        const postToViewModel = mapToPostViewModel(createdPost);
+        const createdPostId = await postsServices.createForBlog(req.body, blog);
+        const post = await postsQwRepository.findById(createdPostId);
+        const postToViewModel = mapToPostViewModel(post);
 
         res.status(HttpStatus.Created).send(postToViewModel);
 

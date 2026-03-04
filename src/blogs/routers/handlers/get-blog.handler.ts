@@ -6,6 +6,7 @@ import {
 import { mapToBlogViewModel } from "../mappers/mapToBlogViewModel";
 import { blogsServices } from "../../application/blogs.services";
 import { errorsHandler } from "../../../core/errors/errors.handler";
+import { blogsQwRepository } from "../../repositories/blogs-query.repository";
 
 export async function getBlogHandler(
   req: RequestWithParams<{ id: string }>,
@@ -13,7 +14,7 @@ export async function getBlogHandler(
 ) {
   try {
     const id = req.params.id;
-    const blog = await blogsServices.findByIdOrFail(id)
+    const blog = await blogsQwRepository.findById(id)
 
     return res.status(HttpStatus.Ok).send(mapToBlogViewModel(blog));
     

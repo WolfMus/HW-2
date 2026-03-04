@@ -6,6 +6,7 @@ import { BlogsQueryDtoInput } from "../../input/blogs-query.input";
 import { mapToBlogsListPaginatedOutput } from "../mappers/mapToBlogsListPaginatedOutput";
 import { matchedData } from "express-validator";
 import { setDefaultSortAndPaginationIfNotExist } from "../../../core/heplers/set-default-sort-and-pagination";
+import { blogsQwRepository } from "../../repositories/blogs-query.repository";
 
 export async function getBlogListHandler(req: Request, res: Response) {
   try {
@@ -13,7 +14,8 @@ export async function getBlogListHandler(req: Request, res: Response) {
     const sanitizedQuery = matchedData(req, {includeOptionals: true}) as BlogsQueryDtoInput;
     const queryInput = setDefaultSortAndPaginationIfNotExist(sanitizedQuery);
 
-    const { items, totalCount } = await blogsServices.findMany(queryInput);
+    // const { items, totalCount } = await blogsServices.findMany(queryInput);
+    const { items, totalCount } = await blogsQwRepository.findAll(queryInput);
     const blogsListOutput = mapToBlogsListPaginatedOutput(items, {
       pageNumber: queryInput.pageNumber,
       pageSize: queryInput.pageSize,

@@ -6,58 +6,10 @@ import { RepositoryNotFoundError } from "../../core/errors/repository-not-found.
 import { PostsQueryDtoInput } from "../input/post-query.input";
 
 export const postsRepository = {
-  async findAll(
-    queryDto: PostsQueryDtoInput,
-  ): Promise<{ items: WithId<Post>[]; totalCount: number }> {
-    const { pageNumber, pageSize, sortBy, sortDirection } = queryDto;
 
-    const skip = (pageNumber - 1) * pageSize;
-
-    const sortOrder = sortDirection === "asc" ? 1 : -1;
-
-    const items = await postsCollection
-      .find()
-      .sort({ [sortBy]: sortOrder })
-      .skip(skip)
-      .limit(pageSize)
-      .toArray();
-
-    const totalCount = await postsCollection.countDocuments();
-
-    return { items, totalCount };
-  },
-
-  async findByBlogId(id: string, queryDto: PostsQueryDtoInput): Promise< {items: WithId<Post>[]; totalCount: number }> {
-    const { pageNumber, pageSize, sortBy, sortDirection } = queryDto;
-
-    const skip = (pageNumber - 1) * pageSize;
-    const filter = { 'blogId': id };
-    const sortOrder = sortDirection === 'asc' ? 1 : -1;
-
-    const [items, totalCount] = await Promise.all([
-      postsCollection
-        .find(filter)
-        .sort({ [sortBy]: sortOrder})
-        .skip(skip)
-        .limit(pageSize)
-        .toArray(),
-      postsCollection.countDocuments(filter),
-    ]);
-
-      return {items, totalCount};
-  },
-
-  async findById(id: string): Promise<WithId<Post>> {
-    const post = await postsCollection.findOne({ _id: new ObjectId(id) });
-    if (!post) {
-      throw new RepositoryNotFoundError("Post id not found", "id");
-    }
-    return post;
-  },
-
-  async create(newPost: Post): Promise<WithId<Post>> {
+  async create(newPost: Post): Promise<string> {
     const createdPost = await postsCollection.insertOne(newPost);
-    return { ...newPost, _id: createdPost.insertedId };
+    return createdPost.insertedId.toString();
   },
 
   async update(id: string, body: PostInputModel): Promise<void> {
