@@ -14,7 +14,6 @@ export async function getBlogListHandler(req: Request, res: Response) {
     const sanitizedQuery = matchedData(req, {includeOptionals: true}) as BlogsQueryDtoInput;
     const queryInput = setDefaultSortAndPaginationIfNotExist(sanitizedQuery);
 
-    // const { items, totalCount } = await blogsServices.findMany(queryInput);
     const { items, totalCount } = await blogsQwRepository.findAll(queryInput);
     const blogsListOutput = mapToBlogsListPaginatedOutput(items, {
       pageNumber: queryInput.pageNumber,

@@ -16,7 +16,6 @@ import { PostSortField } from "../../posts/input/post-sort-field";
 import { getPostListForBlogHandler } from "./handlers/get-post-list-for-blog.handler";
 
 export const blogsRouter = Router({});
-blogsRouter.post("/test", (req, res) => res.send("Blogs router works!"));
 
 blogsRouter
 
