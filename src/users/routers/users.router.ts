@@ -5,10 +5,11 @@ import { paginationAndSortingValidation } from "../../core/middlewares/validatio
 import { getUsersListHandler } from "./handlers/get-user-list.handler";
 import { createUserHandler } from "./handlers/create-user.handler";
 import { deleteUserHandler } from "./handlers/delete-user.handler";
+import { UserSortField } from "../type/user-sort.enum";
 
 export const usersRouter = Router({});
-
+// paginationAndSortingValidation<UserSortField>, inputValidationResultMiddleware,
 usersRouter
-    .get("", paginationAndSortingValidation, inputValidationResultMiddleware, getUsersListHandler)
-    .post("", inputValidationResultMiddleware, createUserHandler)
+    .get("", getUsersListHandler)
+    .post("", createUserHandler)
     .delete("/:id", idValidation, inputValidationResultMiddleware, deleteUserHandler)

@@ -5,19 +5,9 @@ import { postsRepository } from "../repository/posts.repository";
 import { Blog } from "../../blogs/types/blogs";
 import { PostsQueryDtoInput } from "../input/post-query.input";
 import { PostInputForBlogModel } from "../dto/post-input-for-blog.dto";
+import { postsQwRepository } from "../repository/posts-query.repository";
 
 export const postsServices = {
-  async findAll(queryDto: PostsQueryDtoInput): Promise<{items: WithId<Post>[]; totalCount: number }> {
-    return await postsRepository.findAll(queryDto);
-  },
-
-  async findById(id: string): Promise<WithId<Post>> {
-    return await postsRepository.findById(id);
-  },
-
-  async findByBlogId(id: string, queryDto: PostsQueryDtoInput): Promise<{items: WithId<Post>[]; totalCount: number }> {
-    return await postsRepository.findByBlogId(id, queryDto);
-  },
 
   async create(dto: PostInputModel, blog: WithId<Blog>): Promise<string> {
 

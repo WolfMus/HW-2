@@ -49,6 +49,18 @@ export function paginationAndSortingValidation<T extends string>(sortFieldsEnum:
             .optional()
             .isString()
             .withMessage('Search term must be a string')
-            .trim()
+            .trim(),
+
+        query('searchLoginTerm')
+            .optional()
+            .isString()
+            .withMessage('Search term must be a string')
+            .trim(),
+
+        query('searchEmailTerm')
+            .optional()
+            .isString()
+            .withMessage('Search term must be a string')
+            .trim(),
     ]
 }

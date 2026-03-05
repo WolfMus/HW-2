@@ -1,12 +1,17 @@
-import { WithId } from "mongodb";
+import { ObjectId, WithId } from "mongodb";
 import { usersCollection } from "../../db/mongo.db";
 import { User } from "../type/user.type";
 import { UsersQueryInput } from "../input/users-query.input";
+import { UserDbView } from "../type/user.db.interface";
+import { UserView } from "../type/user-view.interface";
+import { Pagination } from "../../core/types/pagination.interface";
+import { RepositoryNotFoundError } from "../../core/errors/repository-not-found.error";
 
 export const usersQwRepository = {
+
   async findAll(
     queryInput: UsersQueryInput,
-  ): Promise<{ items: WithId<User>[]; totalCount: number }> {
+  ): Promise<Pagination<UserView[]>> {
     const {
       pageNumber,
       pageSize,
@@ -18,15 +23,18 @@ export const usersQwRepository = {
 
     const skip = (pageNumber - 1) * pageSize;
     const filter: any = {};
+    if (searchLoginTerm || searchEmailTerm) {
+      filter.$or = [];
 
-    if (searchLoginTerm) {
-      filter.name = { $regex: searchLoginTerm, $options: "i" };
+      if (searchLoginTerm) {
+        filter.$or.push({login: { $regex: searchLoginTerm, $options: "i" }});
+      };
+      
+      if (searchEmailTerm) {
+      filter.$or.push({email: {$regex: searchEmailTerm, $options: "i" }});
     };
-
-    if (searchEmailTerm) {
-      filter.name = { $regex: searchEmailTerm, $options: "i" };
-    };
-
+    
+  }
     const sortOrder = sortDirection === "asc" ? 1 : -1;
 
     const items = await usersCollection
@@ -38,6 +46,30 @@ export const usersQwRepository = {
 
     const totalCount = await usersCollection.countDocuments(filter);
 
-    return { items, totalCount };
+    return {
+      pagesCount: Math.ceil(totalCount / pageSize),
+      page: pageNumber,
+      pageSize: pageSize,
+      totalCount,
+      items: items.map(u => this._toViewModel(u)),
+    };
+  },
+
+  async findById(id: string): Promise<User>{
+
+    const user = await usersCollection.findOne({_id: new ObjectId(id)})
+    if (!user) {
+      throw new RepositoryNotFoundError('User not found', 'id')
+    }
+    return this._toViewModel(user)
+  },
+
+  _toViewModel(item: WithId<UserDbView>): UserView {
+    return {
+      id: item._id.toString(),
+      login: item.login,
+      email: item.email,
+      createdAt: item.createdAt,
+    }
   },
 };
