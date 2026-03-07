@@ -1,6 +1,6 @@
+import { bcryptService } from "../../core/heplers/bcrypt-service";
 import { usersRepository } from "../repository/users.repository";
 import { UserDto } from "../type/user-dto.interface";
-import bcrypt from "bcrypt";
 
 export const userService = {
   async create(
@@ -8,11 +8,13 @@ export const userService = {
     password: string,
     email: string,
   ): Promise<string> {
-    const passwordHash = await bcrypt.hash(password, 10);
+
+    const passwordHash = await bcryptService.generateHash(password);
+
     const userInputBody: UserDto = {
       login: login,
-      password: passwordHash,
       email: email,
+      hash: passwordHash,
       createdAt: new Date(),
     };
 
@@ -25,4 +27,5 @@ export const userService = {
     await usersRepository.delete(id);
     return;
   },
+
 };

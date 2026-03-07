@@ -51,7 +51,7 @@ export const usersQwRepository = {
     };
   },
 
-  async findById(id: string): Promise<User> {
+  async findById(id: string): Promise<UserDbView> {
     const user = await usersCollection.findOne({ _id: new ObjectId(id) });
     if (!user) {
       throw new RepositoryNotFoundError("User not found", "id");
@@ -65,11 +65,12 @@ export const usersQwRepository = {
     })
   },
 
-  _toViewModel(item: WithId<UserDbView>): UserView {
+  _toViewModel(item: WithId<User>): UserDbView {
     return {
       id: item._id.toString(),
       login: item.login,
       email: item.email,
+      hash: item.hash,
       createdAt: item.createdAt,
     };
   },
