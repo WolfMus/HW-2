@@ -3,31 +3,36 @@ import { errorsHandler } from "../../../core/errors/errors.handler";
 import { matchedData } from "express-validator";
 import { PostsQueryDtoInput } from "../../../posts/input/post-query.input";
 import { setDefaultSortAndPaginationIfNotExist } from "../../../core/heplers/set-default-sort-and-pagination";
-import { postsServices } from "../../../posts/application/posts-service";
 import { mapToPostsListPaginatedOutput } from "../../../posts/routers/mapped/mapToPostListPaginatedOutput";
 import { HttpStatus } from "../../../core/types/types";
-import { blogsServices } from "../../application/blogs.services";
 import { blogsQwRepository } from "../../repositories/blogs-query.repository";
 import { postsQwRepository } from "../../../posts/repository/posts-query.repository";
 
-export async function getPostListForBlogHandler(req: Request<{id: string}>, res: Response) {
-    try {
-        const id = req.params.id;
-        await blogsQwRepository.findById(id);
-        
-        const sanitizedQuery = matchedData(req, {includeOptionals: true}) as PostsQueryDtoInput;
-        const queryInput = setDefaultSortAndPaginationIfNotExist(sanitizedQuery);
+export async function getPostListForBlogHandler(
+  req: Request<{ id: string }>,
+  res: Response,
+) {
+  try {
+    const id = req.params.id;
+    await blogsQwRepository.findById(id);
 
-        const { items, totalCount } = await postsQwRepository.findByBlogId(id, queryInput);
-        const postsListOutput = mapToPostsListPaginatedOutput(items, {
-              pageNumber: queryInput.pageNumber,
-              pageSize: queryInput.pageSize,
-              totalCount,
-        });
-            
-            res.status(HttpStatus.Ok).send(postsListOutput);
+    const sanitizedQuery = matchedData(req, {
+      includeOptionals: true,
+    }) as PostsQueryDtoInput;
+    const queryInput = setDefaultSortAndPaginationIfNotExist(sanitizedQuery);
 
-    } catch (e) {
-        errorsHandler(e, res);
-    }
+    const { items, totalCount } = await postsQwRepository.findByBlogId(
+      id,
+      queryInput,
+    );
+    const postsListOutput = mapToPostsListPaginatedOutput(items, {
+      pageNumber: queryInput.pageNumber,
+      pageSize: queryInput.pageSize,
+      totalCount,
+    });
+
+    res.status(HttpStatus.Ok).send(postsListOutput);
+  } catch (e) {
+    errorsHandler(e, res);
+  }
 }

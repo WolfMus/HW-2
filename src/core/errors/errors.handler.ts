@@ -7,16 +7,14 @@ export function errorsHandler(error: unknown, res: Response): void {
   if (error instanceof RepositoryNotFoundError) {
     const httpStatus = HttpStatus.NotFound;
 
-    res
-      .status(httpStatus)
-      .send(
-        createErrorMessage([
-            { 
-            field: error.field, 
-            message: error.message, 
-            },
-        ]),
-      );
-      return;
+    res.status(httpStatus).send(
+      createErrorMessage([
+        {
+          field: error.field,
+          message: error.message,
+        },
+      ]),
+    );
+    return;
   }
 }

@@ -1,5 +1,5 @@
 import { FieldErrorMessage } from "./validationError";
 
-export type validationErrorDto = { 
-    errorMessage: FieldErrorMessage[] 
-}
+export type validationErrorDto = {
+  errorMessage: FieldErrorMessage[];
+};

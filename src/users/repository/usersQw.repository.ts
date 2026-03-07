@@ -8,10 +8,7 @@ import { Pagination } from "../../core/types/pagination.interface";
 import { RepositoryNotFoundError } from "../../core/errors/repository-not-found.error";
 
 export const usersQwRepository = {
-
-  async findAll(
-    queryInput: UsersQueryInput,
-  ): Promise<Pagination<UserView[]>> {
+  async findAll(queryInput: UsersQueryInput): Promise<Pagination<UserView[]>> {
     const {
       pageNumber,
       pageSize,
@@ -27,14 +24,13 @@ export const usersQwRepository = {
       filter.$or = [];
 
       if (searchLoginTerm) {
-        filter.$or.push({login: { $regex: searchLoginTerm, $options: "i" }});
-      };
-      
+        filter.$or.push({ login: { $regex: searchLoginTerm, $options: "i" } });
+      }
+
       if (searchEmailTerm) {
-      filter.$or.push({email: {$regex: searchEmailTerm, $options: "i" }});
-    };
-    
-  }
+        filter.$or.push({ email: { $regex: searchEmailTerm, $options: "i" } });
+      }
+    }
     const sortOrder = sortDirection === "asc" ? 1 : -1;
 
     const items = await usersCollection
@@ -51,17 +47,22 @@ export const usersQwRepository = {
       page: pageNumber,
       pageSize: pageSize,
       totalCount,
-      items: items.map(u => this._toViewModel(u)),
+      items: items.map((u) => this._toViewModel(u)),
     };
   },
 
-  async findById(id: string): Promise<User>{
-
-    const user = await usersCollection.findOne({_id: new ObjectId(id)})
+  async findById(id: string): Promise<User> {
+    const user = await usersCollection.findOne({ _id: new ObjectId(id) });
     if (!user) {
-      throw new RepositoryNotFoundError('User not found', 'id')
+      throw new RepositoryNotFoundError("User not found", "id");
     }
-    return this._toViewModel(user)
+    return this._toViewModel(user);
+  },
+
+  async findLoginOrEmail(loginOrEmail: string): Promise<WithId<User> | null> {
+    return usersCollection.findOne({
+      $or: [{email: loginOrEmail}, {login: loginOrEmail}],
+    })
   },
 
   _toViewModel(item: WithId<UserDbView>): UserView {
@@ -70,6 +71,6 @@ export const usersQwRepository = {
       login: item.login,
       email: item.email,
       createdAt: item.createdAt,
-    }
+    };
   },
 };

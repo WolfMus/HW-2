@@ -34,7 +34,6 @@ describe("Posts API", () => {
     await clearDb(app);
   });
 
-  
   it("✅ should create new post; POST /posts", async () => {
     const blog = await createBlog(app);
 
@@ -43,22 +42,20 @@ describe("Posts API", () => {
       blogId: blog.id,
       blogName: blog.name,
       createdAt: new Date(),
-    }
-    await createPost(app, newPost)
+    };
+    await createPost(app, newPost);
   });
 
   it("✅ should return all posts; GET /posts", async () => {
-    const blog = await createBlog(app)
+    const blog = await createBlog(app);
 
     const newPost: PostInputModel = {
       ...createPostsDto(),
       blogId: blog.id,
-    }
-    await createPost(app, newPost)
+    };
+    await createPost(app, newPost);
 
-    await request(app)
-    .get("/posts")
-    .expect(HttpStatus.Ok);
+    await request(app).get("/posts").expect(HttpStatus.Ok);
   });
 
   it("✅ should return post by id; GET /posts/:postId", async () => {
@@ -67,14 +64,14 @@ describe("Posts API", () => {
     const newPost: PostInputModel = {
       ...createPostsDto(),
       blogId: blog.id,
-    }
-    const createdPost = await createPost(app, newPost)
-    const post = await getPostId(app, createdPost.id)
+    };
+    const createdPost = await createPost(app, newPost);
+    const post = await getPostId(app, createdPost.id);
 
     expect(post).toEqual({
       ...createdPost,
-      id: expect.any(String)
-    })
+      id: expect.any(String),
+    });
   });
 
   it("✅ should delete post by id; DELETE /posts/:postId", async () => {
@@ -82,9 +79,9 @@ describe("Posts API", () => {
     const newPost: PostInputModel = {
       ...createPostsDto(),
       blogId: blog.id,
-    }
-    const createdPost = await createPost(app, newPost)
-    
+    };
+    const createdPost = await createPost(app, newPost);
+
     const deletePost = await request(app)
       .delete(`${POSTS_PATH}/${createdPost.id}`)
       .set("Authorization", adminToken)
@@ -92,7 +89,7 @@ describe("Posts API", () => {
 
     await request(app)
       .get(`${POSTS_PATH}/${createdPost.id}`)
-      .expect(HttpStatus.NotFound)
+      .expect(HttpStatus.NotFound);
   });
 
   it("✅ should update post by id with InputModel; PUT /posts/:postId", async () => {
@@ -100,24 +97,24 @@ describe("Posts API", () => {
     const newPost: PostInputModel = {
       ...createPostsDto(),
       blogId: blog.id,
-    }
-    const createdPost = await createPost(app, newPost)
+    };
+    const createdPost = await createPost(app, newPost);
 
     const updatePostData: Post = {
-      title: 'new title',
-      content: 'new content',
-      shortDescription: 'new shortDescription',
+      title: "new title",
+      content: "new content",
+      shortDescription: "new shortDescription",
       blogId: blog.id,
       blogName: blog.name,
       createdAt: createdPost.createdAt,
-    }
+    };
 
     const updatedPost = await updatePost(app, createdPost.id, updatePostData);
-    const getNewPost = await getPostId(app, createdPost.id)
-    
+    const getNewPost = await getPostId(app, createdPost.id);
+
     expect(getNewPost).toEqual({
       ...updatePostData,
-      id: expect.any(String)
-    })
+      id: expect.any(String),
+    });
   });
 });

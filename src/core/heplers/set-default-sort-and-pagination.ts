@@ -1,5 +1,5 @@
-import { paginationAndSortingDefault } from '../middlewares/validation/query-pagination-sorting.validation-middleware';
-import { PaginationAndSorting } from '../types/pagination-and-sorting';
+import { paginationAndSortingDefault } from "../middlewares/validation/query-pagination-sorting.validation-middleware";
+import { PaginationAndSorting } from "../types/pagination-and-sorting";
 
 export function setDefaultSortAndPaginationIfNotExist<P = string>(
   query: Partial<PaginationAndSorting<P>>,

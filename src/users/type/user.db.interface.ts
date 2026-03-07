@@ -1,5 +1,5 @@
 export interface UserDbView {
-    login: string,
-    email: string,
-    createdAt: Date,
+  login: string;
+  email: string;
+  createdAt: Date;
 }

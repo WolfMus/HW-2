@@ -1,5 +1,5 @@
 export enum BlogSortField {
-    Name = 'name',
-    CreatedAt = 'createdAt',
-    Id = 'id'
+  Name = "name",
+  CreatedAt = "createdAt",
+  Id = "id",
 }

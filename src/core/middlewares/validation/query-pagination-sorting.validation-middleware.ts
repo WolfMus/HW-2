@@ -5,62 +5,64 @@ import { query } from "express-validator";
 // дефолтные значения
 const DEFAULT_PAGE_NUMBER = 1;
 const DEFAULT_PAGE_SIZE = 10;
-const DEFAULT_SORT_BY = 'createdAt';
-const DEFAULT_SORT_DIRECTION = SortDirection.Desc
+const DEFAULT_SORT_BY = "createdAt";
+const DEFAULT_SORT_DIRECTION = SortDirection.Desc;
 
 export const paginationAndSortingDefault: PaginationAndSorting<string> = {
-    pageNumber: DEFAULT_PAGE_NUMBER,
-    pageSize: DEFAULT_PAGE_SIZE,
-    sortBy: DEFAULT_SORT_BY,
-    sortDirection: DEFAULT_SORT_DIRECTION,
-}
+  pageNumber: DEFAULT_PAGE_NUMBER,
+  pageSize: DEFAULT_PAGE_SIZE,
+  sortBy: DEFAULT_SORT_BY,
+  sortDirection: DEFAULT_SORT_DIRECTION,
+};
 
-export function paginationAndSortingValidation<T extends string>(sortFieldsEnum: Record<string,T>) {
-    const allowedSortFields = Object.values(sortFieldsEnum);
+export function paginationAndSortingValidation<T extends string>(
+  sortFieldsEnum: Record<string, T>,
+) {
+  const allowedSortFields = Object.values(sortFieldsEnum);
 
-    return [
-        query('pageNumber')
-            .default(DEFAULT_PAGE_NUMBER)
-            .isInt({min: 1})
-            .withMessage('Page number must be a positive integer')
-            .toInt(),
+  return [
+    query("pageNumber")
+      .default(DEFAULT_PAGE_NUMBER)
+      .isInt({ min: 1 })
+      .withMessage("Page number must be a positive integer")
+      .toInt(),
 
-        query('pageSize')
-            .default(DEFAULT_PAGE_SIZE)
-            .isInt({min: 1, max: 100})
-            .withMessage('Page size must be between 1 and 100')
-            .toInt(),
+    query("pageSize")
+      .default(DEFAULT_PAGE_SIZE)
+      .isInt({ min: 1, max: 100 })
+      .withMessage("Page size must be between 1 and 100")
+      .toInt(),
 
-        query('sortBy')
-            .default(DEFAULT_SORT_BY)
-            .isIn(allowedSortFields)
-            .withMessage(
-                `Invalid sort vield. Allowed values: ${allowedSortFields.join(', ')}`
-            ),
+    query("sortBy")
+      .default(DEFAULT_SORT_BY)
+      .isIn(allowedSortFields)
+      .withMessage(
+        `Invalid sort vield. Allowed values: ${allowedSortFields.join(", ")}`,
+      ),
 
-        query('sortDirection')
-            .default(DEFAULT_SORT_DIRECTION)
-            .isIn(Object.values(SortDirection))
-            .withMessage(
-                `Sort direction must be one of: ${Object.values(SortDirection).join(', ')}`
-            ),           
-        
-        query('searchNameTerm')
-            .optional()
-            .isString()
-            .withMessage('Search term must be a string')
-            .trim(),
+    query("sortDirection")
+      .default(DEFAULT_SORT_DIRECTION)
+      .isIn(Object.values(SortDirection))
+      .withMessage(
+        `Sort direction must be one of: ${Object.values(SortDirection).join(", ")}`,
+      ),
 
-        query('searchLoginTerm')
-            .optional()
-            .isString()
-            .withMessage('Search term must be a string')
-            .trim(),
+    query("searchNameTerm")
+      .optional()
+      .isString()
+      .withMessage("Search term must be a string")
+      .trim(),
 
-        query('searchEmailTerm')
-            .optional()
-            .isString()
-            .withMessage('Search term must be a string')
-            .trim(),
-    ]
+    query("searchLoginTerm")
+      .optional()
+      .isString()
+      .withMessage("Search term must be a string")
+      .trim(),
+
+    query("searchEmailTerm")
+      .optional()
+      .isString()
+      .withMessage("Search term must be a string")
+      .trim(),
+  ];
 }

@@ -6,10 +6,10 @@ import { BlogsListPaginatedOutput } from "../output/blogsListPaginatedOutput";
 export function mapToBlogsListPaginatedOutput(
   newBlog: WithId<Blog>[],
   params: {
-    pageNumber: number,
-    pageSize: number,
-    totalCount: number,
-  }
+    pageNumber: number;
+    pageSize: number;
+    totalCount: number;
+  },
 ): BlogsListPaginatedOutput {
   return {
     pagesCount: Math.ceil(params.totalCount / params.pageSize),

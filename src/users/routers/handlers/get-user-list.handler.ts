@@ -8,15 +8,19 @@ import { UsersQueryInput } from "../../input/users-query.input";
 import { Pagination } from "../../../core/types/pagination.interface";
 import { UserView } from "../../type/user-view.interface";
 
-export async function getUsersListHandler(req: Request, res: Response<Pagination<UserView[]>>) {
+export async function getUsersListHandler(
+  req: Request,
+  res: Response<Pagination<UserView[]>>,
+) {
   try {
     console.log("=======DEBUGGING========");
-    const sanitizedQuery = matchedData(req, {includeOptionals: true}) as UsersQueryInput;
+    const sanitizedQuery = matchedData(req, {
+      includeOptionals: true,
+    }) as UsersQueryInput;
     const queryInput = setDefaultSortAndPaginationIfNotExist(sanitizedQuery);
 
     const usersList = await usersQwRepository.findAll(queryInput);
     return res.status(HttpStatus.Ok).send(usersList);
-
   } catch (e) {
     errorsHandler(e, res);
   }

@@ -5,7 +5,6 @@ import { postsCollection } from "../../db/mongo.db";
 import { RepositoryNotFoundError } from "../../core/errors/repository-not-found.error";
 
 export const postsQwRepository = {
-    
   async findAll(
     queryDto: PostsQueryDtoInput,
   ): Promise<{ items: WithId<Post>[]; totalCount: number }> {
@@ -27,24 +26,27 @@ export const postsQwRepository = {
     return { items, totalCount };
   },
 
-  async findByBlogId(id: string, queryDto: PostsQueryDtoInput): Promise< {items: WithId<Post>[]; totalCount: number }> {
+  async findByBlogId(
+    id: string,
+    queryDto: PostsQueryDtoInput,
+  ): Promise<{ items: WithId<Post>[]; totalCount: number }> {
     const { pageNumber, pageSize, sortBy, sortDirection } = queryDto;
 
     const skip = (pageNumber - 1) * pageSize;
-    const filter = { 'blogId': id };
-    const sortOrder = sortDirection === 'asc' ? 1 : -1;
+    const filter = { blogId: id };
+    const sortOrder = sortDirection === "asc" ? 1 : -1;
 
     const [items, totalCount] = await Promise.all([
       postsCollection
         .find(filter)
-        .sort({ [sortBy]: sortOrder})
+        .sort({ [sortBy]: sortOrder })
         .skip(skip)
         .limit(pageSize)
         .toArray(),
       postsCollection.countDocuments(filter),
     ]);
 
-      return {items, totalCount};
+    return { items, totalCount };
   },
 
   async findById(id: string): Promise<WithId<Post>> {
@@ -53,5 +55,5 @@ export const postsQwRepository = {
       throw new RepositoryNotFoundError("Post id not found", "id");
     }
     return post;
-  }
-}
+  },
+};

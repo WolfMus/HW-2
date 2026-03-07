@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
 import { HttpStatus } from "../../../core/types/types";
-import { postsServices } from "../../application/posts-service";
 import { errorsHandler } from "../../../core/errors/errors.handler";
 import { matchedData } from "express-validator";
 import { setDefaultSortAndPaginationIfNotExist } from "../../../core/heplers/set-default-sort-and-pagination";
@@ -10,7 +9,9 @@ import { postsQwRepository } from "../../repository/posts-query.repository";
 
 export async function getPostListHandler(req: Request, res: Response) {
   try {
-    const sanitizedQuery = matchedData(req, {includeOptionals: true}) as PostsQueryDtoInput;
+    const sanitizedQuery = matchedData(req, {
+      includeOptionals: true,
+    }) as PostsQueryDtoInput;
     const queryInput = setDefaultSortAndPaginationIfNotExist(sanitizedQuery);
 
     const { items, totalCount } = await postsQwRepository.findAll(queryInput);
@@ -18,10 +19,9 @@ export async function getPostListHandler(req: Request, res: Response) {
       pageNumber: queryInput.pageNumber,
       pageSize: queryInput.pageSize,
       totalCount,
-    })
+    });
 
     return res.status(HttpStatus.Ok).send(postsListOutput);
-
   } catch (e: unknown) {
     errorsHandler(e, res);
   }

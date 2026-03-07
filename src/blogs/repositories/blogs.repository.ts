@@ -1,12 +1,10 @@
 import { Blog } from "../types/blogs";
 import { BlogInputModel } from "../dto/blog-input.dto";
 import { blogsCollection } from "../../db/mongo.db";
-import { ObjectId, WithId } from "mongodb";
+import { ObjectId } from "mongodb";
 import { RepositoryNotFoundError } from "../../core/errors/repository-not-found.error";
-import { BlogsQueryDtoInput } from "../input/blogs-query.input";
 
 export const blogsRepository = {
-
   async create(newBlog: Blog): Promise<string> {
     const insertResult = await blogsCollection.insertOne(newBlog);
 

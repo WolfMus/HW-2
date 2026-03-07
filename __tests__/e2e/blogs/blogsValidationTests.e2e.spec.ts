@@ -23,8 +23,8 @@ describe("Blogs API", () => {
   };
 
   beforeAll(async () => {
-    await runDb(SETTINGS.MONGO_URL)
-    await clearDb(app)
+    await runDb(SETTINGS.MONGO_URL);
+    await clearDb(app);
   });
 
   it("should return all blogs; GET /blogs", async () => {
@@ -71,7 +71,7 @@ describe("Blogs API", () => {
       .expect(HttpStatus.BadRequest);
   });
 
-    it("❌ shouldn't return blog with incorrect id; POST /blogs:id", async () => {
+  it("❌ shouldn't return blog with incorrect id; POST /blogs:id", async () => {
     await request(app)
       .get(`${BLOGS_PATH}/507f1f77bcf86cd799439011`)
       .expect(HttpStatus.NotFound);

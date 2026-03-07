@@ -1,7 +1,6 @@
 import { Response } from "express";
 import { HttpStatus, RequestWithParams } from "../../../core/types/types";
 import { mapToPostViewModel } from "../mapped/mapToPostViewModel";
-import { postsServices } from "../../application/posts-service";
 import { errorsHandler } from "../../../core/errors/errors.handler";
 import { postsQwRepository } from "../../repository/posts-query.repository";
 

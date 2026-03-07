@@ -12,7 +12,6 @@ export async function deleteBlogHandler(
 
     await blogsServices.delete(id);
     return res.sendStatus(HttpStatus.NoContent);
-
   } catch (e: unknown) {
     errorsHandler(e, res);
   }

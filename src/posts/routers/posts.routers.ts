@@ -14,8 +14,32 @@ import { PostSortField } from "../input/post-sort-field";
 export const postsRouters = Router({});
 
 postsRouters
-  .get("",  paginationAndSortingValidation(PostSortField), inputValidationResultMiddleware, getPostListHandler)
+  .get(
+    "",
+    paginationAndSortingValidation(PostSortField),
+    inputValidationResultMiddleware,
+    getPostListHandler,
+  )
   .get("/:id", idValidation, inputValidationResultMiddleware, getPostHandler)
-  .post("", adminAuthMiddleware,postInputDtoValidation, inputValidationResultMiddleware, createPostHandler)
-  .put("/:id", adminAuthMiddleware, idValidation, postInputDtoValidation, inputValidationResultMiddleware, updatePostHandler)
-  .delete("/:id", adminAuthMiddleware, idValidation, inputValidationResultMiddleware, deletePostHandler)
+  .post(
+    "",
+    adminAuthMiddleware,
+    postInputDtoValidation,
+    inputValidationResultMiddleware,
+    createPostHandler,
+  )
+  .put(
+    "/:id",
+    adminAuthMiddleware,
+    idValidation,
+    postInputDtoValidation,
+    inputValidationResultMiddleware,
+    updatePostHandler,
+  )
+  .delete(
+    "/:id",
+    adminAuthMiddleware,
+    idValidation,
+    inputValidationResultMiddleware,
+    deletePostHandler,
+  );

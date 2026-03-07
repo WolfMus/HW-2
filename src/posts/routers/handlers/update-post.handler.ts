@@ -4,7 +4,6 @@ import {
   RequestWithParamsAndBody,
 } from "../../../core/types/types";
 import { Post } from "../../types/posts";
-import { blogsServices } from "../../../blogs/application/blogs.services";
 import { postsServices } from "../../application/posts-service";
 import { errorsHandler } from "../../../core/errors/errors.handler";
 import { blogsQwRepository } from "../../../blogs/repositories/blogs-query.repository";
@@ -16,7 +15,7 @@ export async function updatePostHandler(
   try {
     await blogsQwRepository.findById(req.body.blogId);
     await postsServices.update(req.params.id, req.body);
-    
+
     res.sendStatus(HttpStatus.NoContent);
   } catch (e: unknown) {
     errorsHandler(e, res);

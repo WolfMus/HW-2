@@ -73,8 +73,7 @@ describe("Posts API validation tests", () => {
 
   it("❌ Should not return post by incorrect id; GET /POSTS/:id", async () => {
     await request(app)
-        .get(`${POSTS_PATH}/507f1f77bcf86cd799439011`) 
-        .expect(HttpStatus.NotFound);
+      .get(`${POSTS_PATH}/507f1f77bcf86cd799439011`)
+      .expect(HttpStatus.NotFound);
   });
-
 });

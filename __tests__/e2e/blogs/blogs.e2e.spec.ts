@@ -3,9 +3,7 @@ import express, { response } from "express";
 import { setupApp } from "../../../src/setup-app";
 import { BlogInputModel } from "../../../src/blogs/dto/blog-input.dto";
 import { HttpStatus } from "../../../src/core/types/types";
-import {
-  BLOGS_PATH,
-} from "../../../src/core/paths/paths";
+import { BLOGS_PATH } from "../../../src/core/paths/paths";
 import { clearDb } from "../../utils/clear-db";
 import { generateAdminAuthToken } from "../../utils/generate-admin-auth-token";
 import { runDb } from "../../../src/db/mongo.db";
@@ -58,15 +56,15 @@ describe("Blogs API", () => {
 
   it("✅ should delete blog by id; DELETE /blogs/:id", async () => {
     const createdBlog = await createBlog(app);
-    
+
     await request(app)
       .delete(`${BLOGS_PATH}/${createdBlog.id}`)
       .set("Authorization", adminToken)
       .expect(HttpStatus.NoContent);
 
     await request(app)
-        .get(`${BLOGS_PATH}/${createdBlog.id}`)
-        .expect(HttpStatus.NotFound)
+      .get(`${BLOGS_PATH}/${createdBlog.id}`)
+      .expect(HttpStatus.NotFound);
   });
 
   it("✅ should update blog by id; PUT /blogs/:id", async () => {
@@ -76,9 +74,9 @@ describe("Blogs API", () => {
       name: "new name",
       description: "new description",
       websiteUrl: "https://new-url.by",
-    }
+    };
 
-    await updateBlog(app, createdBlog.id, blogUpdateData)
+    await updateBlog(app, createdBlog.id, blogUpdateData);
     const getBlog = await getBlogById(app, createdBlog.id);
 
     expect(getBlog).toEqual({
@@ -88,6 +86,6 @@ describe("Blogs API", () => {
       websiteUrl: blogUpdateData.websiteUrl,
       createdAt: createdBlog.createdAt,
       isMembership: createdBlog.isMembership,
-    })
+    });
   });
 });

@@ -1,12 +1,10 @@
-import { ObjectId, WithId } from "mongodb";
+import { ObjectId } from "mongodb";
 import { postsCollection } from "../../db/mongo.db";
 import { PostInputModel } from "../dto/posts-input.dto";
 import { Post } from "../types/posts";
 import { RepositoryNotFoundError } from "../../core/errors/repository-not-found.error";
-import { PostsQueryDtoInput } from "../input/post-query.input";
 
 export const postsRepository = {
-
   async create(newPost: Post): Promise<string> {
     const createdPost = await postsCollection.insertOne(newPost);
     return createdPost.insertedId.toString();
