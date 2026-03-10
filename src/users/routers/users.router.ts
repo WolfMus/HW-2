@@ -10,12 +10,17 @@ import {
   loginValidation,
   passwordValidation,
 } from "../validation/password.validation";
+import { paginationAndSortingValidation } from "../../core/middlewares/validation/query-pagination-sorting.validation-middleware";
+import { UsersSortField } from "../input/users-sort.input";
+import { loginAndEmailValidation } from "../validation/searchTerm.validation";
 
 export const usersRouter = Router({});
 usersRouter
   .get(
     "",
     adminAuthMiddleware,
+    loginAndEmailValidation,
+    paginationAndSortingValidation(UsersSortField),
     inputValidationResultMiddleware,
     getUsersListHandler,
   )

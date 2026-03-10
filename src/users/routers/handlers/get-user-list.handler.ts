@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { errorsHandler } from "../../../core/errors/errors.handler";
-import { HttpStatus } from "../../../core/types/types";
-import { matchedData } from "express-validator";
+import { HttpStatus, RequestWithQuery } from "../../../core/types/types";
+import { matchedData, query } from "express-validator";
 import { setDefaultSortAndPaginationIfNotExist } from "../../../core/heplers/set-default-sort-and-pagination";
 import { usersQwRepository } from "../../repository/usersQw.repository";
 import { UsersQueryInput } from "../../input/users-query.input";
@@ -13,11 +13,11 @@ export async function getUsersListHandler(
   res: Response<Pagination<UserView[]>>,
 ) {
   try {
-    console.log("=======DEBUGGING========");
-    const sanitizedQuery = matchedData(req, {
-      includeOptionals: true,
-    }) as UsersQueryInput;
-    const queryInput = setDefaultSortAndPaginationIfNotExist(sanitizedQuery);
+
+    const sanitizedQuery = matchedData(req, { includeOptionals: true }) as UsersQueryInput;
+    console.log("SANITIZED QUERY ", sanitizedQuery)
+    
+    const queryInput = {...setDefaultSortAndPaginationIfNotExist(sanitizedQuery)};
 
     const usersList = await usersQwRepository.findAll(queryInput);
     return res.status(HttpStatus.Ok).send(usersList);

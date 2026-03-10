@@ -18,6 +18,8 @@ export const usersQwRepository = {
       searchEmailTerm,
     } = queryInput;
 
+    console.log("SEARCH LOGIN TERM AND EMAIL TERM ", searchLoginTerm, " ", searchEmailTerm);
+
     const skip = (pageNumber - 1) * pageSize;
     const filter: any = {};
     if (searchLoginTerm || searchEmailTerm) {

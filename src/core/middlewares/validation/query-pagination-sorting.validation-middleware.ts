@@ -18,6 +18,8 @@ export const paginationAndSortingDefault: PaginationAndSorting<string> = {
 export function paginationAndSortingValidation<T extends string>(
   sortFieldsEnum: Record<string, T>,
 ) {
+  console.log('sortFieldsEnum values:', Object.values(sortFieldsEnum));
+  console.log('SortDirection values:', Object.values(SortDirection));
   const allowedSortFields = Object.values(sortFieldsEnum);
 
   return [
@@ -37,7 +39,7 @@ export function paginationAndSortingValidation<T extends string>(
       .default(DEFAULT_SORT_BY)
       .isIn(allowedSortFields)
       .withMessage(
-        `Invalid sort vield. Allowed values: ${allowedSortFields.join(", ")}`,
+        `Invalid sort field. Allowed values: ${allowedSortFields.join(", ")}`,
       ),
 
     query("sortDirection")
@@ -46,23 +48,5 @@ export function paginationAndSortingValidation<T extends string>(
       .withMessage(
         `Sort direction must be one of: ${Object.values(SortDirection).join(", ")}`,
       ),
-
-    query("searchNameTerm")
-      .optional()
-      .isString()
-      .withMessage("Search term must be a string")
-      .trim(),
-
-    query("searchLoginTerm")
-      .optional()
-      .isString()
-      .withMessage("Search term must be a string")
-      .trim(),
-
-    query("searchEmailTerm")
-      .optional()
-      .isString()
-      .withMessage("Search term must be a string")
-      .trim(),
-  ];
+  ]
 }
