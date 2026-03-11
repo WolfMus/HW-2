@@ -9,12 +9,13 @@ export const userService = {
     email: string,
   ): Promise<string> {
 
-    const passwordHash = await bcryptService.generateHash(password);
+    const saltAndHash = await bcryptService.generateHash(password);
 
     const userInputBody: UserDto = {
       login: login,
       email: email,
-      hash: passwordHash,
+      hash: saltAndHash.hash,
+      salt: saltAndHash.salt,
       createdAt: new Date(),
     };
 

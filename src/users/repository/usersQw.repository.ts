@@ -2,7 +2,6 @@ import { ObjectId, WithId } from "mongodb";
 import { usersCollection } from "../../db/mongo.db";
 import { User } from "../type/user.type";
 import { UsersQueryInput } from "../input/users-query.input";
-import { UserDbView } from "../type/user.db.interface";
 import { UserView } from "../type/user-view.interface";
 import { Pagination } from "../../core/types/pagination.interface";
 import { RepositoryNotFoundError } from "../../core/errors/repository-not-found.error";
@@ -17,8 +16,6 @@ export const usersQwRepository = {
       searchLoginTerm,
       searchEmailTerm,
     } = queryInput;
-
-    console.log("SEARCH LOGIN TERM AND EMAIL TERM ", searchLoginTerm, " ", searchEmailTerm);
 
     const skip = (pageNumber - 1) * pageSize;
     const filter: any = {};
@@ -53,7 +50,7 @@ export const usersQwRepository = {
     };
   },
 
-  async findById(id: string): Promise<UserDbView> {
+  async findById(id: string): Promise<UserView> {
     const user = await usersCollection.findOne({ _id: new ObjectId(id) });
     if (!user) {
       throw new RepositoryNotFoundError("User not found", "id");
@@ -62,17 +59,22 @@ export const usersQwRepository = {
   },
 
   async findLoginOrEmail(loginOrEmail: string): Promise<WithId<User> | null> {
-    return usersCollection.findOne({
+    const user = usersCollection.findOne({
       $or: [{email: loginOrEmail}, {login: loginOrEmail}],
     })
+
+    if (!user) {
+      throw new RepositoryNotFoundError("User not found", "login or email");
+    };
+
+    return user;
   },
 
-  _toViewModel(item: WithId<User>): UserDbView {
+  _toViewModel(item: WithId<User>): UserView {
     return {
       id: item._id.toString(),
       login: item.login,
       email: item.email,
-      hash: item.hash,
       createdAt: item.createdAt,
     };
   },

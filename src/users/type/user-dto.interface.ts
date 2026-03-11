@@ -1,6 +1,7 @@
 export interface UserDto {
   login: string;
-  hash: string;
   email: string;
+  hash: string;
+  salt: string;
   createdAt: Date;
 }

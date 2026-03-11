@@ -18,8 +18,6 @@ export const paginationAndSortingDefault: PaginationAndSorting<string> = {
 export function paginationAndSortingValidation<T extends string>(
   sortFieldsEnum: Record<string, T>,
 ) {
-  console.log('sortFieldsEnum values:', Object.values(sortFieldsEnum));
-  console.log('SortDirection values:', Object.values(SortDirection));
   const allowedSortFields = Object.values(sortFieldsEnum);
 
   return [

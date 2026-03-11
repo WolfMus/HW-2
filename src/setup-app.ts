@@ -6,15 +6,18 @@ import {
   POSTS_PATH,
   TESTING_PATH,
   USERS_PATH,
+  AUTH_PATH,
 } from "./core/paths/paths";
 import { testingRouter } from "./testing/testing.route";
 import { usersRouter } from "./users/routers/users.router";
+import { authRouter } from "./auth/routers/auth-login.router";
 
 export const setupApp = (app: Express) => {
   app.use(express.json());
 
   app.use(TESTING_PATH, testingRouter);
 
+  app.use(AUTH_PATH, authRouter);
   app.use(BLOGS_PATH, blogsRouter);
   app.use(POSTS_PATH, postsRouters);
   app.use(USERS_PATH, usersRouter);
