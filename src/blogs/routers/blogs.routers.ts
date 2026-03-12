@@ -14,6 +14,7 @@ import { postInputDtoValidation } from "../../posts/validation/postInputDtoValid
 import { createPostForBlogHandler } from "./handlers/create-post-for-blog.handler";
 import { PostSortField } from "../../posts/input/post-sort-field";
 import { getPostListForBlogHandler } from "./handlers/get-post-list-for-blog.handler";
+import {searchNameTermValidation} from "../validation/searchTerm.validation"
 
 export const blogsRouter = Router({});
 
@@ -22,6 +23,7 @@ blogsRouter
   .get(
     "",
     paginationAndSortingValidation(BlogSortField),
+    searchNameTermValidation,
     inputValidationResultMiddleware,
     getBlogListHandler,
   )
