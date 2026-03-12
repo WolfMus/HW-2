@@ -32,10 +32,10 @@ export const inputValidationResultMiddleware = (
     .formatWith(formatErrors)
     .array({ onlyFirstError: true });
 
-  const firstError = errors[0];
+  // const firstError = errors[0];
 
   if (errors.length > 0) {
-    res.status(HttpStatus.BadRequest).send({ errorsMessages: firstError });
+    res.status(HttpStatus.BadRequest).send({ errorsMessages: errors });
     return;
   }
 

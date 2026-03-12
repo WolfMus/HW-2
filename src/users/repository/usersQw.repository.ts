@@ -5,6 +5,7 @@ import { UsersQueryInput } from "../input/users-query.input";
 import { UserView } from "../type/user-view.interface";
 import { Pagination } from "../../core/types/pagination.interface";
 import { RepositoryNotFoundError } from "../../core/errors/repository-not-found.error";
+import { UnauthorizedError } from "../../core/errors/unauthorizedError.error";
 
 export const usersQwRepository = {
   async findAll(queryInput: UsersQueryInput): Promise<Pagination<UserView[]>> {
@@ -59,12 +60,13 @@ export const usersQwRepository = {
   },
 
   async findLoginOrEmail(loginOrEmail: string): Promise<WithId<User> | null> {
-    const user = usersCollection.findOne({
+
+    const user = await usersCollection.findOne({
       $or: [{email: loginOrEmail}, {login: loginOrEmail}],
     })
 
     if (!user) {
-      throw new RepositoryNotFoundError("User not found", "login or email");
+      throw new UnauthorizedError("User not found", "login or email");
     };
 
     return user;

@@ -18,7 +18,7 @@ export async function authLoginHandler(
     const passwordToHash = await bcrypt.hash(password, user!?.hash);
 
     if (user!.hash !== passwordToHash) {
-        return res.sendStatus(HttpStatus.Unauthorized);
+        res.sendStatus(HttpStatus.Unauthorized);
     }
 
     res.sendStatus(HttpStatus.NoContent);
