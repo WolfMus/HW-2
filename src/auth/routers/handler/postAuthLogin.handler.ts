@@ -14,7 +14,7 @@ export async function authLoginHandler(
     const loginOrEmail = req.body.loginOrEmail;
     const password = req.body.password;
 
-    const user = await usersQwRepository.findLoginOrEmail(loginOrEmail);
+    const user = await usersQwRepository.findLoginOrEmailOrFail(loginOrEmail);
     const passwordToHash = await bcrypt.hash(password, user!?.hash);
 
     if (user!.hash !== passwordToHash) {
