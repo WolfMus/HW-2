@@ -65,6 +65,14 @@ export const usersQwRepository = {
       $or: [{email: loginOrEmail}, {login: loginOrEmail}],
     })
 
+    return user;
+  },
+  async findLoginOrEmailOrFail(loginOrEmail: string): Promise<WithId<User> | null> {
+
+    const user = await usersCollection.findOne({
+      $or: [{email: loginOrEmail}, {login: loginOrEmail}],
+    })
+
     if (!user) {
       throw new UnauthorizedError("User not found", "login or email");
     };

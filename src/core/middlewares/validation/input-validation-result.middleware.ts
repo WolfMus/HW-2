@@ -33,7 +33,6 @@ export const inputValidationResultMiddleware = (
     .array({ onlyFirstError: true });
 
   // const firstError = errors[0];
-
   if (errors.length > 0) {
     res.status(HttpStatus.BadRequest).send({ errorsMessages: errors });
     return;

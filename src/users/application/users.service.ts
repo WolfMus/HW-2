@@ -19,6 +19,8 @@ export const userService = {
       createdAt: new Date(),
     };
 
+    console.log(userInputBody);
+
     const createdUserId = await usersRepository.create(userInputBody);
 
     return createdUserId;

@@ -18,6 +18,7 @@ export const setupApp = (app: Express) => {
   app.use(TESTING_PATH, testingRouter);
 
   app.use(AUTH_PATH, authRouter);
+  
   app.use(BLOGS_PATH, blogsRouter);
   app.use(POSTS_PATH, postsRouters);
   app.use(USERS_PATH, usersRouter);
