@@ -2,7 +2,7 @@ import { Response } from "express";
 import { HttpStatus, RequestWithBody } from "../../../core/types/types";
 import { BlogInputModel } from "../../dto/blog-input.dto";
 import { mapToBlogViewModel } from "../mappers/mapToBlogViewModel";
-import { blogsServices } from "../../application/blogs.services";
+import { blogsServices } from "../../application/blogs.service";
 import { errorsHandler } from "../../../core/errors/errors.handler";
 import { blogsQwRepository } from "../../repositories/blogs-query.repository";
 

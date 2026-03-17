@@ -4,4 +4,5 @@ import { authLoginHandler } from "./handler/postAuthLogin.handler";
 export const authRouter = Router({});
 
 authRouter
-    .post("", authLoginHandler);
+    .post("/login", authLoginHandler)
+    // .get("/me")

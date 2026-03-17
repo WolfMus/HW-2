@@ -4,6 +4,7 @@ import { HttpStatus, RequestWithBody } from "../../../core/types/types";
 import { LoginInputModel } from "../../types/login-input.type";
 import { usersQwRepository } from "../../../users/repository/usersQw.repository";
 import bcrypt from 'bcrypt'
+import { jwtService } from "../../application/jwtService";
 
 export async function authLoginHandler(
   req: RequestWithBody<LoginInputModel>,
@@ -15,13 +16,16 @@ export async function authLoginHandler(
     const password = req.body.password;
 
     const user = await usersQwRepository.findLoginOrEmailOrFail(loginOrEmail);
+
     const passwordToHash = await bcrypt.hash(password, user!?.hash);
 
     if (user!.hash !== passwordToHash) {
         res.sendStatus(HttpStatus.Unauthorized);
     }
 
-    res.sendStatus(HttpStatus.NoContent);
+    const accessToken = await jwtService.createToken(user!._id.toString());
+
+    res.status(HttpStatus.Ok).send({accessToken: accessToken});
     
   } catch (e) {
     errorsHandler(e, res);

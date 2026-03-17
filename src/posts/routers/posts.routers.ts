@@ -10,6 +10,7 @@ import { idValidation } from "../../core/middlewares/validation/params-id.valida
 import { adminAuthMiddleware } from "../../auth/middleware/super-admin.guard-middleware";
 import { paginationAndSortingValidation } from "../../core/middlewares/validation/query-pagination-sorting.validation-middleware";
 import { PostSortField } from "../input/post-sort-field";
+import { createCommentHandler } from "./handlers/create-comment.handler";
 
 export const postsRouters = Router({});
 
@@ -42,4 +43,12 @@ postsRouters
     idValidation,
     inputValidationResultMiddleware,
     deletePostHandler,
-  );
+  )
+  
+  .post("/:id/comments",
+    idValidation,
+    inputValidationResultMiddleware,
+    createCommentHandler
+  )
+
+  ;

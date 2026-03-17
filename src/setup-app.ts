@@ -15,7 +15,7 @@ import { authRouter } from "./auth/routers/auth-login.router";
 export const setupApp = (app: Express) => {
   app.use(express.json());
 
-  app.use(TESTING_PATH, testingRouter);
+  // app.use(TESTING_PATH, testingRouter);
 
   app.use(AUTH_PATH, authRouter);
   

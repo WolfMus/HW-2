@@ -4,7 +4,7 @@ import {
   RequestWithParamsAndBody,
 } from "../../../core/types/types";
 import { BlogInputModel } from "../../dto/blog-input.dto";
-import { blogsServices } from "../../application/blogs.services";
+import { blogsServices } from "../../application/blogs.service";
 import { errorsHandler } from "../../../core/errors/errors.handler";
 
 export async function updateBlogHandler(
