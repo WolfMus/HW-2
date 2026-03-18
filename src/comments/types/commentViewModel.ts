@@ -1,7 +1,8 @@
-export type CommentDbViewModel = {
-    postId: string,
+import { CommentatorInfo } from "./commentUserInfo"
+
+export type CommentViewModel = {
+    id: string,
     content: string,
-    userId: string;
-    userLogin: string;
+    commentatorInfo: CommentatorInfo,
     createdAt: Date,
 }

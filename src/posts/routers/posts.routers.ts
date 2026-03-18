@@ -11,6 +11,8 @@ import { adminAuthMiddleware } from "../../auth/middleware/super-admin.guard-mid
 import { paginationAndSortingValidation } from "../../core/middlewares/validation/query-pagination-sorting.validation-middleware";
 import { PostSortField } from "../input/post-sort-field";
 import { createCommentHandler } from "./handlers/create-comment.handler";
+import { getListOfCommentsByIdHandler } from "./handlers/get-comments-list-by-id.handler";
+import { CommentSortField } from "../../comments/types/commentSortField";
 
 export const postsRouters = Router({});
 
@@ -21,7 +23,9 @@ postsRouters
     inputValidationResultMiddleware,
     getPostListHandler,
   )
+
   .get("/:id", idValidation, inputValidationResultMiddleware, getPostHandler)
+
   .post(
     "",
     adminAuthMiddleware,
@@ -29,6 +33,7 @@ postsRouters
     inputValidationResultMiddleware,
     createPostHandler,
   )
+
   .put(
     "/:id",
     adminAuthMiddleware,
@@ -37,6 +42,7 @@ postsRouters
     inputValidationResultMiddleware,
     updatePostHandler,
   )
+
   .delete(
     "/:id",
     adminAuthMiddleware,
@@ -45,10 +51,17 @@ postsRouters
     deletePostHandler,
   )
   
+  // COMMENTS
   .post("/:id/comments",
     idValidation,
     inputValidationResultMiddleware,
     createCommentHandler
   )
 
-  ;
+  .get("/:id/comments",
+    paginationAndSortingValidation(CommentSortField),
+    idValidation,
+    inputValidationResultMiddleware,
+    getListOfCommentsByIdHandler,
+  )
+

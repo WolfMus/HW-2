@@ -1,5 +1,5 @@
 import { usersQwRepository } from "../../users/repository/usersQw.repository";
-import { commentsRepository } from "../repositories/comments-query.repository";
+import { commentsRepository } from "../repositories/comments.repository";
 import { Comment } from "../types/comments";
 
 export const commentService = {
