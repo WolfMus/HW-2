@@ -51,6 +51,7 @@ export const postsQwRepository = {
 
   async findById(id: string): Promise<WithId<Post>> {
     const post = await postsCollection.findOne({ _id: new ObjectId(id) });
+
     if (!post) {
       throw new RepositoryNotFoundError("Post id not found", "id");
     }

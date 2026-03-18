@@ -1,25 +1,24 @@
 import { Response } from "express";
 import {
   HttpStatus,
-  RequestWithParamsAndBody,
+  RequestWithParamsAndBodyAndUserId,
 } from "../../../core/types/types";
 import { errorsHandler } from "../../../core/errors/errors.handler";
 import { postsQwRepository } from "../../repository/posts-query.repository";
-import { jwtService } from "../../../auth/application/jwtService";
 import { commentService } from "../../../comments/application/comments.service";
 import { commentsQwRepository } from "../../../comments/repositories/comments-query.repository";
+import { IdType } from "../../../core/types/id";
 
 export async function createCommentHandler(
-  req: RequestWithParamsAndBody<{ id: string }, { content: string }>,
+  req: RequestWithParamsAndBodyAndUserId<{ id: string }, { content: string }, IdType>,
   res: Response,
 ) {
   try {
-    const id = req.params.id;
+    const postId = req.params.id;
     const content = req.body.content;
-    const token = req.headers.authorization!.split(" ")[1];
-    const userId = await jwtService.decodeToken(token!);
+    const userId = req.user?.id as string;
 
-    const post = await postsQwRepository.findById(id);
+    const post = await postsQwRepository.findById(postId);
 
     const newCommentId = await commentService.create(
       content,

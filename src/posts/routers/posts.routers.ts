@@ -13,6 +13,7 @@ import { PostSortField } from "../input/post-sort-field";
 import { createCommentHandler } from "./handlers/create-comment.handler";
 import { getListOfCommentsByIdHandler } from "./handlers/get-comments-list-by-id.handler";
 import { CommentSortField } from "../../comments/types/commentSortField";
+import { tokenGuard } from "../../auth/middleware/tokenGuard";
 
 export const postsRouters = Router({});
 
@@ -53,6 +54,7 @@ postsRouters
   
   // COMMENTS
   .post("/:id/comments",
+    tokenGuard,
     idValidation,
     inputValidationResultMiddleware,
     createCommentHandler
