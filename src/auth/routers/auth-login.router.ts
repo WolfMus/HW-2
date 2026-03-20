@@ -5,6 +5,7 @@ import {
   passwordValidation,
 } from "../../users/validation/password.validation";
 import { tokenGuard } from "../middleware/tokenGuard";
+import { getInformationAboutUserHandler } from "./handler/getInformation.handler";
 
 export const authRouter = Router({});
 
@@ -17,4 +18,4 @@ authRouter
   authLoginHandler,
 )
 
-.get("/me", tokenGuard, )
+.get("/me", tokenGuard, getInformationAboutUserHandler)

@@ -15,9 +15,10 @@ export enum HttpStatus {
 }
 
 export type RequestWithParams<T> = Request<T, {}, {}, {}>;
+export type RequestWithParamsAndUserId<T, U extends IdType> = Request<T, {}, {}, {}, U>;
 export type RequestWithBody<T> = Request<{}, {}, T, {}>;
 export type RequestWithParamsAndBody<T, B> = Request<T, {}, B, {}>;
 export type RequestWithParamsAndBodyAndUserId<T, B, U extends IdType> = Request<T, {}, B, {}, U>;
 export type RequestWithParamsAndQuery<T, B> = Request<T, {}, {}, B>;
 export type RequestWithQuery<T> = Request<{}, {}, {}, T>;
-export type RequestWuthUserId<U extends IdType> = Request<{},{},{},{}, U>
+export type RequestWithUserId<U extends IdType> = Request<{},{},{},{}, U>

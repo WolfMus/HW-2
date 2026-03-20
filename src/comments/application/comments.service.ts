@@ -22,4 +22,12 @@ export const commentService = {
 
     return commentId;
   },
+
+  async update(commentContent: string, id: string): Promise<void> {
+    return await commentsRepository.update(id, commentContent);
+  },
+
+  async delete(id: string): Promise<void> {
+    return await commentsRepository.delete(id);
+  }
 };
