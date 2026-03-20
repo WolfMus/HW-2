@@ -57,6 +57,7 @@ postsRouters
   .post("/:id/comments",
     tokenGuard,
     idValidation,
+    commentsDtoValidation,
     inputValidationResultMiddleware,
     createCommentHandler
   )
@@ -64,7 +65,6 @@ postsRouters
   .get("/:id/comments",
     paginationAndSortingValidation(CommentSortField),
     idValidation,
-    commentsDtoValidation,
     inputValidationResultMiddleware,
     getListOfCommentsByIdHandler,
   )

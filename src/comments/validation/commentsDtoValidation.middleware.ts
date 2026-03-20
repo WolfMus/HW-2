@@ -6,4 +6,3 @@ export const commentsDtoValidation = body('content')
     .trim()
     .isLength({min: 20, max: 300})
     .withMessage('Comment`s length should be from 20 to 300')
-
