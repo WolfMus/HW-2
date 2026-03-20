@@ -14,6 +14,7 @@ import { createCommentHandler } from "./handlers/create-comment.handler";
 import { getListOfCommentsByIdHandler } from "./handlers/get-comments-list-by-id.handler";
 import { CommentSortField } from "../../comments/types/commentSortField";
 import { tokenGuard } from "../../auth/middleware/tokenGuard";
+import { commentsDtoValidation } from "../../comments/validation/commentsDtoValidation.middleware";
 
 export const postsRouters = Router({});
 
@@ -63,6 +64,7 @@ postsRouters
   .get("/:id/comments",
     paginationAndSortingValidation(CommentSortField),
     idValidation,
+    commentsDtoValidation,
     inputValidationResultMiddleware,
     getListOfCommentsByIdHandler,
   )
