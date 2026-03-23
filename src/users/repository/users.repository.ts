@@ -1,12 +1,25 @@
 import { ObjectId } from "mongodb";
 import { usersCollection } from "../../db/mongo.db";
 import { RepositoryNotFoundError } from "../../core/errors/repository-not-found.error";
-import { UserDto } from "../type/user-dto.interface";
+import { UserDbView } from "../type/user.db.interface";
 
 export const usersRepository = {
-  async create(userInput: UserDto): Promise<string> {
+  async create(userInput: UserDbView): Promise<string> {
     const createdUser = await usersCollection.insertOne(userInput);
     return createdUser.insertedId.toString();
+  },
+
+  async createByRegistration(userInput: UserDbView): Promise<string> {
+    const createdUser = await usersCollection.insertOne(userInput);
+    return createdUser.insertedId.toString()
+  },
+
+  async updateConfirmation(id: string): Promise<void> {
+    const updatedUser = await usersCollection.updateOne({_id: new ObjectId(id)}, {$set: {'emailConfirmation.isConfirmed': true}});
+    if (updatedUser.matchedCount < 1) {
+      throw new RepositoryNotFoundError("User not found", "id");
+    }
+    return;
   },
 
   async delete(id: string): Promise<void> {

@@ -1,21 +1,38 @@
 import { Router } from "express";
 import { authLoginHandler } from "./handler/postAuthLogin.handler";
 import {
+  emailValidation,
   loginOrEmailValidation,
+  loginValidation,
   passwordValidation,
 } from "../../users/validation/password.validation";
 import { tokenGuard } from "../middleware/tokenGuard";
 import { getInformationAboutUserHandler } from "./handler/getInformation.handler";
+import { registrationHandler } from "./handler/registration.handler";
+import { inputValidationResultMiddleware } from "../../core/middlewares/validation/input-validation-result.middleware";
+import { confirmationCodeValidation } from "../validation/confirmation-code.validation";
+import { confirmationHandler } from "./handler/confirmation.handler";
 
 export const authRouter = Router({});
 
 authRouter
 
-.post(
-  "/login",
-  passwordValidation,
-  loginOrEmailValidation,
-  authLoginHandler,
-)
+  .post("/login", passwordValidation, loginOrEmailValidation, authLoginHandler)
 
-.get("/me", tokenGuard, getInformationAboutUserHandler)
+  .get("/me", tokenGuard, getInformationAboutUserHandler)
+
+  .post(
+    "/registration",
+    passwordValidation,
+    loginValidation,
+    emailValidation,
+    inputValidationResultMiddleware,
+    registrationHandler,
+  )
+
+  .post(
+    "/registration-confirmation",
+    confirmationCodeValidation,
+    inputValidationResultMiddleware,
+    confirmationHandler,
+  );

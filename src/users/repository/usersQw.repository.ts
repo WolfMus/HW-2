@@ -1,4 +1,4 @@
-import { ObjectId, WithId } from "mongodb";
+import { ObjectId, WithId} from "mongodb";
 import { usersCollection } from "../../db/mongo.db";
 import { User } from "../type/user.type";
 import { UsersQueryInput } from "../input/users-query.input";
@@ -6,6 +6,7 @@ import { UserView } from "../type/user-view.interface";
 import { Pagination } from "../../core/types/pagination.interface";
 import { RepositoryNotFoundError } from "../../core/errors/repository-not-found.error";
 import { UnauthorizedError } from "../../core/errors/unauthorizedError.error";
+import { UserDbView } from "../type/user.db.interface";
 
 export const usersQwRepository = {
   async findAll(queryInput: UsersQueryInput): Promise<Pagination<UserView[]>> {
@@ -78,6 +79,22 @@ export const usersQwRepository = {
     };
 
     return user;
+  },
+
+  async doesExistByLoginOrEmail(login: string, email: string): Promise<WithId<User> | null> {
+    const user = await usersCollection.findOne({
+      $or: [{email: email}, {login: login}],
+    });
+
+    return user
+  },
+
+  async findByConfirmationCode(code: string): Promise<UserDbView | null> {
+    const user = await usersCollection.findOne({'emailConfirmation.confirmationCode': code});
+    if (!user) {
+      throw new RepositoryNotFoundError('User not found', 'confirmation code');
+    }
+    return user
   },
 
   _toViewModel(item: WithId<User>): UserView {
