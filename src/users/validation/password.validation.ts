@@ -23,6 +23,12 @@ export const emailValidation = body("email")
     return true;
   });
 
+export const emailForResendingValidation = body("email")
+  .isString()
+  .trim()
+  .isEmail()
+  .matches(EMAIL_REGEX);
+
 export const loginValidation = body("login")
   .isString()
   .trim()

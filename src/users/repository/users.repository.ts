@@ -22,6 +22,19 @@ export const usersRepository = {
     return;
   },
 
+  async updateConfirmationCode(id: string, confirmationCode: string, expiration: Date): Promise<void> {
+    const updatedUser = await usersCollection.updateOne({_id: new ObjectId(id)}, {$set: {
+      'emailConfirmation.confirmationCode': confirmationCode,
+      'emailConfirmation.expirationCode': expiration,
+    }});
+
+    if (updatedUser.matchedCount < 1) {
+      throw new RepositoryNotFoundError("User not found", "id");
+    }
+
+    return;
+  },
+
   async delete(id: string): Promise<void> {
     const deletedUser = await usersCollection.deleteOne({
       _id: new ObjectId(id),

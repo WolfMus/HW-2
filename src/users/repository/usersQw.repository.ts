@@ -7,6 +7,7 @@ import { Pagination } from "../../core/types/pagination.interface";
 import { RepositoryNotFoundError } from "../../core/errors/repository-not-found.error";
 import { UnauthorizedError } from "../../core/errors/unauthorizedError.error";
 import { UserDbView } from "../type/user.db.interface";
+import { BadRequestError } from "../../core/errors/bad-request.error";
 
 export const usersQwRepository = {
   async findAll(queryInput: UsersQueryInput): Promise<Pagination<UserView[]>> {
@@ -20,6 +21,7 @@ export const usersQwRepository = {
     } = queryInput;
 
     const skip = (pageNumber - 1) * pageSize;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const filter: any = {};
     if (searchLoginTerm || searchEmailTerm) {
       filter.$or = [];
@@ -81,10 +83,28 @@ export const usersQwRepository = {
     return user;
   },
 
-  async doesExistByLoginOrEmail(login: string, email: string): Promise<WithId<User> | null> {
+  async doesExistByLoginAndEmail(login: string, email: string): Promise<void> {
+
     const user = await usersCollection.findOne({
-      $or: [{email: email}, {login: login}],
+      $or: [{email: login}, {login: email}],
     });
+
+    if (user) {
+      throw new BadRequestError("User not found", 'email');
+    }
+
+    return
+  },
+
+  async doesExistByLoginOrEmail(loginOrEmail: string): Promise<WithId<User>> {
+
+    const user = await usersCollection.findOne({
+      $or: [{email: loginOrEmail}, {login: loginOrEmail}],
+    });
+
+    if (!user) {
+      throw new BadRequestError("User not found", 'email');
+    }
 
     return user
   },
@@ -92,7 +112,7 @@ export const usersQwRepository = {
   async findByConfirmationCode(code: string): Promise<UserDbView | null> {
     const user = await usersCollection.findOne({'emailConfirmation.confirmationCode': code});
     if (!user) {
-      throw new RepositoryNotFoundError('User not found', 'confirmation code');
+      throw new BadRequestError('User not found', 'confirmation code');
     }
     return user
   },

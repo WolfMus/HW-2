@@ -39,8 +39,7 @@ export const userService = {
     email: string,
     password: string,
   ): Promise<UserDbView | null> {
-    const userExist = await usersQwRepository.doesExistByLoginOrEmail(login, email);
-    if (userExist) return null
+    await usersQwRepository.doesExistByLoginAndEmail(login, email);
 
     const {salt, hash} = await bcryptService.generateHash(password);
 
