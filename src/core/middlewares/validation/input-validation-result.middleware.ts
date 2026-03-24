@@ -11,7 +11,7 @@ import { validationErrorDto } from "../../types/validationErrorDto";
 export const createErrorMessage = (
   errors: FieldErrorMessage[],
 ): validationErrorDto => {
-  return { errorMessage: errors };
+  return { errorsMessage: errors };
 };
 
 const formatErrors = (error: ValidationError): FieldErrorMessage => {
