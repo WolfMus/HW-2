@@ -1,5 +1,5 @@
-import { query } from "express-validator";
+import { body, query } from "express-validator";
 
-export const confirmationCodeValidation = query('code')
+export const confirmationCodeValidation = body('code')
     .isString()
-    .withMessage('Query code has wrong type')
+    .withMessage('Confirmation code has wrong type')

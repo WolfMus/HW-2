@@ -17,7 +17,7 @@ export const nodeMailerService = {
 
 
     // MOCK ETHEREAL ACCOUNT  
-    
+
     // const transporter = nodemailer.createTransport({
     //   host: "smtp.ethereal.email",
     //   port: 587,
