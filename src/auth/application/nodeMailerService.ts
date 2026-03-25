@@ -5,20 +5,33 @@ dotenv.config();
 export const nodeMailerService = {
   async sendEmail(userEmail: string, confirmationCode: string) {
     
+    // REAL ACCOUNT
+    // const transporter = nodemailer.createTransport({
+    //   host: "smtp.gmail.com",
+    //   auth: {
+    //     user: "mrsevere484@gmail.com",
+    //     pass: process.env.GOOGLE_APP_PASSWORD,
+    //   },
+    // });
+
+
+    // MOCK ETHEREAL ACCOUNT  
     const transporter = nodemailer.createTransport({
-      host: "smtp.gmail.com",
+      host: "smtp.ethereal.email",
+      port: 587,
+      secure: false, // Use true for port 465, false for port 587
       auth: {
-        user: "mrsevere484@gmail.com",
-        pass: process.env.GOOGLE_APP_PASSWORD,
+        user: "rhett88@ethereal.email",
+        pass: "RagH4VnZeBxkEP5een",
       },
     });
 
-    try {
-      await transporter.verify();
-      console.log("Server is ready to take our messages");
-    } catch (e) {
-      console.error("Verification failed", e);
-    }
+    // try {
+    //   await transporter.verify();
+    //   console.log("Server is ready to take our messages");
+    // } catch (e) {
+    //   console.error("Verification failed", e);
+    // }
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const info = await transporter.sendMail({
@@ -32,14 +45,3 @@ export const nodeMailerService = {
     console.log("QUERY: ", confirmationCode);
   },
 };
-
-    // MOCK ETHEREAL ACCOUNT  
-    // const transporter = nodemailer.createTransport({
-    //   host: "smtp.ethereal.email",
-    //   port: 587,
-    //   secure: false, // Use true for port 465, false for port 587
-    //   auth: {
-    //     user: "rhett88@ethereal.email",
-    //     pass: "RagH4VnZeBxkEP5een",
-    //   },
-    // });

@@ -86,11 +86,15 @@ export const usersQwRepository = {
   async doesExistByLoginAndEmail(login: string, email: string): Promise<void> {
 
     const user = await usersCollection.findOne({
-      $or: [{email: login}, {login: email}],
+      $or: [{email: email}, {login: login}],
     });
 
-    if (user) {
-      throw new BadRequestError("User not found", 'email');
+    if (user?.email === email) {
+      throw new BadRequestError("User with same email exists", "email");
+    }
+
+    if (user?.login === login) {
+      throw new BadRequestError("User with same login exists", "login");
     }
 
     return
@@ -112,7 +116,7 @@ export const usersQwRepository = {
   async findByConfirmationCode(code: string): Promise<UserDbView | null> {
     const user = await usersCollection.findOne({'emailConfirmation.confirmationCode': code});
     if (!user) {
-      throw new BadRequestError('User not found', 'confirmation code');
+      throw new BadRequestError('User not found', 'code');
     }
     return user
   },
