@@ -14,7 +14,9 @@ export async function emailResendingHandler(
 
     const user = await usersQwRepository.doesExistByLoginOrEmail(email);
 
-    const confirmationCode = await authService.updateConfirmationCodeForUser(user._id.toString());
+    await authService.isConfirmed(user.id);
+
+    const confirmationCode = await authService.updateConfirmationCodeForUser(user.id);
 
     await nodeMailerService.sendEmail(
       email,

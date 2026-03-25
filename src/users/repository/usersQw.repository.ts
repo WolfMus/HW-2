@@ -8,6 +8,7 @@ import { RepositoryNotFoundError } from "../../core/errors/repository-not-found.
 import { UnauthorizedError } from "../../core/errors/unauthorizedError.error";
 import { UserDbView } from "../type/user.db.interface";
 import { BadRequestError } from "../../core/errors/bad-request.error";
+import { UserDb } from "../type/user-db-view.interface";
 
 export const usersQwRepository = {
   async findAll(queryInput: UsersQueryInput): Promise<Pagination<UserView[]>> {
@@ -62,31 +63,38 @@ export const usersQwRepository = {
     return this._toViewModel(user);
   },
 
-  async findLoginOrEmail(loginOrEmail: string): Promise<WithId<User> | null> {
+  async findByIdInDbView(id: string): Promise<UserDb> {
+    const user = await usersCollection.findOne({_id: new ObjectId(id)});
+    if (!user) {
+      throw new RepositoryNotFoundError("User not found", "id");
+    }
+    return this._toDbModel(user);
+  },
 
+  async findLoginOrEmail(loginOrEmail: string): Promise<WithId<User> | null> {
     const user = await usersCollection.findOne({
-      $or: [{email: loginOrEmail}, {login: loginOrEmail}],
-    })
+      $or: [{ email: loginOrEmail }, { login: loginOrEmail }],
+    });
 
     return user;
   },
-  async findLoginOrEmailOrFail(loginOrEmail: string): Promise<WithId<User> | null> {
-
+  async findLoginOrEmailOrFail(
+    loginOrEmail: string,
+  ): Promise<WithId<User> | null> {
     const user = await usersCollection.findOne({
-      $or: [{email: loginOrEmail}, {login: loginOrEmail}],
-    })
+      $or: [{ email: loginOrEmail }, { login: loginOrEmail }],
+    });
 
     if (!user) {
       throw new UnauthorizedError("User not found", "login or email");
-    };
+    }
 
     return user;
   },
 
   async doesExistByLoginAndEmail(login: string, email: string): Promise<void> {
-
     const user = await usersCollection.findOne({
-      $or: [{email: email}, {login: login}],
+      $or: [{ email: email }, { login: login }],
     });
 
     if (user?.email === email) {
@@ -97,28 +105,29 @@ export const usersQwRepository = {
       throw new BadRequestError("User with same login exists", "login");
     }
 
-    return
+    return;
   },
 
-  async doesExistByLoginOrEmail(loginOrEmail: string): Promise<WithId<User>> {
-
+  async doesExistByLoginOrEmail(loginOrEmail: string): Promise<UserDb> {
     const user = await usersCollection.findOne({
-      $or: [{email: loginOrEmail}, {login: loginOrEmail}],
+      $or: [{ email: loginOrEmail }, { login: loginOrEmail }],
     });
 
     if (!user) {
-      throw new BadRequestError("User not found", 'email');
+      throw new BadRequestError("User not found", "email");
     }
 
-    return user
+    return this._toDbModel(user);
   },
 
   async findByConfirmationCode(code: string): Promise<UserDbView | null> {
-    const user = await usersCollection.findOne({'emailConfirmation.confirmationCode': code});
+    const user = await usersCollection.findOne({
+      "emailConfirmation.confirmationCode": code,
+    });
     if (!user) {
-      throw new BadRequestError('User not found', 'code');
+      throw new BadRequestError("User not found", "code");
     }
-    return user
+    return this._toDbModel(user);
   },
 
   _toViewModel(item: WithId<User>): UserView {
@@ -127,6 +136,22 @@ export const usersQwRepository = {
       login: item.login,
       email: item.email,
       createdAt: item.createdAt,
+    };
+  },
+
+  _toDbModel(item: WithId<User>): UserDb {
+    return {
+      id: item._id.toString(),
+      login: item.login,
+      email: item.email,
+      hash: item.hash,
+      salt: item.salt,
+      createdAt: item.createdAt,
+      emailConfirmation: {
+        confirmationCode: item.emailConfirmation.confirmationCode,
+        expirationCode: item.emailConfirmation.expirationCode,
+        isConfirmed: item.emailConfirmation.isConfirmed,
+      },
     };
   },
 };
