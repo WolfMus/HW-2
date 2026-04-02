@@ -80,7 +80,7 @@ export const usersQwRepository = {
   },
   async findLoginOrEmailOrFail(
     loginOrEmail: string,
-  ): Promise<WithId<User> | null> {
+  ): Promise<UserDb> {
     const user = await usersCollection.findOne({
       $or: [{ email: loginOrEmail }, { login: loginOrEmail }],
     });
@@ -89,7 +89,7 @@ export const usersQwRepository = {
       throw new UnauthorizedError("User not found", "login or email");
     }
 
-    return user;
+    return this._toDbModel(user);
   },
 
   async doesExistByLoginAndEmail(login: string, email: string): Promise<void> {
