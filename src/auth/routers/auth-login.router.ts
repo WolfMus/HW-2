@@ -14,6 +14,8 @@ import { inputValidationResultMiddleware } from "../../core/middlewares/validati
 import { confirmationCodeValidation } from "../validation/confirmation-code.validation";
 import { confirmationHandler } from "./handler/confirmation.handler";
 import { emailResendingHandler } from "./handler/emailResending.handler";
+import { updateRefreshTokenHandler } from "./handler/updateRefreshToken.handler";
+import { refreshTokenGuard } from "../middleware/refresh-token.guard";
 
 export const authRouter = Router({});
 
@@ -22,6 +24,8 @@ authRouter
   .post("/login", passwordValidation, loginOrEmailValidation, authLoginHandler)
 
   .get("/me", tokenGuard, getInformationAboutUserHandler)
+
+  .post("/refresh-token", refreshTokenGuard, updateRefreshTokenHandler)
 
   .post(
     "/registration",

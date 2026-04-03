@@ -50,4 +50,20 @@ export const jwtService = {
     const refreshToken = await tokenQwRepository.findById(id);
     return refreshToken;
   },
+
+  async updateRefreshToken(id: string): Promise<string> {
+    const newRefreshToken = await this.createToken(id);
+    const refreshTokenId = await this.findRefreshToken(id);
+
+    const tokenBody: Token = {
+      refreshToken: newRefreshToken,
+      userId: id,
+      createdAt: new Date(),
+      expiredAt: add(new Date(), { seconds: 20 }),
+    }
+
+    await tokenRepository.update(tokenBody, refreshTokenId.id);
+
+    return refreshTokenId.id;
+  }
 };
