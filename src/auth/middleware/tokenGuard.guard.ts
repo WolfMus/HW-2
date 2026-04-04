@@ -31,15 +31,6 @@ export const tokenGuard = async (
     return;
   }
 
-  // ПРОВЕРКА КУКОВ
-  if (req.cookies.refreshToken) {
-    const isBlocked = await jwtService.isBlocked(req.cookies.refreshToken);
-    if (isBlocked === true) {
-      res.sendStatus(HttpStatus.Unauthorized);
-      return;
-    }
-  }
-
   const payload = await jwtService.verifyToken(token);
 
   if (payload) {

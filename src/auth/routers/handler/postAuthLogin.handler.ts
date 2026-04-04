@@ -20,6 +20,7 @@ export async function authLoginHandler(
 
     if (user!.hash !== passwordToHash) {
       res.sendStatus(HttpStatus.Unauthorized);
+      return;
     }
 
     const accessToken = await jwtService.createToken(user.id);

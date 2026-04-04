@@ -29,7 +29,7 @@ export const jwtService = {
     try {
       return jwt.verify(token, SETTINGS.JWT_SECRET) as { userId: string };
     } catch (error) {
-      console.error("Token verify catch some error", error);
+      console.error("Token verify catch some error:", error);
       return null;
     }
   },
@@ -38,7 +38,7 @@ export const jwtService = {
     try {
       return jwt.verify(token, SETTINGS.JWT_SECRET) as RefreshToken;
     } catch (error) {
-      console.error("Refresh token verify catch some error", error);
+      console.error("Refresh token verify catch some error:", error);
       return null;
     }
   },
