@@ -1,12 +1,13 @@
 import jwt from "jsonwebtoken";
 import { SETTINGS } from "../../core/settings/settings";
-import { add } from "date-fns";
 import { tokenRepository } from "../repositories/token.repository";
 import { TokenDbView } from "../types/token-db-view.type";
 import { tokenQwRepository } from "../repositories/token-query.repository";
 import { randomUUID } from "crypto";
 import { RefreshToken } from "../types/token-refresh.type";
 import { blackListRepository } from "../repositories/black-list.repository";
+import { add } from "date-fns";
+import { Token } from "../types/tokens.types";
 
 export const jwtService = {
   async createToken(userId: string): Promise<string> {
@@ -46,18 +47,16 @@ export const jwtService = {
   async createRefreshToken(userId: string): Promise<string> {
     const jit = randomUUID();
     const createdAt = new Date();
-    const expiresAt = add(createdAt, { seconds: 20 });
+    const expiresAt = add(createdAt, {seconds: 20})
 
     const refreshToken = jwt.sign({
       jit: jit,
       sub: userId,
-      iat: createdAt.getTime(),
-      exp: expiresAt.getTime(),
     }, SETTINGS.JWT_SECRET, {
-      expiresIn: '20sec'
+      expiresIn: "20sec",
     });
 
-    const tokenBody = {
+    const tokenBody: Token = {
       tokenId: jit,
       userId: userId,
       refreshToken: refreshToken,
