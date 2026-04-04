@@ -5,6 +5,7 @@ import { jwtService } from "../../application/jwtService";
 
 export async function updateRefreshTokenHandler(req: Request, res: Response) {
   try {
+    console.log("ВХОД В ОБНОВЕНИЕ")
     const refreshToken = await jwtService.verifyRefreshToken(
       req.cookies.refreshToken,
     );
