@@ -13,16 +13,17 @@ export async function updateRefreshTokenHandler(req: RequestWithUserId<{ id: str
 
         const newRefreshTokenId = await jwtService.createRefreshToken(userId);
         const newRefreshToken = await jwtService.findRefreshTokenById(newRefreshTokenId);
+        const maxAge = newRefreshToken.expiresAt.getTime() - newRefreshToken.createdAt.getTime();
+
         const accessToken = await jwtService.createToken(userId);
 
-        const maxAge = newRefreshToken.expiresAt.getTime() - newRefreshToken.createdAt.getTime();
 
         res.cookie("refreshToken", newRefreshToken.refreshToken, {
             httpOnly: true,
             secure: true,
             maxAge: maxAge,
         })
-        res.status(HttpStatus.NoContent).send(accessToken);
+        res.status(HttpStatus.Ok).send(accessToken);
     } catch(e) {
         errorsHandler(e, res);
     }
