@@ -11,12 +11,14 @@ export const refreshTokenGuard = async (
   console.log("ВХОД В ЗАЩИТНИКА: ", refreshToken);
 
   // ПРОВЕРКА КУКОВ
-  if (req.cookies.refreshToken) {
-    const isBlocked = await jwtService.isBlocked(req.cookies.refreshToken);
-    if (isBlocked === true) {
-      res.sendStatus(HttpStatus.Unauthorized);
-      return;
-    }
+  if (!req.cookies.refreshToken) {
+    res.sendStatus(HttpStatus.Unauthorized);
+    return;
+  }
+  const isBlocked = await jwtService.isBlocked(req.cookies.refreshToken);
+  if (isBlocked === true) {
+    res.sendStatus(HttpStatus.Unauthorized);
+    return;
   }
 
   next();

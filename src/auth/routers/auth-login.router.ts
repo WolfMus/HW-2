@@ -16,6 +16,7 @@ import { emailResendingHandler } from "./handler/emailResending.handler";
 import { updateRefreshTokenHandler } from "./handler/updateRefreshToken.handler";
 import { refreshTokenLogoutHandler } from "./handler/refreshTokenLogout.handler";
 import { refreshTokenGuard } from "../middleware/refresh-token.guard";
+import { tokenGuard } from "../middleware/tokenGuard.guard";
 
 export const authRouter = Router({});
 
@@ -23,7 +24,7 @@ authRouter
 
   .post("/login", passwordValidation, loginOrEmailValidation, inputValidationResultMiddleware, authLoginHandler)
 
-  .get("/me", refreshTokenGuard, getInformationAboutUserHandler)
+  .get("/me", tokenGuard, getInformationAboutUserHandler)
 
   .post("/refresh-token", refreshTokenGuard, updateRefreshTokenHandler)
 
