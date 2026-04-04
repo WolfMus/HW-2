@@ -8,18 +8,21 @@ export const refreshTokenGuard = async (
   next: NextFunction,
 ) => {
   const refreshToken = req.cookies.refreshToken;
-  console.log("ВХОД В ЗАЩИТНИКА: ", refreshToken);
 
   // ПРОВЕРКА КУКОВ
-  if (!req.cookies.refreshToken) {
+  if (!refreshToken) {
     res.sendStatus(HttpStatus.Unauthorized);
     return;
   }
-  const isBlocked = await jwtService.isBlocked(req.cookies.refreshToken);
+  const isBlocked = await jwtService.isBlocked(refreshToken);
   if (isBlocked === true) {
     res.sendStatus(HttpStatus.Unauthorized);
     return;
   }
+
+  const token = await jwtService.verifyRefreshToken(refreshToken)
+
+  if(token!.exp < Date.now())
 
   next();
 };

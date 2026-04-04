@@ -47,12 +47,15 @@ export const jwtService = {
     const jit = randomUUID();
     const createdAt = new Date();
     const expiresAt = add(createdAt, { seconds: 20 });
+
     const refreshToken = jwt.sign({
       jit: jit,
       sub: userId,
       iat: createdAt.getTime(),
       exp: expiresAt.getTime(),
-    }, SETTINGS.JWT_SECRET);
+    }, SETTINGS.JWT_SECRET, {
+      expiresIn: '20sec'
+    });
 
     const tokenBody = {
       tokenId: jit,
