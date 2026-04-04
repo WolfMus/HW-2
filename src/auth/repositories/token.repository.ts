@@ -1,23 +1,21 @@
 import { Token } from "../types/tokens.types"
 import { tokensCollection } from "../../db/mongo.db"
 import { RepositoryNotFoundError } from "../../core/errors/repository-not-found.error"
-import { ObjectId } from "mongodb"
+import { UUID } from "crypto"
 
 export const tokenRepository = {
-    async create(tokenBody: Token): Promise<string> {
-        const token = await tokensCollection.insertOne(tokenBody)
-        return token.insertedId.toString()
+    async create(refreshToken: Token): Promise<string> {
+        await tokensCollection.insertOne(refreshToken);
+        return refreshToken.tokenId;
     },
 
-    async update(tokenBody: Token, id: string): Promise<void> {
-        const updated = await tokensCollection.updateOne({_id: new ObjectId(id)}, {$set: {
-            refreshToken: tokenBody.refreshToken,
-            createdAt: tokenBody.createdAt,
-            expiredAt: tokenBody.expiredAt,
-        }});
-        if (updated.matchedCount < 1) {
-            throw new RepositoryNotFoundError("Token is not found", "token");
+    async delete(token: UUID): Promise<void> {
+        const deleted = await tokensCollection.deleteOne({tokenId: token});
+
+        if (deleted.deletedCount < 1) {
+            throw new RepositoryNotFoundError("TokenId not found", "refresh token")
         }
+        
         return;
     }
 } 

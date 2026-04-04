@@ -13,7 +13,7 @@ import { PostSortField } from "../input/post-sort-field";
 import { createCommentHandler } from "./handlers/create-comment.handler";
 import { getListOfCommentsByIdHandler } from "./handlers/get-comments-list-by-id.handler";
 import { CommentSortField } from "../../comments/types/commentSortField";
-import { tokenGuard } from "../../auth/middleware/tokenGuard";
+import { tokenGuard } from "../../auth/middleware/tokenGuard.guard";
 import { commentsDtoValidation } from "../../comments/validation/commentsDtoValidation.middleware";
 
 export const postsRouters = Router({});

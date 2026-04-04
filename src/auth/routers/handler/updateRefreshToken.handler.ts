@@ -7,14 +7,15 @@ export async function updateRefreshTokenHandler(req: RequestWithUserId<{ id: str
     try {
         console.log("ВХОД В ОБНОВЛЕНИЕ")
         const userId = req.user.id;
-        // const refreshToken = req.cookies.refreshToken;
+        const refreshToken = req.cookies.refreshToken;
 
-        const newRefreshTokenId = await jwtService.updateRefreshToken(userId);
-        const newRefreshToken = await jwtService.findRefreshToken(newRefreshTokenId);
+        await jwtService.addToBlackList(refreshToken);
 
+        const newRefreshTokenId = await jwtService.createRefreshToken(userId);
+        const newRefreshToken = await jwtService.findRefreshTokenById(newRefreshTokenId);
         const accessToken = await jwtService.createToken(userId);
 
-        const maxAge = newRefreshToken.expiredAt.getTime() - newRefreshToken.createdAt.getTime();
+        const maxAge = newRefreshToken.expiresAt.getTime() - newRefreshToken.createdAt.getTime();
 
         res.cookie("refreshToken", newRefreshToken.refreshToken, {
             httpOnly: true,

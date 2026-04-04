@@ -1,6 +1,7 @@
 export type Token = {
-    refreshToken: string;
-    userId: string;
-    createdAt: Date;
-    expiredAt: Date;
+    tokenId: string,
+    userId: string,
+    refreshToken: string,
+    expiresAt: Date,
+    createdAt: Date,
 }

@@ -1,10 +1,12 @@
 import jwt from "jsonwebtoken";
 import { SETTINGS } from "../../core/settings/settings";
 import { add } from "date-fns";
-import { Token } from "../types/tokens.types";
 import { tokenRepository } from "../repositories/token.repository";
 import { TokenDbView } from "../types/token-db-view.type";
 import { tokenQwRepository } from "../repositories/token-query.repository";
+import { randomUUID } from "crypto";
+import { RefreshToken } from "../types/token-refresh.type";
+import { blackListRepository } from "../repositories/black-list.repository";
 
 export const jwtService = {
   async createToken(userId: string): Promise<string> {
@@ -32,38 +34,57 @@ export const jwtService = {
     }
   },
 
-  async createRefreshToken(id: string): Promise<string> {
-    const refreshToken = await this.createToken(id);
+  async verifyRefreshToken(token: string): Promise<RefreshToken | null> {
+    try {
+      return jwt.verify(token, SETTINGS.JWT_SECRET) as RefreshToken;
+    } catch (error) {
+      console.error("Refresh token verify catch some error", error);
+      return null;
+    }
+  },
 
-    const tokenBody: Token = {
+  async createRefreshToken(userId: string): Promise<string> {
+    const jit = randomUUID();
+    const createdAt = new Date();
+    const expiresAt = add(new Date(), { seconds: 20 });
+    const refreshToken = jwt.sign({
+      jit: jit,
+      sub: userId,
+      iat: createdAt.getTime(),
+      exp: expiresAt.getTime(),
+    }, SETTINGS.JWT_SECRET);
+
+    const tokenBody = {
+      tokenId: jit,
+      userId: userId,
       refreshToken: refreshToken,
-      userId: id,
-      createdAt: new Date(),
-      expiredAt: add(new Date(), { seconds: 20 }),
-    };
+      createdAt: createdAt,
+      expiresAt: expiresAt,
+    }
 
     const tokenId = await tokenRepository.create(tokenBody);
     return tokenId;
   },
 
-  async findRefreshToken(id: string): Promise<TokenDbView> {
-    const refreshToken = await tokenQwRepository.findById(id);
+  async findRefreshTokenById(tokenId: string): Promise<TokenDbView> {
+    const refreshToken = await tokenQwRepository.findById(tokenId);
     return refreshToken;
   },
 
-  async updateRefreshToken(id: string): Promise<string> {
-    const newRefreshToken = await this.createToken(id);
-    const refreshTokenId = await this.findRefreshToken(id);
+  async addToBlackList(refreshToken: string): Promise<void> {
+    const payload = await this.verifyRefreshToken(refreshToken);
 
-    const tokenBody: Token = {
-      refreshToken: newRefreshToken,
-      userId: id,
-      createdAt: new Date(),
-      expiredAt: add(new Date(), { seconds: 20 }),
+    const blackListId = await blackListRepository.create(refreshToken);
+    if (!blackListId) {
+      throw new Error("Token was not added in black list");
     }
+    await tokenRepository.delete(payload!.jit);
+    return;
+  },
 
-    await tokenRepository.update(tokenBody, refreshTokenId.id);
-
-    return refreshTokenId.id;
+  async isBlocked(refreshToken: string): Promise<boolean> {
+    const isBlocked = await blackListRepository.find(refreshToken);
+    return isBlocked;
   }
+
 };

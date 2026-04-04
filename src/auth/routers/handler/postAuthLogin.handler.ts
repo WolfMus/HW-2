@@ -25,12 +25,12 @@ export async function authLoginHandler(
     const accessToken = await jwtService.createToken(user.id);
 
     const refreshTokenId = await jwtService.createRefreshToken(user.id);
-    const refreshToken = await jwtService.findRefreshToken(refreshTokenId);
+    const refreshTokenBody = await jwtService.findRefreshTokenById(refreshTokenId);
 
-    const maxAge = refreshToken.expiredAt.getTime() - refreshToken.createdAt.getTime();
+    const maxAge = refreshTokenBody.expiresAt.getTime() - refreshTokenBody.createdAt.getTime();
 
     console.log("ACCESS TOKEN: ", accessToken)
-    res.cookie("refreshToken", refreshToken.refreshToken, {
+    res.cookie("refreshToken", refreshTokenBody.refreshToken, {
       httpOnly: true,
       secure: true,
       maxAge: maxAge,

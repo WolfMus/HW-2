@@ -7,7 +7,7 @@ import {
   loginValidation,
   passwordValidation,
 } from "../../users/validation/password.validation";
-import { tokenGuard } from "../middleware/tokenGuard";
+import { tokenGuard } from "../middleware/tokenGuard.guard";
 import { getInformationAboutUserHandler } from "./handler/getInformation.handler";
 import { registrationHandler } from "./handler/registration.handler";
 import { inputValidationResultMiddleware } from "../../core/middlewares/validation/input-validation-result.middleware";
@@ -15,7 +15,7 @@ import { confirmationCodeValidation } from "../validation/confirmation-code.vali
 import { confirmationHandler } from "./handler/confirmation.handler";
 import { emailResendingHandler } from "./handler/emailResending.handler";
 import { updateRefreshTokenHandler } from "./handler/updateRefreshToken.handler";
-import { refreshTokenGuard } from "../middleware/refresh-token.guard";
+import { refreshTokenLogoutHandler } from "./handler/refreshTokenLogout.handler";
 
 export const authRouter = Router({});
 
@@ -25,7 +25,9 @@ authRouter
 
   .get("/me", tokenGuard, getInformationAboutUserHandler)
 
-  .post("/refresh-token", refreshTokenGuard, updateRefreshTokenHandler)
+  .post("/refresh-token", tokenGuard, updateRefreshTokenHandler)
+
+  .post("/logout", tokenGuard, refreshTokenLogoutHandler)
 
   .post(
     "/registration",

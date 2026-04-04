@@ -6,7 +6,6 @@ export const nodeMailerService = {
   async sendEmail(userEmail: string, confirmationCode: string) {
     
     // REAL ACCOUNT
-
     const transporter = nodemailer.createTransport({
       host: "smtp.gmail.com",
       auth: {
@@ -15,9 +14,7 @@ export const nodeMailerService = {
       },
     });
 
-
     // MOCK ETHEREAL ACCOUNT  
-
     // const transporter = nodemailer.createTransport({
     //   host: "smtp.ethereal.email",
     //   port: 587,

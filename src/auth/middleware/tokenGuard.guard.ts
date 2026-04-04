@@ -3,8 +3,11 @@ import { HttpStatus } from "../../core/types/types";
 import { jwtService } from "../application/jwtService";
 import { IdType } from "../../core/types/id";
 
-export const tokenGuard = async (req: Request, res: Response, next: NextFunction) => {
-
+export const tokenGuard = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   // ЕСТЬ ЛИ АВТОРИЗАЦИЯ
   if (!req.headers.authorization) {
     res.sendStatus(HttpStatus.Unauthorized);
@@ -17,7 +20,7 @@ export const tokenGuard = async (req: Request, res: Response, next: NextFunction
     res.sendStatus(HttpStatus.Unauthorized);
     return;
   }
-  
+
   const [authType, token] = auth!.split(" ");
   if (authType !== "Bearer") {
     res.sendStatus(HttpStatus.Unauthorized);
@@ -27,18 +30,27 @@ export const tokenGuard = async (req: Request, res: Response, next: NextFunction
     res.sendStatus(HttpStatus.Unauthorized);
     return;
   }
-  
+
+  // ПРОВЕРКА КУКОВ
+  if (req.cookies.refreshToken) {
+    const isBlocked = await jwtService.isBlocked(req.cookies.refreshToken);
+    if (isBlocked === true) {
+      res.sendStatus(HttpStatus.Unauthorized);
+      return;
+    }
+  }
+
   const payload = await jwtService.verifyToken(token);
-  
+
   if (payload) {
-    const {userId} = payload;
-    
-    req.user = {id: userId} as IdType
+    const { userId } = payload;
+
+    req.user = { id: userId } as IdType;
 
     next();
     return;
   }
 
-  res.sendStatus(HttpStatus.Unauthorized)
+  res.sendStatus(HttpStatus.Unauthorized);
   return;
 };
