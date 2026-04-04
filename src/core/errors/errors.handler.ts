@@ -21,9 +21,7 @@ export function errorsHandler(error: unknown, res: Response): void {
   }
 
   if (error instanceof UnauthorizedError) {
-    const httpstatus = HttpStatus.Unauthorized;
-
-    res.sendStatus(httpstatus);
+    res.sendStatus(HttpStatus.Unauthorized);
     return;
   }
 

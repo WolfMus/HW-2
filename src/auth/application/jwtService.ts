@@ -45,19 +45,19 @@ export const jwtService = {
   },
 
   async createRefreshToken(userId: string): Promise<string> {
-    const jit = randomUUID();
+    const jti = randomUUID();
     const createdAt = new Date();
     const expiresAt = add(createdAt, {seconds: 20})
 
     const refreshToken = jwt.sign({
-      jit: jit,
+      jti: jti,
       sub: userId,
     }, SETTINGS.JWT_SECRET, {
-      expiresIn: "20sec",
+      expiresIn: "20s",
     });
 
     const tokenBody: Token = {
-      tokenId: jit,
+      tokenId: jti,
       userId: userId,
       refreshToken: refreshToken,
       createdAt: createdAt,
@@ -80,7 +80,7 @@ export const jwtService = {
     if (!blackListId) {
       throw new Error("Token was not added in black list");
     }
-    await tokenRepository.delete(payload!.jit);
+    await tokenRepository.delete(payload!.jti);
     return;
   },
 

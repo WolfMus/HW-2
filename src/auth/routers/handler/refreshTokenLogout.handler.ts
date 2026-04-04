@@ -17,5 +17,6 @@ export async function refreshTokenLogoutHandler(
     res.sendStatus(HttpStatus.NoContent);
   } catch (e) {
     errorsHandler(e, res);
+    return;
   }
 }

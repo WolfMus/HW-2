@@ -16,11 +16,10 @@ export async function authLoginHandler(
 
     const user = await usersQwRepository.findLoginOrEmailOrFail(loginOrEmail);
 
-    const passwordToHash = await bcrypt.hash(password, user!.hash);
+    const ispasswordCorrect = await bcrypt.compare(password, user.hash);
 
-    if (user!.hash !== passwordToHash) {
-      res.sendStatus(HttpStatus.Unauthorized);
-      return;
+    if (!ispasswordCorrect) {
+      return res.sendStatus(HttpStatus.Unauthorized);
     }
 
     const accessToken = await jwtService.createToken(user.id);

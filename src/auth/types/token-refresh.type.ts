@@ -1,7 +1,7 @@
 import { UUID } from "crypto";
 
 export type RefreshToken = {
-    jit: UUID,
+    jti: UUID,
     sub: string,
     iat: number,
     exp: number,
