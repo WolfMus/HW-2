@@ -19,6 +19,8 @@ export const tokenQwRepository = {
       tokenId: token.tokenId,
       userId: token.userId,
       refreshToken: token.refreshToken,
+      createdAt: token.createdAt,
+      expiresAt: token.expiresAt,
     };
   },
 };
