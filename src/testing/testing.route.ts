@@ -15,7 +15,7 @@ testingRouter.delete("/all-data", async (req: Request, res: Response) => {
   await Promise.all([
     blogsCollection.deleteMany(),
     postsCollection.deleteMany(),
-    // usersCollection.deleteMany(),
+    usersCollection.deleteMany(),
     commentsCollection.deleteMany(),
     tokensCollection.deleteMany(),
     blackListCollection.deleteMany(),
