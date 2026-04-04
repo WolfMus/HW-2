@@ -46,7 +46,7 @@ export const jwtService = {
   async createRefreshToken(userId: string): Promise<string> {
     const jit = randomUUID();
     const createdAt = new Date();
-    const expiresAt = add(new Date(), { seconds: 20 });
+    const expiresAt = add(createdAt, { seconds: 20 });
     const refreshToken = jwt.sign({
       jit: jit,
       sub: userId,

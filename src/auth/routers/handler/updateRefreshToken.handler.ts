@@ -22,7 +22,7 @@ export async function updateRefreshTokenHandler(req: Request, res: Response) {
             secure: true,
             maxAge: maxAge,
         })
-        res.status(HttpStatus.Ok).send(accessToken);
+        res.status(HttpStatus.Ok).send({accessToken: accessToken});
     } catch(e) {
         errorsHandler(e, res);
     }
