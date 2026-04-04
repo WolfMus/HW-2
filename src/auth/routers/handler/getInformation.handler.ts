@@ -1,13 +1,14 @@
-import { Response } from "express";
+import { Request, Response } from "express";
 import { HttpStatus, RequestWithUserId } from "../../../core/types/types";
 import { usersQwRepository } from "../../../users/repository/usersQw.repository";
+import { jwtService } from "../../application/jwtService";
 
 export async function getInformationAboutUserHandler(
-  req: RequestWithUserId<{ id: string }>,
+  req: Request,
   res: Response,
 ) {
-  const id = req.user.id;
-  const me = await usersQwRepository.findById(id);
+  const refreshToken = await jwtService.verifyRefreshToken(req.cookies.refreshToken);
+  const me = await usersQwRepository.findById(refreshToken!.sub);
 
   const meToView = {
     email: me.email,
