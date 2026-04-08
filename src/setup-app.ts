@@ -14,8 +14,28 @@ import { usersRouter } from "./users/routers/users.router";
 import { authRouter } from "./auth/routers/auth-login.router";
 import { commentsRouter } from "./comments/routers/comments.router";
 import cookieParser from "cookie-parser";
+import cors from "cors";
+import helmet from "helmet";
 
 export const setupApp = (app: Express) => {
+  app.set('trust proxy', true);
+  app.use(cors());
+  // Basic CSP with helmet
+  app.use(
+    helmet.contentSecurityPolicy({
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'", "'unsafe-inline'", "https://trusted-cdn.com"],
+        styleSrc: ["'self'", "'unsafe-inline'"],
+        imgSrc: ["'self'", "data:", "https:"],
+        connectSrc: ["'self'", "https://api.example.com"],
+        fontSrc: ["'self'", "https://fonts.gstatic.com"],
+        objectSrc: ["'none'"],
+        upgradeInsecureRequests: [],
+      },
+    }),
+  );
+
   app.use(express.json());
   app.use(cookieParser());
 
@@ -29,4 +49,4 @@ export const setupApp = (app: Express) => {
   app.use(COMMENT_PATH, commentsRouter);
 
   return app;
-};
+};;

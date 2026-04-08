@@ -6,6 +6,7 @@ import { User } from "../users/type/user.type";
 import { Comment } from "../comments/types/comments";
 import { Token } from "../auth/types/tokens.types";
 import { BlackList } from "../core/types/black-list.type";
+import { RateLimit } from "../auth/types/rate-limit.type";
 
 const TOKENS_COLLECTION_NAME = "tokens";
 const BLOGS_COLLECTION_NAME = "blogs";
@@ -13,6 +14,7 @@ const POSTS_COLLECTION_NAME = "posts";
 const USERS_COLLECTION_NAME = "users";
 const COMMENTS_COLLECTION_NAME = "comments";
 const BLACKLIST_COLLECTION_NAME = "black-list";
+const RATELIMIT_COLLECTION_NAME = 'rate-limit';
 
 export let client: MongoClient;
 export let tokensCollection: Collection<Token>;
@@ -21,6 +23,7 @@ export let postsCollection: Collection<Post>;
 export let usersCollection: Collection<User>;
 export let commentsCollection: Collection<Comment>;
 export let blackListCollection: Collection<BlackList>;
+export let rateLimitCollection: Collection<RateLimit>;
 
 export async function runDb(url: string): Promise<void> {
   client = new MongoClient(url);
@@ -32,12 +35,14 @@ export async function runDb(url: string): Promise<void> {
   postsCollection = db.collection<Post>(POSTS_COLLECTION_NAME);
   usersCollection = db.collection<User>(USERS_COLLECTION_NAME);
   commentsCollection = db.collection<Comment>(COMMENTS_COLLECTION_NAME);
+  rateLimitCollection = db.collection<RateLimit>(RATELIMIT_COLLECTION_NAME);
 
   try {
     await client.connect();
     await db.command({ ping: 1 });
     console.log("✅ Connected to the database");
   } catch (e) {
+    console.error(e);
     await client.close();
     throw new Error(`❌ Database not connected: ${e}`);
   }

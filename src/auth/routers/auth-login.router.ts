@@ -17,12 +17,13 @@ import { updateRefreshTokenHandler } from "./handler/updateRefreshToken.handler"
 import { refreshTokenLogoutHandler } from "./handler/refreshTokenLogout.handler";
 import { refreshTokenGuard } from "../middleware/refresh-token.guard";
 import { tokenGuard } from "../middleware/tokenGuard.guard";
+import { rateLimitMiddleware } from "../middleware/rate-limit.middleware";
 
 export const authRouter = Router({});
 
 authRouter
 
-  .post("/login", passwordValidation, loginOrEmailValidation, inputValidationResultMiddleware, authLoginHandler)
+  .post("/login", rateLimitMiddleware, passwordValidation, loginOrEmailValidation, inputValidationResultMiddleware, authLoginHandler)
 
   .get("/me", tokenGuard, getInformationAboutUserHandler)
 
