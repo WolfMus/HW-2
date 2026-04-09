@@ -5,6 +5,7 @@ import { LoginInputModel } from "../../types/login-input.type";
 import { usersQwRepository } from "../../../users/repository/usersQw.repository";
 import bcrypt from "bcrypt";
 import { jwtService } from "../../application/jwtService";
+import { securityDeviceService } from "../../../security/application/securityDevice.service";
 
 export async function authLoginHandler(
   req: RequestWithBody<LoginInputModel>,
@@ -24,12 +25,14 @@ export async function authLoginHandler(
 
     const accessToken = await jwtService.createToken(user.id);
 
-    const refreshTokenId = await jwtService.createRefreshToken(user.id);
-    const refreshTokenBody = await jwtService.findRefreshTokenById(refreshTokenId);
-
+    const {tokenId, deviceId} = await jwtService.createRefreshToken(user.id);
+    const refreshTokenBody = await jwtService.findRefreshTokenById(tokenId);
     const MAX_AGE = 20;
 
-    console.log("ACCESS TOKEN: ", accessToken)
+    const ip = req.ip!;
+    const title = req.headers['user-agent']!;
+    await securityDeviceService.add(ip, user.id, title, new Date(), deviceId)
+
     res.cookie("refreshToken", refreshTokenBody.refreshToken, {
       httpOnly: true,
       secure: true,

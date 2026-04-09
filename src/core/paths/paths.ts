@@ -4,3 +4,4 @@ export const USERS_PATH = "/users";
 export const AUTH_PATH = "/auth";
 export const COMMENT_PATH = "/comments";
 export const TESTING_PATH = "/testing";
+export const SECURITY_PATH = "/security";

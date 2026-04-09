@@ -33,6 +33,7 @@ authRouter
 
   .post(
     "/registration",
+    rateLimitMiddleware,
     passwordValidation,
     loginValidation,
     emailValidation,
@@ -42,6 +43,7 @@ authRouter
 
   .post(
     "/registration-confirmation",
+    rateLimitMiddleware,
     confirmationCodeValidation,
     inputValidationResultMiddleware,
     confirmationHandler,
@@ -49,6 +51,7 @@ authRouter
 
   .post(
     "/registration-email-resending",
+    rateLimitMiddleware,
     emailForResendingValidation,
     inputValidationResultMiddleware,
     emailResendingHandler,

@@ -8,6 +8,7 @@ import {
   USERS_PATH,
   AUTH_PATH,
   COMMENT_PATH,
+  SECURITY_PATH,
 } from "./core/paths/paths";
 import { testingRouter } from "./testing/testing.route";
 import { usersRouter } from "./users/routers/users.router";
@@ -16,11 +17,12 @@ import { commentsRouter } from "./comments/routers/comments.router";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import helmet from "helmet";
+import { securityRouter } from "./security/routers/security.router";
 
 export const setupApp = (app: Express) => {
   app.set('trust proxy', true);
-  app.use(cors());
   // Basic CSP with helmet
+  app.use(cors());
   app.use(
     helmet.contentSecurityPolicy({
       directives: {
@@ -40,13 +42,12 @@ export const setupApp = (app: Express) => {
   app.use(cookieParser());
 
   app.use(TESTING_PATH, testingRouter);
-
   app.use(AUTH_PATH, authRouter);
-
   app.use(BLOGS_PATH, blogsRouter);
   app.use(POSTS_PATH, postsRouters);
   app.use(USERS_PATH, usersRouter);
   app.use(COMMENT_PATH, commentsRouter);
+  app.use(SECURITY_PATH, securityRouter);
 
   return app;
 };;

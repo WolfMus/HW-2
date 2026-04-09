@@ -7,6 +7,7 @@ import { Comment } from "../comments/types/comments";
 import { Token } from "../auth/types/tokens.types";
 import { BlackList } from "../core/types/black-list.type";
 import { RateLimit } from "../auth/types/rate-limit.type";
+import { DeviceType } from "../security/types/device.type";
 
 const TOKENS_COLLECTION_NAME = "tokens";
 const BLOGS_COLLECTION_NAME = "blogs";
@@ -15,6 +16,7 @@ const USERS_COLLECTION_NAME = "users";
 const COMMENTS_COLLECTION_NAME = "comments";
 const BLACKLIST_COLLECTION_NAME = "black-list";
 const RATELIMIT_COLLECTION_NAME = 'rate-limit';
+const DEVICE_COLLECTION_NAME = "security-device";
 
 export let client: MongoClient;
 export let tokensCollection: Collection<Token>;
@@ -24,6 +26,7 @@ export let usersCollection: Collection<User>;
 export let commentsCollection: Collection<Comment>;
 export let blackListCollection: Collection<BlackList>;
 export let rateLimitCollection: Collection<RateLimit>;
+export let securityDeviceCollection: Collection<DeviceType>
 
 export async function runDb(url: string): Promise<void> {
   client = new MongoClient(url);
@@ -36,6 +39,7 @@ export async function runDb(url: string): Promise<void> {
   usersCollection = db.collection<User>(USERS_COLLECTION_NAME);
   commentsCollection = db.collection<Comment>(COMMENTS_COLLECTION_NAME);
   rateLimitCollection = db.collection<RateLimit>(RATELIMIT_COLLECTION_NAME);
+  securityDeviceCollection = db.collection<DeviceType>(DEVICE_COLLECTION_NAME);
 
   try {
     await client.connect();
