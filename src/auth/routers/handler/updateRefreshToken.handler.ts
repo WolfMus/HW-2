@@ -7,9 +7,7 @@ export async function updateRefreshTokenHandler(req: RequestWithUserId<{id: stri
   try {
     console.log("ВХОД В ОБНОВЕНИЕ")
     const userId = req.user.id;
-
-    await jwtService.addToBlackList(req.cookies.refreshToken);
-    
+   
     const newRefreshTokenId = await jwtService.createRefreshToken(userId);
     const newRefreshToken = await jwtService.findRefreshTokenById(newRefreshTokenId);
     const accessToken = await jwtService.createToken(userId);

@@ -5,7 +5,6 @@ import { Post } from "../posts/types/posts";
 import { User } from "../users/type/user.type";
 import { Comment } from "../comments/types/comments";
 import { Token } from "../auth/types/tokens.types";
-import { BlackList } from "../core/types/black-list.type";
 import { RateLimit } from "../auth/types/rate-limit.type";
 import { DeviceType } from "../security/types/device.type";
 
@@ -14,9 +13,8 @@ const BLOGS_COLLECTION_NAME = "blogs";
 const POSTS_COLLECTION_NAME = "posts";
 const USERS_COLLECTION_NAME = "users";
 const COMMENTS_COLLECTION_NAME = "comments";
-const BLACKLIST_COLLECTION_NAME = "black-list";
 const RATELIMIT_COLLECTION_NAME = 'rate-limit';
-const DEVICE_COLLECTION_NAME = "security-device";
+const DEVICE_COLLECTION_NAME = "device";
 
 export let client: MongoClient;
 export let tokensCollection: Collection<Token>;
@@ -24,7 +22,6 @@ export let blogsCollection: Collection<Blog>;
 export let postsCollection: Collection<Post>;
 export let usersCollection: Collection<User>;
 export let commentsCollection: Collection<Comment>;
-export let blackListCollection: Collection<BlackList>;
 export let rateLimitCollection: Collection<RateLimit>;
 export let securityDeviceCollection: Collection<DeviceType>
 
@@ -33,7 +30,6 @@ export async function runDb(url: string): Promise<void> {
   const db: Db = client.db(SETTINGS.DB_NAME);
 
   tokensCollection = db.collection<Token>(TOKENS_COLLECTION_NAME);
-  blackListCollection = db.collection<BlackList>(BLACKLIST_COLLECTION_NAME);
   blogsCollection = db.collection<Blog>(BLOGS_COLLECTION_NAME);
   postsCollection = db.collection<Post>(POSTS_COLLECTION_NAME);
   usersCollection = db.collection<User>(USERS_COLLECTION_NAME);

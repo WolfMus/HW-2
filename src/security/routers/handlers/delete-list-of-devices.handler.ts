@@ -7,9 +7,10 @@ import { securityDeviceService } from "../../application/securityDevice.service"
 
 export async function deleteAllDevicesHandler(req: RequestWithUserId<IdType>, res: Response) {
     try {
+        const userId = req.user.id;
         const refreshToken = await jwtService.verifyRefreshToken(req.cookies.refreshToken);
 
-        await securityDeviceService.deleteMany(req.user.id, refreshToken!.deviceId);
+        await securityDeviceService.deleteMany(userId, refreshToken!.deviceId);
 
         res.sendStatus(HttpStatus.NoContent);
     } catch (e) {

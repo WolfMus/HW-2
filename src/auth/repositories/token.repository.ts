@@ -4,9 +4,9 @@ import { RepositoryNotFoundError } from "../../core/errors/repository-not-found.
 import { UUID } from "crypto"
 
 export const tokenRepository = {
-    async create(refreshToken: Token): Promise<string> {
+    async create(refreshToken: Token): Promise<void> {
         await tokensCollection.insertOne(refreshToken);
-        return refreshToken.tokenId;
+        return;
     },
 
     async delete(token: UUID): Promise<void> {

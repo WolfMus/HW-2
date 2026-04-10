@@ -12,28 +12,26 @@ export async function authLoginHandler(
   res: Response,
 ) {
   try {
+
+    // Проверка пароля
     const loginOrEmail = req.body.loginOrEmail;
     const password = req.body.password;
-
     const user = await usersQwRepository.findLoginOrEmailOrFail(loginOrEmail);
-
     const ispasswordCorrect = await bcrypt.compare(password, user.hash);
-
     if (!ispasswordCorrect) {
       return res.sendStatus(HttpStatus.Unauthorized);
     }
 
     const accessToken = await jwtService.createToken(user.id);
-
-    const {tokenId, deviceId} = await jwtService.createRefreshToken(user.id);
-    const refreshTokenBody = await jwtService.findRefreshTokenById(tokenId);
-    const MAX_AGE = 20;
-
+    const refreshToken = await jwtService.createRefreshToken(user.id);
+    const refreshTokenBody = await jwtService.verifyRefreshToken(refreshToken);
+    
     const ip = req.ip!;
     const title = req.headers['user-agent']!;
-    await securityDeviceService.add(ip, user.id, title, new Date(), deviceId)
-
-    res.cookie("refreshToken", refreshTokenBody.refreshToken, {
+    await securityDeviceService.add(user.id, refreshTokenBody!.deviceId, title, ip, refreshTokenBody!.iat);
+    
+    const MAX_AGE = 20; //seconds
+    res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       secure: true,
       maxAge: MAX_AGE * 1000,

@@ -17,18 +17,18 @@ export const securityDeviceRepository = {
     return;
   },
 
-  async delete(deviceId: string): Promise<void> {
+  async delete(userId: string, deviceId: string): Promise<void> {
     const deleted = await securityDeviceCollection.deleteOne({
+      userId: userId,
       deviceId: deviceId,
     });
     if (deleted.deletedCount < 1) {
       throw new RepositoryNotFoundError("Session was not founded", "deviceId");
-      return;
     }
     return;
   },
 
-  async find(userId: string): Promise<WithId<DeviceType>[]> {
+  async findMany(userId: string): Promise<WithId<DeviceType>[]> {
     const founded = await securityDeviceCollection
       .find({ userId: userId })
       .toArray();
@@ -39,6 +39,17 @@ export const securityDeviceRepository = {
     const founded = await securityDeviceCollection.findOne({deviceId: deviceId})
     if (!founded) {
       throw new RepositoryNotFoundError("Device id not found", "deviceId")
+    };
+    return founded;
+  },
+
+  async findOne(userId: string, deviceId: string): Promise<WithId<DeviceType>> {
+    const founded = await securityDeviceCollection.findOne({
+      userId: userId,
+      deviceId: deviceId,
+    });
+    if (!founded) {
+      throw new RepositoryNotFoundError("Device id not found", "deviceId");
     };
     return founded;
   },

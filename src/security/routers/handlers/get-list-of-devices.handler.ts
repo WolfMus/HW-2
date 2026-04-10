@@ -9,7 +9,8 @@ export async function getDevicesListHandler(
   res: Response,
 ) {
   try {
-    const listOfDevices = await securityDeviceService.find(req.user.id);
+    const userId = req.user.id;
+    const listOfDevices = await securityDeviceService.findMany(userId);
     res.status(HttpStatus.Ok).send(listOfDevices);
   } catch (e) {
     errorsHandler(e, res);

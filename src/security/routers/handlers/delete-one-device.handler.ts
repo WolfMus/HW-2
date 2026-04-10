@@ -19,10 +19,12 @@ export async function deleteOneDeviceHandler(
       console.log("userId: ", userId);
 
     // ПРОВЕРКА НА ДРУГОГО ЮЗЕРА
-    const deviceIdUserId = await securityDeviceService.findUserId(deviceId);
-    console.log("User 2: ", deviceIdUserId);
-    if (deviceIdUserId === userId) {
-      await securityDeviceService.deleteOne(deviceId);
+    const userId_2 = await securityDeviceService.findUserId(deviceId);
+
+    console.log("User 2: ", userId_2);
+
+    if (userId_2 === userId) {
+      await securityDeviceService.deleteOne(userId, deviceId);
       res.sendStatus(HttpStatus.NoContent);
     } else {
       res.sendStatus(HttpStatus.Forbidden);

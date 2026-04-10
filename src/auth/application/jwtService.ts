@@ -5,7 +5,6 @@ import { TokenDbView } from "../types/token-db-view.type";
 import { tokenQwRepository } from "../repositories/token-query.repository";
 import { randomUUID } from "crypto";
 import { RefreshToken } from "../types/token-refresh.type";
-import { blackListRepository } from "../repositories/black-list.repository";
 import { add } from "date-fns";
 import { Token } from "../types/tokens.types";
 
@@ -44,14 +43,12 @@ export const jwtService = {
     }
   },
 
-  async createRefreshToken(userId: string): Promise<{tokenId: string, deviceId: string}> {
-    const jti = randomUUID();
+  async createRefreshToken(userId: string): Promise<string> {
     const deviceId = randomUUID();
     const createdAt = new Date();
     const expiresAt = add(createdAt, {seconds: 20})
 
     const refreshToken = jwt.sign({
-      jti: jti,
       sub: userId,
       deviceId: deviceId,
     }, SETTINGS.JWT_SECRET, {
@@ -59,36 +56,19 @@ export const jwtService = {
     });
 
     const tokenBody: Token = {
-      tokenId: jti,
       userId: userId,
       refreshToken: refreshToken,
       createdAt: createdAt,
       expiresAt: expiresAt,
     }
 
-    const tokenId = await tokenRepository.create(tokenBody);
-    return {tokenId, deviceId};
+    await tokenRepository.create(tokenBody);
+    //return {tokenId, deviceId};
+    return refreshToken;
   },
 
   async findRefreshTokenById(tokenId: string): Promise<TokenDbView> {
     const refreshToken = await tokenQwRepository.findById(tokenId);
     return refreshToken;
   },
-
-  async addToBlackList(refreshToken: string): Promise<void> {
-    const payload = await this.verifyRefreshToken(refreshToken);
-
-    const blackListId = await blackListRepository.create(refreshToken);
-    if (!blackListId) {
-      throw new Error("Token was not added in black list");
-    }
-    await tokenRepository.delete(payload!.jti);
-    return;
-  },
-
-  async isBlocked(refreshToken: string): Promise<boolean> {
-    const isBlocked = await blackListRepository.find(refreshToken);
-    return isBlocked;
-  }
-
 };

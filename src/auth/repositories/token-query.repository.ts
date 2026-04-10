@@ -16,7 +16,6 @@ export const tokenQwRepository = {
   _toDbViewModel(token: WithId<Token>): TokenDbView {
     return {
       id: token._id.toString(),
-      tokenId: token.tokenId,
       userId: token.userId,
       refreshToken: token.refreshToken,
       createdAt: token.createdAt,

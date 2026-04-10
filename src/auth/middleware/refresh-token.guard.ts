@@ -4,6 +4,7 @@ import { HttpStatus } from "../../core/types/types";
 import { errorsHandler } from "../../core/errors/errors.handler";
 import { IdType } from "../../core/types/id";
 import { UnauthorizedError } from "../../core/errors/unauthorizedError.error";
+import { securityDeviceService } from "../../security/application/securityDevice.service";
 
 export const refreshTokenGuard = async (
   req: Request,
@@ -17,15 +18,16 @@ export const refreshTokenGuard = async (
     if (!refreshToken) {
       throw new UnauthorizedError("Refresh token is not valid", "refreshToken");
     }
-
-    const isBlocked = await jwtService.isBlocked(refreshToken);
-    if (isBlocked === true) {
-      return res.sendStatus(HttpStatus.Unauthorized);
+    
+    const payload = await jwtService.verifyRefreshToken(refreshToken);
+    if (!payload) {
+      res.sendStatus(HttpStatus.Unauthorized);
+      return;
     }
 
-    const payload = await jwtService.verifyRefreshToken(refreshToken);
-
-    if (!payload) {
+    // Проверока существует ли сессия
+    const session = await securityDeviceService.findByUserAndDeviceId(payload.sub, payload.deviceId);
+    if (!session) {
       res.sendStatus(HttpStatus.Unauthorized);
       return;
     }
