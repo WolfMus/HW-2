@@ -12,11 +12,17 @@ export const refreshTokenGuard = async (
   next: NextFunction,
 ) => {
   try {
-    console.log("COOKIE: ", req.cookies);
+    // console.log("COOKIE: ", req.cookies.refreshToken);
     const refreshToken = req.cookies.refreshToken;
 
     if (!refreshToken) {
       throw new UnauthorizedError("Refresh token is not valid", "refreshToken");
+    }
+    
+    const refreshTokenBody = await jwtService.findRefreshTokenById(refreshToken);
+    if (!refreshTokenBody) {
+      throw new UnauthorizedError("Refresh token is not valid", "refreshToken");
+
     }
     
     const payload = await jwtService.verifyRefreshToken(refreshToken);

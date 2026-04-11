@@ -15,6 +15,8 @@ import { getPostId } from "../../utils/posts/get-post-by-id";
 import { updatePost } from "../../utils/posts/update-post";
 import { Post } from "../../../src/posts/types/posts";
 import { getBlogById } from "../../utils/blogs/get-blog-id";
+import { describe, beforeAll, afterAll, it, expect } from '@jest/globals';
+
 
 describe("Posts API", () => {
   const app = express();

@@ -6,6 +6,7 @@
 // import { createUser } from "../utils/users/create-user";
 // import { UserInput } from "../../src/users/type/user-input.interface";
 // import { bcryptService } from "../../src/core/heplers/bcrypt-service";
+// import { describe, beforeAll, afterAll, it, expect } from '@jest/globals';
 
 // describe("UNIT TESTS", () => {
 //   const app = express();
@@ -26,8 +27,6 @@
 //       password: "hardpassword",
 //       email: "alex322@gmail.com",
 //     };
-
-
 
 //     const boolean = await bcryptService.checkPassword(newUser.password, )
 //     expect(boolean === true);

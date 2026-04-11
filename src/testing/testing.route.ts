@@ -4,6 +4,7 @@ import {
   blogsCollection,
   commentsCollection,
   postsCollection,
+  rateLimitCollection,
   securityDeviceCollection,
   tokensCollection,
   usersCollection,
@@ -19,6 +20,7 @@ testingRouter.delete("/all-data", async (req: Request, res: Response) => {
     commentsCollection.deleteMany(),
     tokensCollection.deleteMany(),
     securityDeviceCollection.deleteMany(),
+    rateLimitCollection.deleteMany(),
   ]);
 
   res.sendStatus(HttpStatus.NoContent);

@@ -9,6 +9,7 @@ import { createUser } from "../../utils/users/create-user";
 import { USERS_PATH } from "../../../src/core/paths/paths";
 import { HttpStatus } from "../../../src/core/types/types";
 import request from "supertest";
+import { describe, beforeAll, afterAll, it, expect } from '@jest/globals';
 
 describe("Users API", () => {
     const app = express();

@@ -8,10 +8,10 @@ export const rateLimitMiddleware = async (req: Request, res: Response, next: Nex
 
     const amountOfCalls = await rateLimitRepository.find(ip, url);
     console.log(amountOfCalls)
-    if (amountOfCalls >= 5) {
-        throw new Error('Wait a few seconds')
-        return;
-    } 
+    // if (amountOfCalls >= 5) {
+    //     throw new Error('Wait a few seconds')
+    //     return;
+    // } 
     await rateLimitRepository.create(ip, url)
     next()
 

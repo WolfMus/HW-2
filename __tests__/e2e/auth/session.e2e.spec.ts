@@ -1,0 +1,155 @@
+import express from "express"
+import { describe, beforeAll, afterAll, it, expect } from '@jest/globals';
+import request from "supertest";
+import { setupApp } from "../../../src/setup-app";
+import { generateAdminAuthToken } from "../../utils/generate-admin-auth-token";
+import { runDb, stopDb } from "../../../src/db/mongo.db";
+import { SETTINGS } from "../../../src/core/settings/settings";
+import { clearDb } from "../../utils/clear-db";
+import { AUTH_PATH, SECURITY_PATH, USERS_PATH } from "../../../src/core/paths/paths";
+import { HttpStatus } from "../../../src/core/types/types";
+
+describe("Auth API", () => {
+    const app = express();
+    setupApp(app);
+
+    const adminToken = generateAdminAuthToken();
+
+    beforeAll(async () => {
+        await runDb(SETTINGS.MONGO_URL);
+        await clearDb(app);
+    });
+
+    afterAll(async () => {
+        await clearDb(app);
+        await stopDb();
+    });
+
+    /* Рекомендации по тестированию: 
+
+Создаем пользователя,
+логиним пользователя 4 раза с разныными user-agent;
+Делаем проверки на ошибки 404, 401, 403;
+Обновляем refreshToken девайса 1;
+Удаляем девайс 2 (передаем refreshToken девайса 1). Запрашиваем список девайсов. Проверяем, что девайс 2 отсутствует в списке;
+Запрашиваем список девайсов с обновленным токеном. Количество девайсов и deviceId  всех девайсов не должны измениться. LastActiveDate девайса 1 должна измениться;
+Делаем logout девайсом 3. Запрашиваем список девайсов (девайсом 1).  В списке не должно быть девайса 3;
+Удаляем все оставшиеся девайсы (девайсом 1).  Запрашиваем список девайсов. В списке должен содержаться только один (текущий) девайс;
+Пишем дополнительные тесты для проверки логика работы с девайсами.*/
+
+    it("Session test", async () => {
+        // CREATE USER
+        const userBody = {
+          login: "alex",
+          password: "qwerty",
+          email: "alex@gmail.com",
+        };
+        const userCreated = await request(app)
+            .post(`${USERS_PATH}`)
+            .set("Authorization", adminToken)
+            .send(userBody)
+            .expect(HttpStatus.Created)
+        
+        // CREATE 4 SESSIONS
+        const session_1 = await request(app)
+            .post(`${AUTH_PATH}/login`)
+            .set('User-Agent', 'MacOS')
+            .send({
+                loginOrEmail: userBody.login,
+                password: userBody.password,
+            })
+            .expect(HttpStatus.Ok)
+        const session_2 = await request(app)
+            .post(`${AUTH_PATH}/login`)
+            .set('User-Agent', 'Windows')
+            .send({
+                loginOrEmail: userBody.login,
+                password: userBody.password,
+            })
+            .expect(HttpStatus.Ok)
+        const session_3 = await request(app)
+            .post(`${AUTH_PATH}/login`)
+            .set('User-Agent', 'Linux')
+            .send({
+                loginOrEmail: userBody.login,
+                password: userBody.password,
+            })
+            .expect(HttpStatus.Ok)
+        const session_4 = await request(app)
+            .post(`${AUTH_PATH}/login`)
+            .set('user-agent', 'Android')
+            .send({
+                loginOrEmail: userBody.login,
+                password: userBody.password,
+            })
+            .expect(HttpStatus.Ok)    
+            
+        // GET 4 REFRESH TOKENS
+        const cookie_1 = session_1.headers['set-cookie'];
+        const refreshToken_1 = cookie_1[0].split(';')[0].split('=')[1];
+        const cookie_2 = session_2.headers['set-cookie'];
+        const refreshToken_2 = cookie_2[0].split(';')[0].split('=')[1];
+        const cookie_3 = session_3.headers['set-cookie'];
+        const refreshToken_3 = cookie_3[0].split(';')[0].split('=')[1];
+        const cookie_4 = session_4.headers['set-cookie'];
+        const refreshToken_4 = cookie_4[0].split(';')[0].split('=')[1];
+            
+        // GET LIST OF SESSIONS
+        const listOfSessions = await request(app)
+            .get(`${SECURITY_PATH}/devices`)
+            .set('Cookie', `refreshToken=${refreshToken_1}`)
+            .expect(HttpStatus.Ok)
+        expect(listOfSessions.body).toHaveLength(4)
+
+        // UPDATE REFRESH TOKEN 1
+        const updateRT_1 = await request(app)
+            .post(`${AUTH_PATH}/refresh-token`)
+            .set('Cookie', `refreshToken=${refreshToken_1}`)
+            .expect(HttpStatus.Ok)
+        const refreshToken_1_new = updateRT_1.headers['set-cookie'][0].split(';')[0].split('=')[1];
+        expect(refreshToken_1_new).not.toBe(refreshToken_1)
+
+        // DELETE SESSION WITH OLD TOKEN
+        const deleteDevice_2_FAIL = await request(app)
+        .delete(`${SECURITY_PATH}/devices/${listOfSessions.body[1].deviceId}`)
+        .set('Cookie', `refreshToken=${refreshToken_1}`)
+        .expect(HttpStatus.Unauthorized)
+        
+        // DELETE SESSION WITH NEW TOKEN
+        const deleteDevice_2 = await request(app)
+            .delete(`${SECURITY_PATH}/devices/${listOfSessions.body[1].deviceId}`)
+            .set('Cookie', `refreshToken=${refreshToken_1_new}`)
+            .expect(HttpStatus.NoContent)
+
+        // GET LIST OF SESSIONS
+        const listOfSessions_2 = await request(app)
+            .get(`${SECURITY_PATH}/devices`)
+            .set('Cookie', `refreshToken=${refreshToken_1_new}`)
+            .expect(HttpStatus.Ok)
+        expect(listOfSessions_2.body).toHaveLength(3)
+
+        // LOGOUT FROM SESSION 3
+        const session_3_logout = await request(app)
+            .post(`${AUTH_PATH}/logout`)
+            .set('Cookie', `refreshToken=${refreshToken_3}`)
+            .expect(HttpStatus.NoContent)
+
+        // LIST OF SESSIONS BY DEVICE 1
+        const listOfSessions_3 = await request(app)
+            .get(`${SECURITY_PATH}/devices`)
+            .set('Cookie', `refreshToken=${refreshToken_1_new}`)
+            .expect(HttpStatus.Ok)
+        expect(listOfSessions_3.body).toHaveLength(2)
+
+        const deleteAllSessions = await request(app)
+            .delete(`${SECURITY_PATH}/devices`)
+            .set('Cookie', `refreshToken=${refreshToken_1_new}`)
+            .expect(HttpStatus.NoContent)
+        
+        const listOfSessions_4 = await request(app)
+            .get(`${SECURITY_PATH}/devices`)
+            .set('Cookie', `refreshToken=${refreshToken_1_new}`)
+            .expect(HttpStatus.Ok)
+        expect(listOfSessions_4.body).toHaveLength(1)
+    })
+})

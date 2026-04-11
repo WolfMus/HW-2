@@ -1,12 +1,13 @@
 import request from "supertest";
-import express, { response } from "express";
+import express from "express";
+import { describe, beforeAll, afterAll, it, expect } from '@jest/globals';
 import { setupApp } from "../../../src/setup-app";
 import { BlogInputModel } from "../../../src/blogs/dto/blog-input.dto";
 import { HttpStatus } from "../../../src/core/types/types";
 import { generateAdminAuthToken } from "../../utils/generate-admin-auth-token";
 import { clearDb } from "../../utils/clear-db";
 import { SETTINGS } from "../../../src/core/settings/settings";
-import { runDb } from "../../../src/db/mongo.db";
+import { runDb, stopDb } from "../../../src/db/mongo.db";
 import { BLOGS_PATH } from "../../../src/core/paths/paths";
 
 describe("Blogs API", () => {
@@ -27,6 +28,11 @@ describe("Blogs API", () => {
     await clearDb(app);
   });
 
+  afterAll(async () => {
+    await clearDb(app);
+    await stopDb();
+  })
+
   it("should return all blogs; GET /blogs", async () => {
     await request(app).get("/blogs").expect(HttpStatus.Ok);
   });
@@ -34,7 +40,7 @@ describe("Blogs API", () => {
   it("❌ should NOT create blog with incorrect name; POST /blogs", async () => {
     const newBlog: BlogInputModel = {
       ...testBlogsData,
-      name: null,
+      name: null!,
     };
 
     await request(app)
@@ -47,7 +53,7 @@ describe("Blogs API", () => {
   it("❌ shouldn't create blog with incorrect description; POST /blogs", async () => {
     const newBlog: BlogInputModel = {
       ...testBlogsData,
-      description: null,
+      description: null!,
     };
 
     await request(app)

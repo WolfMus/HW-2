@@ -8,6 +8,7 @@ import { createPost } from "../../utils/posts/create-post";
 import { createPostsDto } from "../../utils/posts/create-post-dto";
 import { createBlog } from "../../utils/blogs/create-blog";
 import { Post } from "../../../src/posts/types/posts";
+import { describe, beforeAll, afterAll, it, expect } from '@jest/globals';
 
 describe("Comments API", () => {
     const app = express();

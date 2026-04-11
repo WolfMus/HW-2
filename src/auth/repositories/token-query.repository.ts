@@ -1,14 +1,14 @@
 import { tokensCollection } from "../../db/mongo.db";
 import { WithId } from "mongodb";
-import { RepositoryNotFoundError } from "../../core/errors/repository-not-found.error";
 import { Token } from "../types/tokens.types";
 import { TokenDbView } from "../types/token-db-view.type";
+import { UnauthorizedError } from "../../core/errors/unauthorizedError.error";
 
 export const tokenQwRepository = {
-  async findById(tokenId: string): Promise<TokenDbView> {
-    const token = await tokensCollection.findOne({ tokenId: tokenId });
+  async findById(refreshToken: string): Promise<TokenDbView> {
+    const token = await tokensCollection.findOne({ refreshToken: refreshToken });
     if (!token) {
-      throw new RepositoryNotFoundError("Token id not found", "id");
+      throw new UnauthorizedError("Token id not found", "id");
     }
     return this._toDbViewModel(token);
   },
