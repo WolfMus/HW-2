@@ -75,7 +75,7 @@ export const jwtService = {
     const refreshToken = jwt.sign({
       sub: userId,
       deviceId: deviceId,
-      exp: Math.floor(expiresAt.getDate() / 1000)
+      exp: Math.floor(expiresAt.getTime() / 1000)
     }, SETTINGS.JWT_SECRET);
 
     const tokenBody: Token = {
