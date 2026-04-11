@@ -25,7 +25,7 @@ export const refreshTokenGuard = async (
       return;
     }
 
-    // Проверока существует ли сессия
+    // Проверка существует ли сессия
     const session = await securityDeviceService.findByUserAndDeviceId(payload.sub, payload.deviceId);
     if (!session) {
       res.sendStatus(HttpStatus.Unauthorized);

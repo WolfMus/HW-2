@@ -36,7 +36,7 @@ export async function updateRefreshTokenHandler(req: RequestWithUserId<{id: stri
     res.cookie("refreshToken", newRefreshToken, {
       httpOnly: true,
       secure: true,
-      maxAge: MAX_AGE,
+      maxAge: MAX_AGE * 1000,
     });
     res.status(HttpStatus.Ok).send({ accessToken: accessToken });
   } catch (e) {
