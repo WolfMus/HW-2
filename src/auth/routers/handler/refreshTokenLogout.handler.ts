@@ -9,8 +9,8 @@ export async function refreshTokenLogoutHandler(
   res: Response,
 ) {
   try {
-    const refreshToken = await jwtService.verifyRefreshToken(req.cookies.refreshToken);
-    await securityDeviceService.deleteOne(refreshToken!.sub, refreshToken!.deviceId)
+    const refreshToken = await jwtService.decodeToken(req.cookies.refreshToken);
+    await securityDeviceService.deleteOne(refreshToken.sub!, refreshToken.deviceId)
     res.clearCookie("refreshToken", {
       httpOnly: true,
       secure: true,
