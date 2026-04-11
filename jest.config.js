@@ -10,7 +10,7 @@ module.exports = {
     ...tsJestTransformCfg,
   },
   testMatch: [
-    "**/__tests__/e2e/**/*.spec.ts",
+    "**/__tests__/e2e/**/*spec.ts",
     // "**/__tests__/unit/**/*.unit.ts",
   ],
 };

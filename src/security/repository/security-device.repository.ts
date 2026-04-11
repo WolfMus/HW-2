@@ -9,6 +9,17 @@ export const securityDeviceRepository = {
     return;
   },
 
+  async update(sessionBody: DeviceType): Promise<void> {
+    const updated = await securityDeviceCollection.updateOne({
+      userId: sessionBody.userId,
+      deviceId: sessionBody.deviceId,
+    }, {$set: sessionBody})
+    if (updated.matchedCount < 1) {
+      throw new RepositoryNotFoundError("Session was not found", "session");
+    }
+    return;
+  },
+
   async deleteMany(userId: string, deviceId: string): Promise<void> {
     await securityDeviceCollection.deleteMany({
       userId: userId,

@@ -9,18 +9,21 @@ export const securityDeviceService = {
     deviceId: string,
     title: string,
     ip: string,
-    lastActiveDate: number,
+    lastActiveDate: Date,
   ): Promise<void> {
     const deviceBody: DeviceType = {
-      userId: userId,
-      deviceId: deviceId,
-      title: title,
       ip: ip,
+      title: title,
       lastActiveDate: lastActiveDate,
+      deviceId: deviceId,
+      userId: userId,
     };
-
     await securityDeviceRepository.create(deviceBody);
     return;
+  },
+
+  async updateSession(sessionBody: DeviceType): Promise<void> {
+    return await securityDeviceRepository.update(sessionBody);
   },
 
   async deleteMany(userId: string, deviceId: string): Promise<void> {

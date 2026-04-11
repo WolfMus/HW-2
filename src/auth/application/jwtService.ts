@@ -10,19 +10,21 @@ import { Token } from "../types/tokens.types";
 
 export const jwtService = {
   async createToken(userId: string): Promise<string> {
+    const iat = new Date();
+    const exp = add(iat, {seconds: 10})
     const token = jwt.sign(
       {
         userId,
+        exp: Math.floor(exp.getTime() / 1000),
       },
-      SETTINGS.JWT_SECRET,
-      { expiresIn: "10s" },
+      SETTINGS.JWT_SECRET
     );
     return token;
   },
 
-  async decodeToken(token: string): Promise<string> {
+  async decodeToken(token: string): Promise<jwt.JwtPayload> {
     const decodedToken = jwt.decode(token);
-    return decodedToken!.toString();
+    return decodedToken as jwt.JwtPayload;
   },
 
   async verifyToken(token: string): Promise<{ userId: string } | null> {
@@ -51,9 +53,8 @@ export const jwtService = {
     const refreshToken = jwt.sign({
       sub: userId,
       deviceId: deviceId,
-    }, SETTINGS.JWT_SECRET, {
-      expiresIn: "20s",
-    });
+      exp: Math.floor(expiresAt.getTime() / 1000),
+    }, SETTINGS.JWT_SECRET);
 
     const tokenBody: Token = {
       userId: userId,
@@ -63,12 +64,38 @@ export const jwtService = {
     }
 
     await tokenRepository.create(tokenBody);
-    //return {tokenId, deviceId};
+
+    return refreshToken;
+  },
+
+  async updateRefreshToken(userId: string, deviceId: string): Promise<string> {
+    const createdAt = new Date();
+    const expiresAt = add(createdAt, {seconds: 20})
+
+    const refreshToken = jwt.sign({
+      sub: userId,
+      deviceId: deviceId,
+      exp: Math.floor(expiresAt.getDate() / 1000)
+    }, SETTINGS.JWT_SECRET);
+
+    const tokenBody: Token = {
+      userId: userId,
+      refreshToken: refreshToken,
+      createdAt: createdAt,
+      expiresAt: expiresAt,
+    }
+
+    await tokenRepository.create(tokenBody);
     return refreshToken;
   },
 
   async findRefreshTokenById(tokenId: string): Promise<TokenDbView> {
     const refreshToken = await tokenQwRepository.findById(tokenId);
     return refreshToken;
+  },
+
+  async deleteRefreshToken(refreshToken: string): Promise<void> {
+    await tokenRepository.delete(refreshToken);
+    return;
   },
 };
