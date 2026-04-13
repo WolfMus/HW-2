@@ -24,21 +24,21 @@ export async function authLoginHandler(
     // Создание токенов
     const accessToken = await jwtService.createToken(user.id);
     const refreshToken = await jwtService.createRefreshToken(user.id);
-    const refreshTokenBody = await jwtService.verifyRefreshToken(refreshToken);
+    const refreshTokenBody = await jwtService.decodeToken(refreshToken);
 
     // Работа с сессиями
     const ip = req.ip!;
     const title = req.headers["user-agent"]!;
     await securityDeviceService.add(
       user.id,
-      refreshTokenBody!.deviceId,
+      refreshTokenBody.deviceId,
       title,
       ip,
-      new Date(refreshTokenBody!.iat * 1000),
+      new Date(refreshTokenBody.iat! * 1000),
     );
     
     // Отправка куков
-    const MAX_AGE = refreshTokenBody!.exp - refreshTokenBody!.iat;
+    const MAX_AGE = refreshTokenBody.exp! - refreshTokenBody.iat!;
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       secure: true,

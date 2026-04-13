@@ -2,6 +2,7 @@ import { WithId } from "mongodb";
 import { securityDeviceCollection } from "../../db/mongo.db";
 import { DeviceType } from "../types/device.type";
 import { RepositoryNotFoundError } from "../../core/errors/repository-not-found.error";
+import { UnauthorizedError } from "../../core/errors/unauthorizedError.error";
 
 export const securityDeviceRepository = {
   async create(deviceBody: DeviceType): Promise<void> {
@@ -34,7 +35,7 @@ export const securityDeviceRepository = {
       deviceId: deviceId,
     });
     if (deleted.deletedCount < 1) {
-      throw new RepositoryNotFoundError("Session was not founded", "deviceId");
+      throw new UnauthorizedError("Session was not founded", "deviceId");
     }
     return;
   },

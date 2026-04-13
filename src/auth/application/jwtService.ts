@@ -48,7 +48,7 @@ export const jwtService = {
   async createRefreshToken(userId: string): Promise<string> {
     const deviceId = randomUUID();
     const createdAt = new Date();
-    const expiresAt = add(createdAt, {seconds: 20})
+    const expiresAt = add(createdAt, {seconds: 20});
 
     const refreshToken = jwt.sign({
       sub: userId,
@@ -63,6 +63,9 @@ export const jwtService = {
       expiresAt: expiresAt,
     }
 
+    console.log("Refresh Token Created at: ", createdAt);
+    console.log("Device id after log in: ", deviceId);
+
     await tokenRepository.create(tokenBody);
 
     return refreshToken;
@@ -70,7 +73,10 @@ export const jwtService = {
 
   async updateRefreshToken(userId: string, deviceId: string): Promise<string> {
     const createdAt = new Date();
-    const expiresAt = add(createdAt, {seconds: 20})
+    const expiresAt = add(createdAt, {seconds: 20});
+
+    console.log("New refresh token created at: ", createdAt);
+    console.log("Device id after updating refresh token: ", deviceId);
 
     const refreshToken = jwt.sign({
       sub: userId,

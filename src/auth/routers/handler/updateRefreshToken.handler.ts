@@ -21,7 +21,7 @@ export async function updateRefreshTokenHandler(req: RequestWithUserId<{id: stri
     const newRefreshToken = await jwtService.updateRefreshToken(userId, refreshToken.deviceId);
     await jwtService.deleteRefreshToken(req.cookies.refreshToken);
     const accessToken = await jwtService.createToken(userId);
-    const rTBody = await jwtService.decodeToken(req.cookies.refreshToken);
+    const rTBody = await jwtService.decodeToken(newRefreshToken);
 
     const sessionBody: DeviceType = {
       ip: ip!,
