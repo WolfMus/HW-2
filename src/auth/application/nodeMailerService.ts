@@ -6,24 +6,24 @@ export const nodeMailerService = {
   async sendEmail(userEmail: string, confirmationCode: string) {
     
     // REAL ACCOUNT
-    const transporter = nodemailer.createTransport({
-      host: "smtp.gmail.com",
-      auth: {
-        user: "mrsevere484@gmail.com",
-        pass: process.env.GOOGLE_APP_PASSWORD,
-      },
-    });
-
-    // MOCK ETHEREAL ACCOUNT  
     // const transporter = nodemailer.createTransport({
-    //   host: "smtp.ethereal.email",
-    //   port: 587,
-    //   secure: false, // Use true for port 465, false for port 587
+    //   host: "smtp.gmail.com",
     //   auth: {
-    //     user: "rhett88@ethereal.email",
-    //     pass: "RagH4VnZeBxkEP5een",
+    //     user: "mrsevere484@gmail.com",
+    //     pass: process.env.GOOGLE_APP_PASSWORD,
     //   },
     // });
+
+    // MOCK ETHEREAL ACCOUNT  
+    const transporter = nodemailer.createTransport({
+      host: "smtp.ethereal.email",
+      port: 587,
+      secure: false, // Use true for port 465, false for port 587
+      auth: {
+        user: "rhett88@ethereal.email",
+        pass: "RagH4VnZeBxkEP5een",
+      },
+    });
 
     try {
       await transporter.verify();

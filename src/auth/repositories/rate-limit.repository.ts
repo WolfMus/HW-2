@@ -20,9 +20,8 @@ export const rateLimitRepository = {
 
   async find(ip: string, url: string, tenSecondsAgo: Date): Promise<number> {
     const founded = await rateLimitCollection
-      .find({ ip: ip, url: url, date: { $gte: tenSecondsAgo } })
-      .toArray();
+      .countDocuments({ ip: ip, url: url, date: { $gte: tenSecondsAgo } })
     if (!founded) return 0;
-    return founded.length;
+    return founded;
   },
 };

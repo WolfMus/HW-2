@@ -14,17 +14,7 @@ export const rateLimitMiddleware = async (
 
   await rateLimitRepository.deleteOld(ip, url, tenSecondsAgo);
 
-  let amountOfCalls = await rateLimitRepository.find(ip, url, tenSecondsAgo);
-  console.log(amountOfCalls);
-  if (amountOfCalls >= 5) {
-    res.sendStatus(HttpStatus.TooManyRequests);
-    return;
-  }
-  await rateLimitRepository.create(ip, url);
-
-  await new Promise((resolve) => setTimeout(resolve, 5));
-
-  amountOfCalls = await rateLimitRepository.find(ip, url, tenSecondsAgo);
+  const amountOfCalls = await rateLimitRepository.find(ip, url, tenSecondsAgo);
   console.log(amountOfCalls);
   if (amountOfCalls >= 5) {
     res.sendStatus(HttpStatus.TooManyRequests);
