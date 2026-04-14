@@ -44,8 +44,11 @@ export const securityDeviceService = {
     return session.userId;
   },
 
-  async findByUserAndDeviceId(userId: string, deviceId: string): Promise<DeviceViewType> {
+  async findByUserAndDeviceId(userId: string, deviceId: string): Promise<DeviceViewType | null> {
     const session = await securityDeviceRepository.findOne(userId, deviceId);
+    if (!session) {
+      return null;
+    }
     return this._toViewModel(session);
   },
 

@@ -55,14 +55,11 @@ export const securityDeviceRepository = {
     return founded;
   },
 
-  async findOne(userId: string, deviceId: string): Promise<WithId<DeviceType>> {
+  async findOne(userId: string, deviceId: string): Promise<WithId<DeviceType> | null> {
     const founded = await securityDeviceCollection.findOne({
       userId: userId,
       deviceId: deviceId,
     });
-    if (!founded) {
-      throw new RepositoryNotFoundError("Device id not found", "deviceId");
-    };
-    return founded;
+    return founded || null;
   },
 };

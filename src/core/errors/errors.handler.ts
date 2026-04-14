@@ -21,7 +21,14 @@ export function errorsHandler(error: unknown, res: Response): void {
   }
 
   if (error instanceof UnauthorizedError) {
-    res.sendStatus(HttpStatus.Unauthorized);
+    res.status(HttpStatus.Unauthorized).send(
+      createErrorMessage([
+        {
+          field: error.field,
+          message: error.message,
+        },
+      ]),
+    );
     return;
   }
 

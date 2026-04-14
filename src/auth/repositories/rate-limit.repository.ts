@@ -1,4 +1,3 @@
-import { subSeconds } from "date-fns";
 import { rateLimitCollection } from "../../db/mongo.db"
 import { RateLimit } from "../types/rate-limit.type"
 
@@ -14,9 +13,14 @@ export const rateLimitRepository = {
     return created.insertedId.toString();
   },
 
-  async find(ip: string, url: string): Promise<number> {
+  async deleteOld(ip: string, url: string, tenSecondsAgo: Date): Promise<void> {
+    await rateLimitCollection.deleteMany({ip: ip, url: url, date: {$lte: tenSecondsAgo}});
+    return;
+  },
+
+  async find(ip: string, url: string, tenSecondsAgo: Date): Promise<number> {
     const founded = await rateLimitCollection
-      .find({ ip: ip, url: url, date: { $gte: subSeconds(new Date(), 10) } })
+      .find({ ip: ip, url: url, date: { $gte: tenSecondsAgo } })
       .toArray();
     if (!founded) return 0;
     return founded.length;
