@@ -1,10 +1,10 @@
 import { NextFunction, Request, Response } from "express";
 import { jwtService } from "../application/jwtService";
-import { HttpStatus } from "../../core/types/types";
 import { errorsHandler } from "../../core/errors/errors.handler";
 import { IdType } from "../../core/types/id";
 import { UnauthorizedError } from "../../core/errors/unauthorizedError.error";
 import { securityDeviceService } from "../../security/application/securityDevice.service";
+import { tokenRepository } from "../repositories/token.repository";
 
 export const refreshTokenGuard = async (
   req: Request,
@@ -12,30 +12,34 @@ export const refreshTokenGuard = async (
   next: NextFunction,
 ) => {
   try {
-    // console.log("COOKIE: ", req.cookies.refreshToken);
+
     const refreshToken = req.cookies.refreshToken;
 
     if (!refreshToken) {
+      throw new UnauthorizedError("Refresh token is not valid", "refreshToken");
+    }
+
+    const payload = await jwtService.verifyRefreshToken(refreshToken);
+    if (!payload) {
       throw new UnauthorizedError("Refresh token is not valid", "refreshToken");
     }
     
     const refreshTokenBody = await jwtService.findRefreshTokenById(refreshToken);
     if (!refreshTokenBody) {
       throw new UnauthorizedError("Refresh token is not valid", "refreshToken");
+    }
 
+    const dateNow = new Date();
+    if (refreshTokenBody.expiresAt <= dateNow) {
+      await tokenRepository.delete(refreshToken);
+      throw new UnauthorizedError("Refresh token is not valid", "refreshToken");
     }
     
-    const payload = await jwtService.verifyRefreshToken(refreshToken);
-    if (!payload) {
-      res.sendStatus(HttpStatus.Unauthorized);
-      return;
-    }
 
     // Проверка существует ли сессия
     const session = await securityDeviceService.findByUserAndDeviceId(payload.sub, payload.deviceId);
     if (!session) {
-      res.sendStatus(HttpStatus.Unauthorized);
-      return;
+      throw new UnauthorizedError("Refresh token is not valid", "refreshToken");
     }
 
     const userId = payload.sub;
