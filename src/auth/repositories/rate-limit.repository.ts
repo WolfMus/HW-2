@@ -2,15 +2,15 @@ import { rateLimitCollection } from "../../db/mongo.db"
 import { RateLimit } from "../types/rate-limit.type"
 
 export const rateLimitRepository = {
-  async create(ip: string, url: string): Promise<string> {
+  async create(ip: string, url: string): Promise<void> {
     const rateBody: RateLimit = {
       ip: ip,
       url: url,
       date: new Date(),
     };
 
-    const created = await rateLimitCollection.insertOne(rateBody);
-    return created.insertedId.toString();
+    await rateLimitCollection.insertOne(rateBody);
+    return;
   },
 
   async deleteOld(ip: string, url: string, tenSecondsAgo: Date): Promise<void> {
