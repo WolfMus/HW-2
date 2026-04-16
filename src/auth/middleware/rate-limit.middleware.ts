@@ -13,14 +13,14 @@ export const rateLimitMiddleware = async (
   const tenSecondsAgo = subSeconds(new Date(), 10);
 
   await rateLimitRepository.deleteOld(ip, url, tenSecondsAgo);
+  await rateLimitRepository.create(ip, url);
 
   const amountOfCalls = await rateLimitRepository.find(ip, url, tenSecondsAgo);
   console.log(amountOfCalls);
-  if (amountOfCalls >= 5) {
+  if (amountOfCalls > 5) {
+    console.log("Too many requests. Wait 10 sec");
     res.sendStatus(HttpStatus.TooManyRequests);
     return;
   }
-  await rateLimitRepository.create(ip, url);
-
   next();
 };
