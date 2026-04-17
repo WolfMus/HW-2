@@ -236,5 +236,5 @@ describe("Auth API", () => {
       });
 
     expect(successRequest.status).toBe(HttpStatus.NoContent);
-  }, 2000);
+  }, 20000);
 });

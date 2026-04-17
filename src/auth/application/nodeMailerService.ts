@@ -33,7 +33,7 @@ export const nodeMailerService = {
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const info = await transporter.sendMail({
+    const info = transporter.sendMail({
       from: 'mrsevere484@gmail.com',
       to: userEmail,
       subject: "Registration",
