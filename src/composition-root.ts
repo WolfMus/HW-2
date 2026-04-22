@@ -44,7 +44,7 @@ export const usersService = new UsersService(usersRepo, usersQueryRepo, cryptoSe
 export const rateLimitRepo = new RateLimitRepository();
 export const tokenRepo = new TokenRepository();
 export const tokenQueryRepo = new TokenQwRepository();
-export const authService = new AuthService(usersRepo, usersQueryRepo);
+export const authService = new AuthService(usersRepo, usersQueryRepo, emailService);
 export const jwtService = new JwtService(tokenRepo, tokenQueryRepo);
 
 // COMMENTS

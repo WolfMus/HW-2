@@ -18,6 +18,7 @@ import { refreshTokenLogoutHandler } from "./handler/refreshTokenLogout.handler"
 import { refreshTokenGuard } from "../middleware/refresh-token.guard";
 import { tokenGuard } from "../middleware/tokenGuard.guard";
 import { rateLimitMiddleware } from "../middleware/rate-limit.middleware";
+import { passwordRecoveryHandler } from "./handler/password-recovery.handler";
 
 export const authRouter = Router({});
 
@@ -55,6 +56,22 @@ authRouter
     emailForResendingValidation,
     inputValidationResultMiddleware,
     emailResendingHandler,
-  );
+  )
+
+  .post(
+    "/password-recovery",
+    rateLimitMiddleware,
+    emailForResendingValidation,
+    inputValidationResultMiddleware,
+    passwordRecoveryHandler,
+  )
+
+  .post(
+    "/new-password",
+    rateLimitMiddleware,
+    passwordValidation,
+    inputValidationResultMiddleware,
+    newPasswordHandler
+  )
 
   
