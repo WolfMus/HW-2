@@ -2,20 +2,18 @@ import { Response } from "express";
 import { HttpStatus, RequestWithBody } from "../../../core/types/types";
 import { PostInputModel } from "../../dto/posts-input.dto";
 import { mapToPostViewModel } from "../mapped/mapToPostViewModel";
-import { postsServices } from "../../application/posts-service";
 import { errorsHandler } from "../../../core/errors/errors.handler";
-import { blogsQwRepository } from "../../../blogs/repositories/blogs-query.repository";
-import { postsQwRepository } from "../../repository/posts-query.repository";
+import { blogsService, postsService } from "../../../composition-root";
 
 export async function createPostHandler(
   req: RequestWithBody<PostInputModel>,
   res: Response,
 ) {
   try {
-    const blog = await blogsQwRepository.findById(req.body.blogId);
+    const blog = await blogsService.findById(req.body.blogId);
 
-    const createdPostId = await postsServices.create(req.body, blog);
-    const post = await postsQwRepository.findById(createdPostId);
+    const createdPostId = await postsService.create(req.body, blog);
+    const post = await postsService.findById(createdPostId);
     const postToViewModel = mapToPostViewModel(post);
 
     res.status(HttpStatus.Created).send(postToViewModel);

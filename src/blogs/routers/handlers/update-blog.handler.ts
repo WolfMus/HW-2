@@ -4,8 +4,8 @@ import {
   RequestWithParamsAndBody,
 } from "../../../core/types/types";
 import { BlogInputModel } from "../../dto/blog-input.dto";
-import { blogsServices } from "../../application/blogs.service";
 import { errorsHandler } from "../../../core/errors/errors.handler";
+import { blogsService } from "../../../composition-root";
 
 export async function updateBlogHandler(
   req: RequestWithParamsAndBody<{ id: string }, BlogInputModel>,
@@ -15,7 +15,7 @@ export async function updateBlogHandler(
     const id = req.params.id;
     const body = req.body;
 
-    await blogsServices.update(id, body);
+    await blogsService.update(id, body);
     res.sendStatus(HttpStatus.NoContent);
   } catch (e: unknown) {
     errorsHandler(e, res);

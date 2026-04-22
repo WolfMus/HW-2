@@ -4,11 +4,11 @@ import { DeviceType } from "../types/device.type";
 import { RepositoryNotFoundError } from "../../core/errors/repository-not-found.error";
 import { UnauthorizedError } from "../../core/errors/unauthorizedError.error";
 
-export const securityDeviceRepository = {
+export class SecurityDeviceRepository {
   async create(deviceBody: DeviceType): Promise<void> {
     await securityDeviceCollection.insertOne(deviceBody);
     return;
-  },
+  }
 
   async update(sessionBody: DeviceType): Promise<void> {
     const updated = await securityDeviceCollection.updateOne({
@@ -19,7 +19,7 @@ export const securityDeviceRepository = {
       throw new RepositoryNotFoundError("Session was not found", "session");
     }
     return;
-  },
+  }
 
   async deleteMany(userId: string, deviceId: string): Promise<void> {
     await securityDeviceCollection.deleteMany({
@@ -27,7 +27,7 @@ export const securityDeviceRepository = {
       deviceId: { $ne: deviceId },
     });
     return;
-  },
+  }
 
   async delete(userId: string, deviceId: string): Promise<void> {
     const deleted = await securityDeviceCollection.deleteOne({
@@ -38,14 +38,14 @@ export const securityDeviceRepository = {
       throw new UnauthorizedError("Session was not founded", "deviceId");
     }
     return;
-  },
+  }
 
   async findMany(userId: string): Promise<WithId<DeviceType>[]> {
     const founded = await securityDeviceCollection
       .find({ userId: userId })
       .toArray();
     return founded;
-  },
+  }
 
   async findUserId(deviceId: string): Promise<WithId<DeviceType>> {
     const founded = await securityDeviceCollection.findOne({deviceId: deviceId})
@@ -53,7 +53,7 @@ export const securityDeviceRepository = {
       throw new RepositoryNotFoundError("Device id not found", "deviceId")
     };
     return founded;
-  },
+  }
 
   async findOne(userId: string, deviceId: string): Promise<WithId<DeviceType> | null> {
     const founded = await securityDeviceCollection.findOne({
@@ -61,5 +61,5 @@ export const securityDeviceRepository = {
       deviceId: deviceId,
     });
     return founded || null;
-  },
+  }
 };

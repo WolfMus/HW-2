@@ -4,11 +4,11 @@ import { PostInputModel } from "../dto/posts-input.dto";
 import { Post } from "../types/posts";
 import { RepositoryNotFoundError } from "../../core/errors/repository-not-found.error";
 
-export const postsRepository = {
+export class PostsRepository {
   async create(newPost: Post): Promise<string> {
     const createdPost = await postsCollection.insertOne(newPost);
     return createdPost.insertedId.toString();
-  },
+  }
 
   async update(id: string, body: PostInputModel): Promise<void> {
     const updatedPost = await postsCollection.updateOne(
@@ -26,7 +26,7 @@ export const postsRepository = {
       throw new RepositoryNotFoundError("Post id not found", "id");
     }
     return;
-  },
+  }
 
   async delete(id: string): Promise<void> {
     const deletedPost = await postsCollection.deleteOne({
@@ -36,5 +36,5 @@ export const postsRepository = {
       throw new RepositoryNotFoundError("Post id not found", "id");
     }
     return;
-  },
+  }
 };

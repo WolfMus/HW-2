@@ -4,10 +4,8 @@ import {
   RequestWithParamsAndBodyAndUserId,
 } from "../../../core/types/types";
 import { errorsHandler } from "../../../core/errors/errors.handler";
-import { postsQwRepository } from "../../repository/posts-query.repository";
-import { commentService } from "../../../comments/application/comments.service";
-import { commentsQwRepository } from "../../../comments/repositories/comments-query.repository";
 import { IdType } from "../../../core/types/id";
+import { commentsQueryRepo, commentsService, postsService } from "../../../composition-root";
 
 export async function createCommentHandler(
   req: RequestWithParamsAndBodyAndUserId<{ id: string }, { content: string }, IdType>,
@@ -18,15 +16,15 @@ export async function createCommentHandler(
     const content = req.body.content;
     const userId = req.user?.id as string;
 
-    const post = await postsQwRepository.findById(postId);
+    const post = await postsService.findById(postId);
 
-    const newCommentId = await commentService.create(
+    const newCommentId = await commentsService.create(
       content,
       post._id.toString(),
       userId,
     );
 
-    const comment = await commentsQwRepository.getCommentById(newCommentId);
+    const comment = await commentsQueryRepo.getCommentById(newCommentId);
 
     res.status(HttpStatus.Created).send(comment);
   } catch (e) {

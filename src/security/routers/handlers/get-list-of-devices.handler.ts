@@ -2,7 +2,7 @@ import { Response } from "express";
 import { errorsHandler } from "../../../core/errors/errors.handler";
 import { IdType } from "../../../core/types/id";
 import { HttpStatus, RequestWithUserId } from "../../../core/types/types";
-import { securityDeviceService } from "../../application/securityDevice.service";
+import { securityService } from "../../../composition-root";
 
 export async function getDevicesListHandler(
   req: RequestWithUserId<IdType>,
@@ -10,7 +10,7 @@ export async function getDevicesListHandler(
 ) {
   try {
     const userId = req.user.id;
-    const listOfDevices = await securityDeviceService.findMany(userId);
+    const listOfDevices = await securityService.findMany(userId);
     res.status(HttpStatus.Ok).send(listOfDevices);
   } catch (e) {
     errorsHandler(e, res);

@@ -4,8 +4,8 @@ import {
   RequestWithParamsAndUserId,
 } from "../../../core/types/types";
 import { IdType } from "../../../core/types/id";
-import { securityDeviceService } from "../../application/securityDevice.service";
 import { errorsHandler } from "../../../core/errors/errors.handler";
+import { securityService } from "../../../composition-root";
 
 export async function deleteOneDeviceHandler(
   req: RequestWithParamsAndUserId<{ deviceId: string }, IdType>,
@@ -16,10 +16,10 @@ export async function deleteOneDeviceHandler(
       const userId = req.user.id;
 
     // ПРОВЕРКА НА ДРУГОГО ЮЗЕРА
-    const userId_2 = await securityDeviceService.findUserId(deviceId);
+    const userId_2 = await securityService.findUserId(deviceId);
 
     if (userId_2 === userId) {
-      await securityDeviceService.deleteOne(userId, deviceId);
+      await securityService.deleteOne(userId, deviceId);
       res.sendStatus(HttpStatus.NoContent);
     } else {
       res.sendStatus(HttpStatus.Forbidden);

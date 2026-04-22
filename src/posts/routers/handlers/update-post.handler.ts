@@ -4,17 +4,16 @@ import {
   RequestWithParamsAndBody,
 } from "../../../core/types/types";
 import { Post } from "../../types/posts";
-import { postsServices } from "../../application/posts-service";
 import { errorsHandler } from "../../../core/errors/errors.handler";
-import { blogsQwRepository } from "../../../blogs/repositories/blogs-query.repository";
+import { blogsService, postsService } from "../../../composition-root";
 
 export async function updatePostHandler(
   req: RequestWithParamsAndBody<{ id: string }, Post>,
   res: Response,
 ) {
   try {
-    await blogsQwRepository.findById(req.body.blogId);
-    await postsServices.update(req.params.id, req.body);
+    await blogsService.findById(req.body.blogId);
+    await postsService.update(req.params.id, req.body);
 
     res.sendStatus(HttpStatus.NoContent);
   } catch (e: unknown) {

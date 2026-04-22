@@ -1,9 +1,9 @@
 import { Response } from "express";
 import { HttpStatus, RequestWithUserId } from "../../../core/types/types";
 import { errorsHandler } from "../../../core/errors/errors.handler";
-import { jwtService } from "../../application/jwtService";
-import { securityDeviceService } from "../../../security/application/securityDevice.service";
+import {  } from "../../../security/application/securityDevice.service";
 import { DeviceType } from "../../../security/types/device.type";
+import { jwtService, securityService } from "../../../composition-root";
 
 export async function updateRefreshTokenHandler(req: RequestWithUserId<{id: string}>, res: Response) {
   try {
@@ -30,7 +30,7 @@ export async function updateRefreshTokenHandler(req: RequestWithUserId<{id: stri
       deviceId: refreshToken.deviceId,
       userId: userId,
     }
-    await securityDeviceService.updateSession(sessionBody);
+    await securityService.updateSession(sessionBody);
 
     const MAX_AGE = refreshToken.exp! - refreshToken.iat!;
     res.cookie("refreshToken", newRefreshToken, {

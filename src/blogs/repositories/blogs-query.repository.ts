@@ -4,7 +4,8 @@ import { Blog } from "../types/blogs";
 import { blogsCollection } from "../../db/mongo.db";
 import { RepositoryNotFoundError } from "../../core/errors/repository-not-found.error";
 
-export const blogsQwRepository = {
+export class BlogsQwRepository {
+
   async findAll(
     queryDto: BlogsQueryDtoInput,
   ): Promise<{ items: WithId<Blog>[]; totalCount: number }> {
@@ -30,7 +31,7 @@ export const blogsQwRepository = {
     const totalCount = await blogsCollection.countDocuments(filter);
 
     return { items, totalCount };
-  },
+  }
 
   async findById(id: string): Promise<WithId<Blog>> {
     const blog = await blogsCollection.findOne({ _id: new ObjectId(id) });
@@ -39,5 +40,6 @@ export const blogsQwRepository = {
     }
 
     return blog;
-  },
+  }
 };
+

@@ -1,9 +1,7 @@
 import { Response } from "express";
 import { HttpStatus, RequestWithBody } from "../../../core/types/types";
-import { nodeMailerService } from "../../application/nodeMailerService";
-import { usersQwRepository } from "../../../users/repository/usersQw.repository";
-import { authService } from "../../application/authService";
 import { errorsHandler } from "../../../core/errors/errors.handler";
+import { authService, emailService, usersQueryRepo } from "../../../composition-root";
 
 export async function emailResendingHandler(
   req: RequestWithBody<{ email: string }>,
@@ -12,13 +10,13 @@ export async function emailResendingHandler(
   try {
     const email = req.body.email;
 
-    const user = await usersQwRepository.doesExistByLoginOrEmail(email);
+    const user = await usersQueryRepo.doesExistByLoginOrEmail(email);
 
     await authService.isConfirmed(user.id);
 
     const confirmationCode = await authService.updateConfirmationCodeForUser(user.id);
 
-    await nodeMailerService.sendEmail(
+    await emailService.sendEmail(
       email,
       confirmationCode,
     );

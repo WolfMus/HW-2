@@ -6,7 +6,7 @@ import { CommentViewModel } from "../types/commentViewModel";
 import { Pagination } from "../../core/types/pagination.interface";
 import { CommentQueryDtoInput } from "../types/commentQueryDtoInput";
 
-export const commentsQwRepository = {
+export class CommentsQwRepository {
   async findByPostId(postId: string, query: CommentQueryDtoInput): Promise<Pagination<CommentViewModel[]>> {
     const { pageNumber, pageSize, sortBy, sortDirection } = query;
 
@@ -30,7 +30,7 @@ export const commentsQwRepository = {
       totalCount,
       items: items.map((u) => this._getToViewModel(u)),
     }
-  },
+  }
 
   async getCommentById(id: string): Promise<CommentViewModel> {
     const comment = await commentsCollection.findOne({ _id: new ObjectId(id) });
@@ -40,7 +40,7 @@ export const commentsQwRepository = {
     }
 
     return this._getToViewModel(comment);
-  },
+  }
 
   _getToViewModel(model: WithId<Comment>): CommentViewModel {
     return {
@@ -52,5 +52,5 @@ export const commentsQwRepository = {
       },
       createdAt: model.createdAt,
     };
-  },
+  }
 };

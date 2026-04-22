@@ -4,12 +4,12 @@ import { blogsCollection } from "../../db/mongo.db";
 import { ObjectId } from "mongodb";
 import { RepositoryNotFoundError } from "../../core/errors/repository-not-found.error";
 
-export const blogsRepository = {
+export class BlogsRepository {
   async create(newBlog: Blog): Promise<string> {
     const insertResult = await blogsCollection.insertOne(newBlog);
 
     return insertResult.insertedId.toString();
-  },
+  }
 
   async update(id: string, dto: BlogInputModel): Promise<void> {
     const updatedResult = await blogsCollection.updateOne(
@@ -28,7 +28,7 @@ export const blogsRepository = {
     }
 
     return;
-  },
+  }
 
   async delete(id: string): Promise<void> {
     const deletedResult = await blogsCollection.deleteOne({
@@ -42,5 +42,5 @@ export const blogsRepository = {
       );
     }
     return;
-  },
+  }
 };

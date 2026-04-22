@@ -3,9 +3,8 @@ import {
   HttpStatus,
   RequestWithParamsAndBodyAndUserId,
 } from "../../../core/types/types";
-import { commentsQwRepository } from "../../repositories/comments-query.repository";
-import { commentService } from "../../application/comments.service";
 import { errorsHandler } from "../../../core/errors/errors.handler";
+import { commentsQueryRepo, commentsService } from "../../../composition-root";
 
 export async function updateCommentHandler(
   req: RequestWithParamsAndBodyAndUserId<
@@ -20,13 +19,13 @@ export async function updateCommentHandler(
     const commentContent = req.body.content;
     const userId = req.user.id;
 
-    const comment = await commentsQwRepository.getCommentById(commentId);
+    const comment = await commentsQueryRepo.getCommentById(commentId);
     if (comment.commentatorInfo.userId !== userId) {
       res.sendStatus(HttpStatus.Forbidden);
       return;
     }
 
-    await commentService.update(commentContent, commentId);
+    await commentsService.update(commentContent, commentId);
     res.sendStatus(HttpStatus.NoContent);
   } catch (e) {
     errorsHandler(e, res);

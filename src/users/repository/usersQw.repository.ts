@@ -10,7 +10,7 @@ import { UserDbView } from "../type/user.db.interface";
 import { BadRequestError } from "../../core/errors/bad-request.error";
 import { UserDb } from "../type/user-db-view.interface";
 
-export const usersQwRepository = {
+export class UsersQwRepository {
   async findAll(queryInput: UsersQueryInput): Promise<Pagination<UserView[]>> {
     const {
       pageNumber,
@@ -53,7 +53,7 @@ export const usersQwRepository = {
       totalCount,
       items: items.map((u) => this._toViewModel(u)),
     };
-  },
+  }
 
   async findById(id: string): Promise<UserView> {
     const user = await usersCollection.findOne({ _id: new ObjectId(id) });
@@ -61,7 +61,7 @@ export const usersQwRepository = {
       throw new RepositoryNotFoundError("User not found", "id");
     }
     return this._toViewModel(user);
-  },
+  }
 
   async findByIdInDbView(id: string): Promise<UserDb> {
     const user = await usersCollection.findOne({_id: new ObjectId(id)});
@@ -69,7 +69,7 @@ export const usersQwRepository = {
       throw new RepositoryNotFoundError("User not found", "id");
     }
     return this._toDbModel(user);
-  },
+  }
 
   async findLoginOrEmail(loginOrEmail: string): Promise<WithId<User> | null> {
     const user = await usersCollection.findOne({
@@ -77,7 +77,8 @@ export const usersQwRepository = {
     });
 
     return user;
-  },
+  }
+
   async findLoginOrEmailOrFail(
     loginOrEmail: string,
   ): Promise<UserDb> {
@@ -90,7 +91,7 @@ export const usersQwRepository = {
     }
 
     return this._toDbModel(user);
-  },
+  }
 
   async doesExistByLoginAndEmail(login: string, email: string): Promise<void> {
     const user = await usersCollection.findOne({
@@ -106,7 +107,7 @@ export const usersQwRepository = {
     }
 
     return;
-  },
+  }
 
   async doesExistByLoginOrEmail(loginOrEmail: string): Promise<UserDb> {
     const user = await usersCollection.findOne({
@@ -118,7 +119,7 @@ export const usersQwRepository = {
     }
 
     return this._toDbModel(user);
-  },
+  }
 
   async findByConfirmationCode(code: string): Promise<UserDbView | null> {
     const user = await usersCollection.findOne({
@@ -128,7 +129,7 @@ export const usersQwRepository = {
       throw new BadRequestError("User not found", "code");
     }
     return this._toDbModel(user);
-  },
+  }
 
   _toViewModel(item: WithId<User>): UserView {
     return {
@@ -137,7 +138,7 @@ export const usersQwRepository = {
       email: item.email,
       createdAt: item.createdAt,
     };
-  },
+  }
 
   _toDbModel(item: WithId<User>): UserDb {
     return {
@@ -153,5 +154,5 @@ export const usersQwRepository = {
         isConfirmed: item.emailConfirmation.isConfirmed,
       },
     };
-  },
+  }
 };

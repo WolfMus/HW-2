@@ -1,18 +1,30 @@
 import { randomUUID } from "crypto";
-import { bcryptService } from "../../core/heplers/bcrypt-service";
-import { usersRepository } from "../repository/users.repository";
-import { usersQwRepository } from "../repository/usersQw.repository";
+import { BcryptService } from "../../core/heplers/bcrypt-service";
+import { UsersRepository } from "../repository/users.repository";
+import { UsersQwRepository } from "../repository/usersQw.repository";
 import { UserDbView } from "../type/user.db.interface";
 import { add } from "date-fns";
-import { nodeMailerService } from "../../auth/application/nodeMailerService";
+import { NodeMailerService } from "../../auth/application/nodeMailerService";
 
-export const userService = {
+export class UsersService {
+  private usersRepo: UsersRepository;
+  private usersQueryRepo: UsersQwRepository;
+  private cryptoService: BcryptService;
+  private mailService: NodeMailerService;
+
+  constructor(usersRepo: UsersRepository, usersQueryRepo: UsersQwRepository, cryptoService: BcryptService, mailService: NodeMailerService) {
+    this.usersRepo = usersRepo;
+    this.usersQueryRepo = usersQueryRepo;
+    this.cryptoService = cryptoService;
+    this.mailService = mailService;
+  }
+
   async create(
     login: string,
     password: string,
     email: string,
   ): Promise<string> {
-    const saltAndHash = await bcryptService.generateHash(password);
+    const saltAndHash = await this.cryptoService.generateHash(password);
 
     const userInputBody: UserDbView = {
       login: login,
@@ -29,19 +41,19 @@ export const userService = {
       }
     };
 
-    const createdUserId = await usersRepository.create(userInputBody);
+    const createdUserId = await this.usersRepo.create(userInputBody);
 
     return createdUserId;
-  },
+  }
 
   async registerUser(
     login: string,
     email: string,
     password: string,
   ): Promise<UserDbView | null> {
-    await usersQwRepository.doesExistByLoginAndEmail(login, email);
+    await this.usersQueryRepo.doesExistByLoginAndEmail(login, email);
 
-    const {salt, hash} = await bcryptService.generateHash(password);
+    const {salt, hash} = await this.cryptoService.generateHash(password);
 
     const newUser: UserDbView = {
       login: login,
@@ -58,19 +70,19 @@ export const userService = {
       },
     };
 
-    await usersRepository.createByRegistration(newUser);
+    await this.usersRepo.createByRegistration(newUser);
     try {
-      await nodeMailerService.sendEmail(newUser.email, newUser.emailConfirmation.confirmationCode);
+      await this.mailService.sendEmail(newUser.email, newUser.emailConfirmation.confirmationCode);
 
     } catch (e: unknown) {
       console.error(e);
     }
     
     return newUser
-  },
+  }
 
   async delete(id: string): Promise<void> {
-    await usersRepository.delete(id);
+    await this.usersRepo.delete(id);
     return;
-  },
+  }
 };

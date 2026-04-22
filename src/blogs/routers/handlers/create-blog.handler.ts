@@ -2,17 +2,16 @@ import { Response } from "express";
 import { HttpStatus, RequestWithBody } from "../../../core/types/types";
 import { BlogInputModel } from "../../dto/blog-input.dto";
 import { mapToBlogViewModel } from "../mappers/mapToBlogViewModel";
-import { blogsServices } from "../../application/blogs.service";
 import { errorsHandler } from "../../../core/errors/errors.handler";
-import { blogsQwRepository } from "../../repositories/blogs-query.repository";
+import { blogsService } from "../../../composition-root";
 
 export async function createBlogHandler(
   req: RequestWithBody<BlogInputModel>,
   res: Response,
 ) {
   try {
-    const blogsId = await blogsServices.create(req.body);
-    const createdBlog = await blogsQwRepository.findById(blogsId);
+    const blogsId = await blogsService.create(req.body);
+    const createdBlog = await blogsService.findById(blogsId);
 
     const blogToViewModel = mapToBlogViewModel(createdBlog);
 

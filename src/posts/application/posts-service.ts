@@ -1,11 +1,21 @@
 import { WithId } from "mongodb";
 import { PostInputModel } from "../dto/posts-input.dto";
 import { Post } from "../types/posts";
-import { postsRepository } from "../repository/posts.repository";
+import { PostsRepository } from "../repository/posts.repository";
 import { Blog } from "../../blogs/types/blogs";
 import { PostInputForBlogModel } from "../dto/post-input-for-blog.dto";
+import { PostsQueryDtoInput } from "../input/post-query.input";
+import { PostsQwRepository } from "../repository/posts-query.repository";
 
-export const postsServices = {
+export class PostsService {
+  private postsRepo: PostsRepository;
+  private postsQueryRepo: PostsQwRepository;
+
+  constructor(postsRepo: PostsRepository, postsQueryRepo: PostsQwRepository) {
+    this.postsRepo = postsRepo;
+    this.postsQueryRepo = postsQueryRepo;
+  }
+
   async create(dto: PostInputModel, blog: WithId<Blog>): Promise<string> {
     const newPost: Post = {
       title: dto.title,
@@ -15,9 +25,9 @@ export const postsServices = {
       blogName: blog.name,
       createdAt: new Date(),
     };
-    const createdPostId = await postsRepository.create(newPost);
+    const createdPostId = await this.postsRepo.create(newPost);
     return createdPostId;
-  },
+  }
 
   async createForBlog(
     dto: PostInputForBlogModel,
@@ -31,15 +41,32 @@ export const postsServices = {
       blogName: blog.name,
       createdAt: new Date(),
     };
-    const createdPostId = await postsRepository.create(newPost);
+    const createdPostId = await this.postsRepo.create(newPost);
     return createdPostId;
-  },
+  }
 
   async update(id: string, body: PostInputModel): Promise<void> {
-    return await postsRepository.update(id, body);
-  },
+    return await this.postsRepo.update(id, body);
+  }
 
   async delete(id: string): Promise<void> {
-    return await postsRepository.delete(id);
-  },
-};
+    return await this.postsRepo.delete(id);
+  }
+
+  async findAll(
+    queryDto: PostsQueryDtoInput,
+  ): Promise<{ items: WithId<Post>[]; totalCount: number }> {
+    return await this.postsQueryRepo.findAll(queryDto);
+  }
+
+  async findByBlogId(
+    id: string,
+    queryDto: PostsQueryDtoInput,
+  ): Promise<{ items: WithId<Post>[]; totalCount: number }> {
+    return await this.postsQueryRepo.findByBlogId(id, queryDto);
+  }
+
+  async findById(id: string): Promise<WithId<Post>> {
+    return await this.postsQueryRepo.findById(id);
+  }  
+}

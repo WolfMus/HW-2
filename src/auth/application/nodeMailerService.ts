@@ -2,7 +2,7 @@ import nodemailer from "nodemailer";
 import dotenv from "dotenv";
 dotenv.config();
 
-export const nodeMailerService = {
+export class NodeMailerService {
   async sendEmail(userEmail: string, confirmationCode: string) {
     
     // REAL ACCOUNT
@@ -42,5 +42,5 @@ export const nodeMailerService = {
     });
 
     console.log("QUERY: ", confirmationCode);
-  },
+  }
 };

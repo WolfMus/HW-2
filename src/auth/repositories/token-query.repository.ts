@@ -4,14 +4,14 @@ import { Token } from "../types/tokens.types";
 import { TokenDbView } from "../types/token-db-view.type";
 import { UnauthorizedError } from "../../core/errors/unauthorizedError.error";
 
-export const tokenQwRepository = {
+export class TokenQwRepository {
   async findById(refreshToken: string): Promise<TokenDbView> {
     const token = await tokensCollection.findOne({ refreshToken: refreshToken });
     if (!token) {
       throw new UnauthorizedError("Token id not found", "id");
     }
     return this._toDbViewModel(token);
-  },
+  }
 
   _toDbViewModel(token: WithId<Token>): TokenDbView {
     return {
@@ -21,5 +21,5 @@ export const tokenQwRepository = {
       createdAt: token.createdAt,
       expiresAt: token.expiresAt,
     };
-  },
+  }
 };

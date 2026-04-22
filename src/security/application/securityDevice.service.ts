@@ -1,9 +1,14 @@
 import { WithId } from "mongodb";
-import { securityDeviceRepository } from "../repository/security-device.repository";
+import { SecurityDeviceRepository } from "../repository/security-device.repository";
 import { DeviceType } from "../types/device.type";
 import { DeviceViewType } from "../types/device-view.type";
 
-export const securityDeviceService = {
+export class SecurityDeviceService {
+  private securityRepo: SecurityDeviceRepository;
+  constructor(securityRepo: SecurityDeviceRepository){
+    this.securityRepo = securityRepo;
+  }
+
   async add(
     userId: string,
     deviceId: string,
@@ -18,39 +23,39 @@ export const securityDeviceService = {
       deviceId: deviceId,
       userId: userId,
     };
-    await securityDeviceRepository.create(deviceBody);
+    await this.securityRepo.create(deviceBody);
     return;
-  },
+  }
 
   async updateSession(sessionBody: DeviceType): Promise<void> {
-    return await securityDeviceRepository.update(sessionBody);
-  },
+    return await this.securityRepo.update(sessionBody);
+  }
 
   async deleteMany(userId: string, deviceId: string): Promise<void> {
-    return await securityDeviceRepository.deleteMany(userId, deviceId);
-  },
+    return await this.securityRepo.deleteMany(userId, deviceId);
+  }
 
   async deleteOne(userId: string, deviceId: string): Promise<void> {
-    return await securityDeviceRepository.delete(userId, deviceId);
-  },
+    return await this.securityRepo.delete(userId, deviceId);
+  }
 
   async findMany(userId: string): Promise<DeviceViewType[]> {
-    const devices = await securityDeviceRepository.findMany(userId);
+    const devices = await this.securityRepo.findMany(userId);
     return devices.map((device) => this._toViewModel(device));
-  },
+  }
 
   async findUserId(deviceId: string): Promise<string> {
-    const session = await securityDeviceRepository.findUserId(deviceId);
+    const session = await this.securityRepo.findUserId(deviceId);
     return session.userId;
-  },
+  }
 
   async findByUserAndDeviceId(userId: string, deviceId: string): Promise<DeviceViewType | null> {
-    const session = await securityDeviceRepository.findOne(userId, deviceId);
+    const session = await this.securityRepo.findOne(userId, deviceId);
     if (!session) {
       return null;
     }
     return this._toViewModel(session);
-  },
+  }
 
   _toViewModel(device: WithId<DeviceType>): DeviceViewType {
     return {
@@ -59,5 +64,5 @@ export const securityDeviceService = {
       lastActiveDate: device.lastActiveDate,
       deviceId: device.deviceId,
     };
-  },
+  }
 };

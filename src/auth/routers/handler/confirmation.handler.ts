@@ -1,8 +1,8 @@
 import { Response } from "express";
 import { HttpStatus, RequestWithBody } from "../../../core/types/types";
 import { ConfirmationCodeType } from "../../types/confirmation-code.type";
-import { authService } from "../../application/authService";
 import { errorsHandler } from "../../../core/errors/errors.handler";
+import { authService } from "../../../composition-root";
 
 export async function confirmationHandler(req: RequestWithBody<ConfirmationCodeType>, res: Response) {
     try {

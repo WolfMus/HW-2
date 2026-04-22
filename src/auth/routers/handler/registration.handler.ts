@@ -1,8 +1,8 @@
 import { Response } from "express";
 import { UserInput } from "../../../users/type/user-input.interface";
 import { HttpStatus, RequestWithBody } from "../../../core/types/types";
-import { userService } from "../../../users/application/users.service";
 import { errorsHandler } from "../../../core/errors/errors.handler";
+import { usersService } from "../../../composition-root";
 
 export async function registrationHandler(
   req: RequestWithBody<UserInput>,
@@ -13,7 +13,7 @@ export async function registrationHandler(
     const email = req.body.email;
     const password = req.body.password;
 
-    await userService.registerUser(login, email, password);
+    await usersService.registerUser(login, email, password);
     res.sendStatus(HttpStatus.NoContent);
   } catch (e) {
     errorsHandler(e, res);

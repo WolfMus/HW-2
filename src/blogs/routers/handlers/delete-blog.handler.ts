@@ -1,7 +1,7 @@
 import { Response } from "express";
 import { HttpStatus, RequestWithParams } from "../../../core/types/types";
-import { blogsServices } from "../../application/blogs.service";
 import { errorsHandler } from "../../../core/errors/errors.handler";
+import { blogsService } from "../../../composition-root";
 
 export async function deleteBlogHandler(
   req: RequestWithParams<{ id: string }>,
@@ -10,7 +10,7 @@ export async function deleteBlogHandler(
   try {
     const id = req.params.id;
 
-    await blogsServices.delete(id);
+    await blogsService.delete(id);
     return res.sendStatus(HttpStatus.NoContent);
   } catch (e: unknown) {
     errorsHandler(e, res);

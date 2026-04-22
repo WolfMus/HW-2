@@ -1,9 +1,8 @@
 import { Response } from "express";
 import { errorsHandler } from "../../../core/errors/errors.handler";
 import { HttpStatus, RequestWithUserId } from "../../../core/types/types";
-import { securityDeviceService } from "../../../security/application/securityDevice.service";
-import { jwtService } from "../../application/jwtService";
 import { IdType } from "../../../core/types/id";
+import { jwtService, securityService } from "../../../composition-root";
 
 export async function refreshTokenLogoutHandler(
   req: RequestWithUserId<IdType>,
@@ -12,7 +11,7 @@ export async function refreshTokenLogoutHandler(
   try {
     const userId = req.user.id;
     const refreshToken = await jwtService.decodeToken(req.cookies.refreshToken);
-    await securityDeviceService.deleteOne(userId, refreshToken.deviceId);
+    await securityService.deleteOne(userId, refreshToken.deviceId);
     res.clearCookie("refreshToken", {
       httpOnly: true,
       secure: true,

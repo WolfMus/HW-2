@@ -3,16 +3,16 @@ import { usersCollection } from "../../db/mongo.db";
 import { RepositoryNotFoundError } from "../../core/errors/repository-not-found.error";
 import { UserDbView } from "../type/user.db.interface";
 
-export const usersRepository = {
+export class UsersRepository {
   async create(userInput: UserDbView): Promise<string> {
     const createdUser = await usersCollection.insertOne(userInput);
     return createdUser.insertedId.toString();
-  },
+  }
 
   async createByRegistration(userInput: UserDbView): Promise<string> {
     const createdUser = await usersCollection.insertOne(userInput);
     return createdUser.insertedId.toString()
-  },
+  }
 
   async updateConfirmation(id: string): Promise<void> {
     const updatedUser = await usersCollection.updateOne({_id: new ObjectId(id)}, {$set: {'emailConfirmation.isConfirmed': true}});
@@ -20,7 +20,7 @@ export const usersRepository = {
       throw new RepositoryNotFoundError("User not found", "id");
     }
     return;
-  },
+  }
 
   async updateConfirmationCode(id: string, confirmationCode: string, expiration: Date): Promise<void> {
     const updatedUser = await usersCollection.updateOne({_id: new ObjectId(id)}, {$set: {
@@ -33,7 +33,7 @@ export const usersRepository = {
     }
 
     return;
-  },
+  }
 
   async delete(id: string): Promise<void> {
     const deletedUser = await usersCollection.deleteOne({
@@ -43,5 +43,5 @@ export const usersRepository = {
       throw new RepositoryNotFoundError("User not found", "id");
     }
     return;
-  },
+  }
 };

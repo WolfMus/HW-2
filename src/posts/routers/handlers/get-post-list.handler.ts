@@ -5,7 +5,7 @@ import { matchedData } from "express-validator";
 import { setDefaultSortAndPaginationIfNotExist } from "../../../core/heplers/set-default-sort-and-pagination";
 import { mapToPostsListPaginatedOutput } from "../mapped/mapToPostListPaginatedOutput";
 import { PostsQueryDtoInput } from "../../input/post-query.input";
-import { postsQwRepository } from "../../repository/posts-query.repository";
+import { postsService } from "../../../composition-root";
 
 export async function getPostListHandler(req: Request, res: Response) {
   try {
@@ -14,7 +14,7 @@ export async function getPostListHandler(req: Request, res: Response) {
     }) as PostsQueryDtoInput;
     const queryInput = setDefaultSortAndPaginationIfNotExist(sanitizedQuery);
 
-    const { items, totalCount } = await postsQwRepository.findAll(queryInput);
+    const { items, totalCount } = await postsService.findAll(queryInput);
     const postsListOutput = mapToPostsListPaginatedOutput(items, {
       pageNumber: queryInput.pageNumber,
       pageSize: queryInput.pageSize,

@@ -3,12 +3,12 @@ import { commentsCollection } from "../../db/mongo.db";
 import { Comment } from "../types/comments";
 import { RepositoryNotFoundError } from "../../core/errors/repository-not-found.error";
 
-export const commentsRepository = {
+export class CommentsRepository {
   async create(newComment: Comment): Promise<string> {
     const insertResult = await commentsCollection.insertOne(newComment);
 
     return insertResult.insertedId.toString();
-  },
+  }
 
   async update(id: string, content: string): Promise<void> {
     const updatedResult = await commentsCollection.updateOne(
@@ -25,7 +25,7 @@ export const commentsRepository = {
     }
 
     return;
-  },
+  }
 
   async delete(id: string): Promise<void> {
     const deletedComment = await commentsCollection.deleteOne({_id: new ObjectId(id)})

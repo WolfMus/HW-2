@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
-import { rateLimitRepository } from "../repositories/rate-limit.repository";
 import { HttpStatus } from "../../core/types/types";
 import { subSeconds } from "date-fns";
+import { rateLimitRepo } from "../../composition-root";
 
 export const rateLimitMiddleware = async (
   req: Request,
@@ -12,10 +12,10 @@ export const rateLimitMiddleware = async (
   const ip = req.ip!;
   const tenSecondsAgo = subSeconds(new Date(), 10);
 
-  await rateLimitRepository.deleteOld(ip, url, tenSecondsAgo);
-  await rateLimitRepository.create(ip, url);
+  await rateLimitRepo.deleteOld(ip, url, tenSecondsAgo);
+  await rateLimitRepo.create(ip, url);
 
-  const amountOfCalls = await rateLimitRepository.find(ip, url, tenSecondsAgo);
+  const amountOfCalls = await rateLimitRepo.find(ip, url, tenSecondsAgo);
   console.log(amountOfCalls);
   if (amountOfCalls > 5) {
     console.log("Too many requests. Wait 10 sec");

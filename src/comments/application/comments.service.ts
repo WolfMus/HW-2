@@ -1,14 +1,19 @@
-import { usersQwRepository } from "../../users/repository/usersQw.repository";
-import { commentsRepository } from "../repositories/comments.repository";
+import { usersQueryRepo } from "../../composition-root";
+import { CommentsRepository } from "../repositories/comments.repository";
 import { Comment } from "../types/comments";
 
-export const commentService = {
+export class CommentsService {
+  private commentsRepo: CommentsRepository
+  constructor(commentsRepo: CommentsRepository) {
+    this.commentsRepo = commentsRepo;
+  }
+
   async create(
     content: string,
     postId: string,
     userId: string,
   ): Promise<string> {
-    const user = await usersQwRepository.findById(userId);
+    const user = await usersQueryRepo.findById(userId);
 
     const newComment: Comment = {
       postId: postId,
@@ -18,16 +23,16 @@ export const commentService = {
       createdAt: new Date(),
     };
 
-    const commentId = await commentsRepository.create(newComment);
+    const commentId = await this.commentsRepo.create(newComment);
 
     return commentId;
-  },
+  }
 
   async update(commentContent: string, id: string): Promise<void> {
-    return await commentsRepository.update(id, commentContent);
-  },
+    return await this.commentsRepo.update(id, commentContent);
+  }
 
   async delete(id: string): Promise<void> {
-    return await commentsRepository.delete(id);
+    return await this.commentsRepo.delete(id);
   }
 };

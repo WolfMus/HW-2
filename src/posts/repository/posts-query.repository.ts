@@ -4,7 +4,7 @@ import { Post } from "../types/posts";
 import { postsCollection } from "../../db/mongo.db";
 import { RepositoryNotFoundError } from "../../core/errors/repository-not-found.error";
 
-export const postsQwRepository = {
+export class PostsQwRepository {
   async findAll(
     queryDto: PostsQueryDtoInput,
   ): Promise<{ items: WithId<Post>[]; totalCount: number }> {
@@ -24,7 +24,7 @@ export const postsQwRepository = {
     const totalCount = await postsCollection.countDocuments();
 
     return { items, totalCount };
-  },
+  }
 
   async findByBlogId(
     id: string,
@@ -47,7 +47,7 @@ export const postsQwRepository = {
     ]);
 
     return { items, totalCount };
-  },
+  }
 
   async findById(id: string): Promise<WithId<Post>> {
     const post = await postsCollection.findOne({ _id: new ObjectId(id) });
@@ -56,5 +56,5 @@ export const postsQwRepository = {
       throw new RepositoryNotFoundError("Post id not found", "id");
     }
     return post;
-  },
+  }
 };

@@ -3,10 +3,10 @@ import { errorsHandler } from "../../../core/errors/errors.handler";
 import { HttpStatus } from "../../../core/types/types";
 import { matchedData } from "express-validator";
 import { setDefaultSortAndPaginationIfNotExist } from "../../../core/heplers/set-default-sort-and-pagination";
-import { usersQwRepository } from "../../repository/usersQw.repository";
 import { UsersQueryInput } from "../../input/users-query.input";
 import { Pagination } from "../../../core/types/pagination.interface";
 import { UserView } from "../../type/user-view.interface";
+import { usersQueryRepo } from "../../../composition-root";
 
 export async function getUsersListHandler(
   req: Request,
@@ -18,7 +18,7 @@ export async function getUsersListHandler(
     
     const queryInput = {...setDefaultSortAndPaginationIfNotExist(sanitizedQuery)};
 
-    const usersList = await usersQwRepository.findAll(queryInput);
+    const usersList = await usersQueryRepo.findAll(queryInput);
     return res.status(HttpStatus.Ok).send(usersList);
   } catch (e) {
     errorsHandler(e, res);

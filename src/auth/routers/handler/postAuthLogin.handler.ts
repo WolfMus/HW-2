@@ -2,10 +2,8 @@ import { Response } from "express";
 import { errorsHandler } from "../../../core/errors/errors.handler";
 import { HttpStatus, RequestWithBody } from "../../../core/types/types";
 import { LoginInputModel } from "../../types/login-input.type";
-import { usersQwRepository } from "../../../users/repository/usersQw.repository";
 import bcrypt from "bcrypt";
-import { jwtService } from "../../application/jwtService";
-import { securityDeviceService } from "../../../security/application/securityDevice.service";
+import { jwtService, securityService, usersQueryRepo } from "../../../composition-root";
 
 export async function authLoginHandler(
   req: RequestWithBody<LoginInputModel>,
@@ -15,7 +13,7 @@ export async function authLoginHandler(
     // Проверка пароля
     const loginOrEmail = req.body.loginOrEmail;
     const password = req.body.password;
-    const user = await usersQwRepository.findLoginOrEmailOrFail(loginOrEmail);
+    const user = await usersQueryRepo.findLoginOrEmailOrFail(loginOrEmail);
     const ispasswordCorrect = await bcrypt.compare(password, user.hash);
     if (!ispasswordCorrect) {
       return res.sendStatus(HttpStatus.Unauthorized);
@@ -29,7 +27,7 @@ export async function authLoginHandler(
     // Работа с сессиями
     const ip = req.ip!;
     const title = req.headers["user-agent"]!;
-    await securityDeviceService.add(
+    await securityService.add(
       user.id,
       refreshTokenBody.deviceId,
       title,
