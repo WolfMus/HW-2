@@ -88,9 +88,9 @@ export class NodeMailerService {
     const info = await transporter.sendMail({
       from: 'mrsevere484@gmail.com',
       to: userEmail,
-      subject: "Registration",
+      subject: "Password Recovery",
       text: "Welcome", // Plain-text version of the message
-      html: `<h1>Password recovery</h1><p>To finish password recovery please follow the link below:<a href='http://localhost:5003/auth/registration-confirmation?code=${recoveryCode}'>recovery password</a></p>`,
+      html: `<h1>Password recovery</h1><p>To finish password recovery please follow the link below:<a href='http://localhost:5003/auth/registration-confirmation?recoveryCode=${recoveryCode}'>recovery password</a></p>`,
     });
 
     // MOCK ETHEREAL ACCOUNT
