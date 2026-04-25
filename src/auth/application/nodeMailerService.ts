@@ -4,7 +4,6 @@ dotenv.config();
 
 export class NodeMailerService {
   async sendEmail(userEmail: string, confirmationCode: string) {
-    
     // REAL ACCOUNT
     // const transporter = nodemailer.createTransport({
     //   host: "smtp.gmail.com",
@@ -14,7 +13,7 @@ export class NodeMailerService {
     //   },
     // });
 
-    // MOCK ETHEREAL ACCOUNT  
+    // MOCK ETHEREAL ACCOUNT
     const transporter = nodemailer.createTransport({
       host: "smtp.ethereal.email",
       port: 587,
@@ -34,7 +33,7 @@ export class NodeMailerService {
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const info = await transporter.sendMail({
-      from: 'mrsevere484@gmail.com',
+      from: "mrsevere484@gmail.com",
       to: userEmail,
       subject: "Registration",
       text: "Welcome", // Plain-text version of the message
@@ -43,4 +42,4 @@ export class NodeMailerService {
 
     console.log("QUERY: ", confirmationCode);
   }
-};
+}

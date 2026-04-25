@@ -1,5 +1,4 @@
 import { Router } from "express";
-import { authLoginHandler } from "./handler/postAuthLogin.handler";
 import {
   emailForResendingValidation,
   emailValidation,
@@ -7,29 +6,31 @@ import {
   loginValidation,
   passwordValidation,
 } from "../../users/validation/password.validation";
-import { getInformationAboutUserHandler } from "./handler/getInformation.handler";
-import { registrationHandler } from "./handler/registration.handler";
 import { inputValidationResultMiddleware } from "../../core/middlewares/validation/input-validation-result.middleware";
 import { confirmationCodeValidation } from "../validation/confirmation-code.validation";
-import { confirmationHandler } from "./handler/confirmation.handler";
-import { emailResendingHandler } from "./handler/emailResending.handler";
-import { updateRefreshTokenHandler } from "./handler/updateRefreshToken.handler";
-import { refreshTokenLogoutHandler } from "./handler/refreshTokenLogout.handler";
 import { refreshTokenGuard } from "../middleware/refresh-token.guard";
 import { tokenGuard } from "../middleware/tokenGuard.guard";
 import { rateLimitMiddleware } from "../middleware/rate-limit.middleware";
+import { authController } from "../../composition-root";
 
 export const authRouter = Router({});
 
 authRouter
 
-  .post("/login", rateLimitMiddleware, passwordValidation, loginOrEmailValidation, inputValidationResultMiddleware, authLoginHandler)
+  .post(
+    "/login",
+    rateLimitMiddleware,
+    passwordValidation,
+    loginOrEmailValidation,
+    inputValidationResultMiddleware,
+    authController.authLogin.bind(authController),
+  )
 
-  .get("/me", tokenGuard, getInformationAboutUserHandler)
+  .get("/me", tokenGuard, authController.getInformationAboutUser.bind(authController))
 
-  .post("/refresh-token", refreshTokenGuard, updateRefreshTokenHandler)
+  .post("/refresh-token", refreshTokenGuard, authController.updateRefreshToken.bind(authController))
 
-  .post("/logout", refreshTokenGuard, refreshTokenLogoutHandler)
+  .post("/logout", refreshTokenGuard, authController.refreshTokenLogout.bind(authController))
 
   .post(
     "/registration",
@@ -38,7 +39,7 @@ authRouter
     loginValidation,
     emailValidation,
     inputValidationResultMiddleware,
-    registrationHandler,
+    authController.registration.bind(authController),
   )
 
   .post(
@@ -46,7 +47,7 @@ authRouter
     rateLimitMiddleware,
     confirmationCodeValidation,
     inputValidationResultMiddleware,
-    confirmationHandler,
+    authController.confirmation.bind(authController),
   )
 
   .post(
@@ -54,7 +55,5 @@ authRouter
     rateLimitMiddleware,
     emailForResendingValidation,
     inputValidationResultMiddleware,
-    emailResendingHandler,
+    authController.emailResending.bind(authController),
   );
-
-  

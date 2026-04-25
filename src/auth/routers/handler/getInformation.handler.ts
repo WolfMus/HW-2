@@ -9,18 +9,17 @@ export async function getInformationAboutUserHandler(
   res: Response,
 ) {
   try {
-  const userId = req.user.id;
-  const me = await usersQueryRepo.findById(userId);
+    const userId = req.user.id;
+    const me = await usersQueryRepo.findById(userId);
 
-  const meToView = {
-    email: me.email,
-    login: me.login,
-    userId: me.id,
-  };
+    const meToView = {
+      email: me.email,
+      login: me.login,
+      userId: me.id,
+    };
 
-  res.status(HttpStatus.Ok).send(meToView);
-} catch (e) {
-  errorsHandler(e, res);
+    res.status(HttpStatus.Ok).send(meToView);
+  } catch (e) {
+    errorsHandler(e, res);
+  }
 }
-}
-

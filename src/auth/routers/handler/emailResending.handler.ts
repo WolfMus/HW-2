@@ -1,7 +1,11 @@
 import { Response } from "express";
 import { HttpStatus, RequestWithBody } from "../../../core/types/types";
 import { errorsHandler } from "../../../core/errors/errors.handler";
-import { authService, emailService, usersQueryRepo } from "../../../composition-root";
+import {
+  authService,
+  emailService,
+  usersQueryRepo,
+} from "../../../composition-root";
 
 export async function emailResendingHandler(
   req: RequestWithBody<{ email: string }>,
@@ -14,12 +18,11 @@ export async function emailResendingHandler(
 
     await authService.isConfirmed(user.id);
 
-    const confirmationCode = await authService.updateConfirmationCodeForUser(user.id);
-
-    await emailService.sendEmail(
-      email,
-      confirmationCode,
+    const confirmationCode = await authService.updateConfirmationCodeForUser(
+      user.id,
     );
+
+    await emailService.sendEmail(email, confirmationCode);
 
     res.sendStatus(HttpStatus.NoContent);
   } catch (e) {

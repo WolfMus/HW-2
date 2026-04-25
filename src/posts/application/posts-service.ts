@@ -68,5 +68,5 @@ export class PostsService {
 
   async findById(id: string): Promise<WithId<Post>> {
     return await this.postsQueryRepo.findById(id);
-  }  
+  }
 }

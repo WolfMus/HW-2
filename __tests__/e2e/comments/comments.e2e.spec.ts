@@ -8,27 +8,27 @@ import { createPost } from "../../utils/posts/create-post";
 import { createPostsDto } from "../../utils/posts/create-post-dto";
 import { createBlog } from "../../utils/blogs/create-blog";
 import { Post } from "../../../src/posts/types/posts";
-import { describe, beforeAll, afterAll, it, expect } from '@jest/globals';
+import { describe, beforeAll, afterAll, it, expect } from "@jest/globals";
 
 describe("Comments API", () => {
-    const app = express();
-    setupApp(app);
+  const app = express();
+  setupApp(app);
 
-    const adminToken = generateAdminAuthToken();
+  const adminToken = generateAdminAuthToken();
 
-    beforeAll(async() => {
-        await runDb(SETTINGS.MONGO_URL);
-        await clearDb(app);
-    });
+  beforeAll(async () => {
+    await runDb(SETTINGS.MONGO_URL);
+    await clearDb(app);
+  });
 
-    it("should create comment; POST /posts, POST /post/:id/comments", async () => {
-        const blog = await createBlog(app);
-        const newPost: Post = {
-              ...createPostsDto(),
-              blogId: blog.id,
-              blogName: blog.name,
-              createdAt: new Date(),
-            };
-        const post = await createPost(app, newPost)
-    })
-})
+  it("should create comment; POST /posts, POST /post/:id/comments", async () => {
+    const blog = await createBlog(app);
+    const newPost: Post = {
+      ...createPostsDto(),
+      blogId: blog.id,
+      blogName: blog.name,
+      createdAt: new Date(),
+    };
+    const post = await createPost(app, newPost);
+  });
+});

@@ -1,24 +1,30 @@
 import { Response } from "express";
 import { HttpStatus, RequestWithUserId } from "../../../core/types/types";
 import { errorsHandler } from "../../../core/errors/errors.handler";
-import {  } from "../../../security/application/securityDevice.service";
+import {} from "../../../security/application/securityDevice.service";
 import { DeviceType } from "../../../security/types/device.type";
 import { jwtService, securityService } from "../../../composition-root";
 
-export async function updateRefreshTokenHandler(req: RequestWithUserId<{id: string}>, res: Response) {
+export async function updateRefreshTokenHandler(
+  req: RequestWithUserId<{ id: string }>,
+  res: Response,
+) {
   try {
     const userId = req.user.id;
     const refreshToken = await jwtService.decodeToken(req.cookies.refreshToken);
     const ip = req.ip;
 
     let deviceName;
-    if (!req.headers['user-agent']) {
+    if (!req.headers["user-agent"]) {
       deviceName = "Unknown";
     } else {
-      deviceName = req.headers['user-agent'];
+      deviceName = req.headers["user-agent"];
     }
 
-    const newRefreshToken = await jwtService.updateRefreshToken(userId, refreshToken.deviceId);
+    const newRefreshToken = await jwtService.updateRefreshToken(
+      userId,
+      refreshToken.deviceId,
+    );
     await jwtService.deleteRefreshToken(req.cookies.refreshToken);
     const accessToken = await jwtService.createToken(userId);
     const rTBody = await jwtService.decodeToken(newRefreshToken);
@@ -29,7 +35,7 @@ export async function updateRefreshTokenHandler(req: RequestWithUserId<{id: stri
       lastActiveDate: new Date(rTBody.iat! * 1000),
       deviceId: refreshToken.deviceId,
       userId: userId,
-    }
+    };
     await securityService.updateSession(sessionBody);
 
     const MAX_AGE = refreshToken.exp! - refreshToken.iat!;

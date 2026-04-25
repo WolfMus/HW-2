@@ -4,7 +4,7 @@ import {
   RequestWithParamsAndBodyAndUserId,
 } from "../../../core/types/types";
 import { errorsHandler } from "../../../core/errors/errors.handler";
-import { commentsQueryRepo, commentsService } from "../../../composition-root";
+import { commentsService } from "../../../composition-root";
 
 export async function updateCommentHandler(
   req: RequestWithParamsAndBodyAndUserId<
@@ -19,7 +19,7 @@ export async function updateCommentHandler(
     const commentContent = req.body.content;
     const userId = req.user.id;
 
-    const comment = await commentsQueryRepo.getCommentById(commentId);
+    const comment = await commentsService.getById(commentId);
     if (comment.commentatorInfo.userId !== userId) {
       res.sendStatus(HttpStatus.Forbidden);
       return;

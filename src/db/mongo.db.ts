@@ -13,7 +13,7 @@ const BLOGS_COLLECTION_NAME = "blogs";
 const POSTS_COLLECTION_NAME = "posts";
 const USERS_COLLECTION_NAME = "users";
 const COMMENTS_COLLECTION_NAME = "comments";
-const RATELIMIT_COLLECTION_NAME = 'rate-limit';
+const RATELIMIT_COLLECTION_NAME = "rate-limit";
 const DEVICE_COLLECTION_NAME = "device";
 
 export let client: MongoClient;
@@ -23,7 +23,7 @@ export let postsCollection: Collection<Post>;
 export let usersCollection: Collection<User>;
 export let commentsCollection: Collection<Comment>;
 export let rateLimitCollection: Collection<RateLimit>;
-export let securityDeviceCollection: Collection<DeviceType>
+export let securityDeviceCollection: Collection<DeviceType>;
 
 export async function runDb(url: string): Promise<void> {
   client = new MongoClient(url);

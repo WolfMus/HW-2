@@ -6,17 +6,22 @@ import { CommentQueryDtoInput } from "../../../comments/types/commentQueryDtoInp
 import { HttpStatus } from "../../../core/types/types";
 import { commentsQueryRepo, postsService } from "../../../composition-root";
 
-export async function getListOfCommentsByIdHandler (req: Request<{id: string}>, res: Response) {
-    try {
-        const id = req.params.id;
-        await postsService.findById(id);
+export async function getListOfCommentsByIdHandler(
+  req: Request<{ id: string }>,
+  res: Response,
+) {
+  try {
+    const id = req.params.id;
+    await postsService.findById(id);
 
-        const sanitizedQuery = matchedData(req, {includeOptionals: true}) as CommentQueryDtoInput;
-        const queryInput = setDefaultSortAndPaginationIfNotExist(sanitizedQuery);
+    const sanitizedQuery = matchedData(req, {
+      includeOptionals: true,
+    }) as CommentQueryDtoInput;
+    const queryInput = setDefaultSortAndPaginationIfNotExist(sanitizedQuery);
 
-        const comments = await commentsQueryRepo.findByPostId(id, queryInput);
-        res.status(HttpStatus.Ok).send(comments)
-    } catch (e) {
-        errorsHandler(e, res);
-    }
+    const comments = await commentsQueryRepo.findByPostId(id, queryInput);
+    res.status(HttpStatus.Ok).send(comments);
+  } catch (e) {
+    errorsHandler(e, res);
+  }
 }

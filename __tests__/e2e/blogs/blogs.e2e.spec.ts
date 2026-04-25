@@ -12,7 +12,7 @@ import { getBlogsDto } from "../../utils/blogs/get-blogs-dto";
 import { createBlog } from "../../utils/blogs/create-blog";
 import { getBlogById } from "../../utils/blogs/get-blog-id";
 import { updateBlog } from "../../utils/blogs/update-blog";
-import { describe, beforeAll, it, expect } from '@jest/globals';
+import { describe, beforeAll, it, expect } from "@jest/globals";
 
 describe("Blogs API", () => {
   const app = express();

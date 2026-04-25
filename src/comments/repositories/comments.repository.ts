@@ -28,10 +28,12 @@ export class CommentsRepository {
   }
 
   async delete(id: string): Promise<void> {
-    const deletedComment = await commentsCollection.deleteOne({_id: new ObjectId(id)})
+    const deletedComment = await commentsCollection.deleteOne({
+      _id: new ObjectId(id),
+    });
     if (deletedComment.deletedCount < 1) {
-      throw new RepositoryNotFoundError("Comment not found", "id")
+      throw new RepositoryNotFoundError("Comment not found", "id");
     }
     return;
   }
-};
+}

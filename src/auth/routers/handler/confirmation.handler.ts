@@ -4,14 +4,17 @@ import { ConfirmationCodeType } from "../../types/confirmation-code.type";
 import { errorsHandler } from "../../../core/errors/errors.handler";
 import { authService } from "../../../composition-root";
 
-export async function confirmationHandler(req: RequestWithBody<ConfirmationCodeType>, res: Response) {
-    try {
+export async function confirmationHandler(
+  req: RequestWithBody<ConfirmationCodeType>,
+  res: Response,
+) {
+  try {
     const code = req.body.code;
 
     await authService.checkConfirmationCode(code);
 
     res.sendStatus(HttpStatus.NoContent);
-    } catch (error) {
-        errorsHandler(error, res);
-    }   
+  } catch (error) {
+    errorsHandler(error, res);
+  }
 }

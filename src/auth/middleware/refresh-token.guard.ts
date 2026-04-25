@@ -10,7 +10,6 @@ export const refreshTokenGuard = async (
   next: NextFunction,
 ) => {
   try {
-
     const refreshToken = req.cookies.refreshToken;
 
     if (!refreshToken) {
@@ -21,8 +20,9 @@ export const refreshTokenGuard = async (
     if (!payload) {
       throw new UnauthorizedError("Refresh token is not valid", "refreshToken");
     }
-    
-    const refreshTokenBody = await jwtService.findRefreshTokenById(refreshToken);
+
+    const refreshTokenBody =
+      await jwtService.findRefreshTokenById(refreshToken);
     if (!refreshTokenBody) {
       throw new UnauthorizedError("Refresh token is not valid", "refreshToken");
     }
@@ -32,10 +32,12 @@ export const refreshTokenGuard = async (
       await tokenRepo.delete(refreshToken);
       throw new UnauthorizedError("Refresh token is not valid", "refreshToken");
     }
-    
 
     // Проверка существует ли сессия
-    const session = await securityService.findByUserAndDeviceId(payload.sub, payload.deviceId);
+    const session = await securityService.findByUserAndDeviceId(
+      payload.sub,
+      payload.deviceId,
+    );
     if (!session) {
       throw new UnauthorizedError("Refresh token is not valid", "refreshToken");
     }

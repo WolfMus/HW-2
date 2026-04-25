@@ -5,7 +5,7 @@ import { DeviceViewType } from "../types/device-view.type";
 
 export class SecurityDeviceService {
   private securityRepo: SecurityDeviceRepository;
-  constructor(securityRepo: SecurityDeviceRepository){
+  constructor(securityRepo: SecurityDeviceRepository) {
     this.securityRepo = securityRepo;
   }
 
@@ -49,7 +49,10 @@ export class SecurityDeviceService {
     return session.userId;
   }
 
-  async findByUserAndDeviceId(userId: string, deviceId: string): Promise<DeviceViewType | null> {
+  async findByUserAndDeviceId(
+    userId: string,
+    deviceId: string,
+  ): Promise<DeviceViewType | null> {
     const session = await this.securityRepo.findOne(userId, deviceId);
     if (!session) {
       return null;
@@ -65,4 +68,4 @@ export class SecurityDeviceService {
       deviceId: device.deviceId,
     };
   }
-};
+}

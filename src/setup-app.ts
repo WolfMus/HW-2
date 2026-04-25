@@ -20,7 +20,7 @@ import helmet from "helmet";
 import { securityRouter } from "./security/routers/security.router";
 
 export const setupApp = (app: Express) => {
-  app.set('trust proxy', true);
+  app.set("trust proxy", true);
   // Basic CSP with helmet
   app.use(cors());
   app.use(
@@ -50,4 +50,4 @@ export const setupApp = (app: Express) => {
   app.use(SECURITY_PATH, securityRouter);
 
   return app;
-};;
+};

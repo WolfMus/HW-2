@@ -13,10 +13,13 @@ export async function getUsersListHandler(
   res: Response<Pagination<UserView[]>>,
 ) {
   try {
+    const sanitizedQuery = matchedData(req, {
+      includeOptionals: true,
+    }) as UsersQueryInput;
 
-    const sanitizedQuery = matchedData(req, { includeOptionals: true }) as UsersQueryInput;
-    
-    const queryInput = {...setDefaultSortAndPaginationIfNotExist(sanitizedQuery)};
+    const queryInput = {
+      ...setDefaultSortAndPaginationIfNotExist(sanitizedQuery),
+    };
 
     const usersList = await usersQueryRepo.findAll(queryInput);
     return res.status(HttpStatus.Ok).send(usersList);

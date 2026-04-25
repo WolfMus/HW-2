@@ -11,10 +11,13 @@ export class SecurityDeviceRepository {
   }
 
   async update(sessionBody: DeviceType): Promise<void> {
-    const updated = await securityDeviceCollection.updateOne({
-      userId: sessionBody.userId,
-      deviceId: sessionBody.deviceId,
-    }, {$set: sessionBody})
+    const updated = await securityDeviceCollection.updateOne(
+      {
+        userId: sessionBody.userId,
+        deviceId: sessionBody.deviceId,
+      },
+      { $set: sessionBody },
+    );
     if (updated.matchedCount < 1) {
       throw new RepositoryNotFoundError("Session was not found", "session");
     }
@@ -48,18 +51,23 @@ export class SecurityDeviceRepository {
   }
 
   async findUserId(deviceId: string): Promise<WithId<DeviceType>> {
-    const founded = await securityDeviceCollection.findOne({deviceId: deviceId})
+    const founded = await securityDeviceCollection.findOne({
+      deviceId: deviceId,
+    });
     if (!founded) {
-      throw new RepositoryNotFoundError("Device id not found", "deviceId")
-    };
+      throw new RepositoryNotFoundError("Device id not found", "deviceId");
+    }
     return founded;
   }
 
-  async findOne(userId: string, deviceId: string): Promise<WithId<DeviceType> | null> {
+  async findOne(
+    userId: string,
+    deviceId: string,
+  ): Promise<WithId<DeviceType> | null> {
     const founded = await securityDeviceCollection.findOne({
       userId: userId,
       deviceId: deviceId,
     });
     return founded || null;
   }
-};
+}

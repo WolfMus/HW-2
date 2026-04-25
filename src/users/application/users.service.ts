@@ -7,16 +7,21 @@ import { add } from "date-fns";
 import { NodeMailerService } from "../../auth/application/nodeMailerService";
 
 export class UsersService {
-  private usersRepo: UsersRepository;
-  private usersQueryRepo: UsersQwRepository;
-  private cryptoService: BcryptService;
-  private mailService: NodeMailerService;
+  public usersRepo: UsersRepository;
+  public usersQueryRepo: UsersQwRepository;
+  public cryptoService: BcryptService;
+  public emailService: NodeMailerService;
 
-  constructor(usersRepo: UsersRepository, usersQueryRepo: UsersQwRepository, cryptoService: BcryptService, mailService: NodeMailerService) {
+  constructor(
+    usersRepo: UsersRepository,
+    usersQueryRepo: UsersQwRepository,
+    cryptoService: BcryptService,
+    emailService: NodeMailerService,
+  ) {
     this.usersRepo = usersRepo;
     this.usersQueryRepo = usersQueryRepo;
     this.cryptoService = cryptoService;
-    this.mailService = mailService;
+    this.emailService = emailService;
   }
 
   async create(
@@ -38,7 +43,7 @@ export class UsersService {
           minutes: 5,
         }),
         isConfirmed: true,
-      }
+      },
     };
 
     const createdUserId = await this.usersRepo.create(userInputBody);
@@ -53,7 +58,7 @@ export class UsersService {
   ): Promise<UserDbView | null> {
     await this.usersQueryRepo.doesExistByLoginAndEmail(login, email);
 
-    const {salt, hash} = await this.cryptoService.generateHash(password);
+    const { salt, hash } = await this.cryptoService.generateHash(password);
 
     const newUser: UserDbView = {
       login: login,
@@ -72,17 +77,19 @@ export class UsersService {
 
     await this.usersRepo.createByRegistration(newUser);
     try {
-      await this.mailService.sendEmail(newUser.email, newUser.emailConfirmation.confirmationCode);
-
+      await this.emailService.sendEmail(
+        newUser.email,
+        newUser.emailConfirmation.confirmationCode,
+      );
     } catch (e: unknown) {
       console.error(e);
     }
-    
-    return newUser
+
+    return newUser;
   }
 
   async delete(id: string): Promise<void> {
     await this.usersRepo.delete(id);
     return;
   }
-};
+}

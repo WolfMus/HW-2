@@ -1,7 +1,7 @@
 export type Comment = {
-        postId: string,
-        userId: string;
-        userLogin: string;
-        content: string,
-        createdAt: Date,
-}
+  postId: string;
+  userId: string;
+  userLogin: string;
+  content: string;
+  createdAt: Date;
+};

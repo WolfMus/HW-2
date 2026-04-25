@@ -7,19 +7,22 @@ import { Pagination } from "../../core/types/pagination.interface";
 import { CommentQueryDtoInput } from "../types/commentQueryDtoInput";
 
 export class CommentsQwRepository {
-  async findByPostId(postId: string, query: CommentQueryDtoInput): Promise<Pagination<CommentViewModel[]>> {
+  async findByPostId(
+    postId: string,
+    query: CommentQueryDtoInput,
+  ): Promise<Pagination<CommentViewModel[]>> {
     const { pageNumber, pageSize, sortBy, sortDirection } = query;
 
     const skip = (pageNumber - 1) * pageSize;
-    const filter = {postId: postId};
-    const sortOrder = sortDirection === 'asc' ? 1 : -1;
+    const filter = { postId: postId };
+    const sortOrder = sortDirection === "asc" ? 1 : -1;
 
     const items = await commentsCollection
-        .find(filter)
-        .sort( {[sortBy]: sortOrder} )
-        .skip(skip)
-        .limit(pageSize)
-        .toArray();
+      .find(filter)
+      .sort({ [sortBy]: sortOrder })
+      .skip(skip)
+      .limit(pageSize)
+      .toArray();
 
     const totalCount = await commentsCollection.countDocuments(filter);
 
@@ -29,17 +32,17 @@ export class CommentsQwRepository {
       pageSize: pageSize,
       totalCount,
       items: items.map((u) => this._getToViewModel(u)),
-    }
+    };
   }
 
-  async getCommentById(id: string): Promise<CommentViewModel> {
+  async getCommentById(id: string): Promise<WithId<Comment>> {
     const comment = await commentsCollection.findOne({ _id: new ObjectId(id) });
 
     if (!comment) {
       throw new RepositoryNotFoundError("Comment not found", "id");
     }
 
-    return this._getToViewModel(comment);
+    return comment;
   }
 
   _getToViewModel(model: WithId<Comment>): CommentViewModel {
@@ -53,4 +56,4 @@ export class CommentsQwRepository {
       createdAt: model.createdAt,
     };
   }
-};
+}

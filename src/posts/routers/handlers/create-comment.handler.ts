@@ -5,10 +5,18 @@ import {
 } from "../../../core/types/types";
 import { errorsHandler } from "../../../core/errors/errors.handler";
 import { IdType } from "../../../core/types/id";
-import { commentsQueryRepo, commentsService, postsService } from "../../../composition-root";
+import {
+  commentsQueryRepo,
+  commentsService,
+  postsService,
+} from "../../../composition-root";
 
 export async function createCommentHandler(
-  req: RequestWithParamsAndBodyAndUserId<{ id: string }, { content: string }, IdType>,
+  req: RequestWithParamsAndBodyAndUserId<
+    { id: string },
+    { content: string },
+    IdType
+  >,
   res: Response,
 ) {
   try {

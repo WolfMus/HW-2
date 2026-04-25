@@ -5,7 +5,6 @@ import { blogsCollection } from "../../db/mongo.db";
 import { RepositoryNotFoundError } from "../../core/errors/repository-not-found.error";
 
 export class BlogsQwRepository {
-
   async findAll(
     queryDto: BlogsQueryDtoInput,
   ): Promise<{ items: WithId<Blog>[]; totalCount: number }> {
@@ -41,5 +40,4 @@ export class BlogsQwRepository {
 
     return blog;
   }
-};
-
+}

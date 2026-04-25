@@ -1,11 +1,25 @@
-import { usersQueryRepo } from "../../composition-root";
+import { WithId } from "mongodb";
 import { CommentsRepository } from "../repositories/comments.repository";
 import { Comment } from "../types/comments";
+import { CommentViewModel } from "../types/commentViewModel";
+import { CommentsQwRepository } from "../repositories/comments-query.repository";
+import { UsersQwRepository } from "../../users/repository/usersQw.repository";
+import { CommentQueryDtoInput } from "../types/commentQueryDtoInput";
+import { Pagination } from "../../core/types/pagination.interface";
 
 export class CommentsService {
-  private commentsRepo: CommentsRepository
-  constructor(commentsRepo: CommentsRepository) {
+  private commentsRepo: CommentsRepository;
+  private commentsQueryRepo: CommentsQwRepository;
+  private usersQueryRepo: UsersQwRepository;
+
+  constructor(
+    commentsRepo: CommentsRepository,
+    commentsQueryRepo: CommentsQwRepository,
+    usersQueryRepo: UsersQwRepository,
+  ) {
     this.commentsRepo = commentsRepo;
+    this.commentsQueryRepo = commentsQueryRepo;
+    this.usersQueryRepo = usersQueryRepo;
   }
 
   async create(
@@ -13,7 +27,7 @@ export class CommentsService {
     postId: string,
     userId: string,
   ): Promise<string> {
-    const user = await usersQueryRepo.findById(userId);
+    const user = await this.usersQueryRepo.findById(userId);
 
     const newComment: Comment = {
       postId: postId,
@@ -35,4 +49,29 @@ export class CommentsService {
   async delete(id: string): Promise<void> {
     return await this.commentsRepo.delete(id);
   }
-};
+
+  async findByPostId(
+    postId: string,
+    query: CommentQueryDtoInput,
+  ): Promise<Pagination<CommentViewModel[]>> {
+    return await this.commentsQueryRepo.findByPostId(postId, query);
+  }
+
+  async getById(id: string): Promise<CommentViewModel> {
+    const comment = await this.commentsQueryRepo.getCommentById(id);
+
+    return this._getToViewModel(comment);
+  }
+
+  _getToViewModel(model: WithId<Comment>): CommentViewModel {
+    return {
+      id: model._id.toString(),
+      content: model.content,
+      commentatorInfo: {
+        userId: model.userId,
+        userLogin: model.userLogin,
+      },
+      createdAt: model.createdAt,
+    };
+  }
+}

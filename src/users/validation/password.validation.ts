@@ -44,9 +44,8 @@ export const loginValidation = body("login")
     return true;
   });
 
-
 export const loginOrEmailValidation = body("loginOrEmail")
   .isString()
   .trim()
-  .isLength({min: 3, max: 25})
-  .withMessage('Login Or email has wrong input')
+  .isLength({ min: 3, max: 25 })
+  .withMessage("Login Or email has wrong input");

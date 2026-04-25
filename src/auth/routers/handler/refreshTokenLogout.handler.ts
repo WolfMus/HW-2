@@ -15,7 +15,7 @@ export async function refreshTokenLogoutHandler(
     res.clearCookie("refreshToken", {
       httpOnly: true,
       secure: true,
-    })
+    });
     res.sendStatus(HttpStatus.NoContent);
   } catch (e) {
     errorsHandler(e, res);

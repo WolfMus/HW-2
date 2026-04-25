@@ -5,8 +5,8 @@ export interface UserDbView {
   salt: string;
   createdAt: Date;
   emailConfirmation: {
-    confirmationCode: string,
-    expirationCode: Date,
-    isConfirmed: boolean,
-  }
+    confirmationCode: string;
+    expirationCode: Date;
+    isConfirmed: boolean;
+  };
 }

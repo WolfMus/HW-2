@@ -1,5 +1,5 @@
-import { rateLimitCollection } from "../../db/mongo.db"
-import { RateLimit } from "../types/rate-limit.type"
+import { rateLimitCollection } from "../../db/mongo.db";
+import { RateLimit } from "../types/rate-limit.type";
 
 export class RateLimitRepository {
   async create(ip: string, url: string): Promise<void> {
@@ -14,14 +14,21 @@ export class RateLimitRepository {
   }
 
   async deleteOld(ip: string, url: string, tenSecondsAgo: Date): Promise<void> {
-    await rateLimitCollection.deleteMany({ip: ip, url: url, date: {$lte: tenSecondsAgo}});
+    await rateLimitCollection.deleteMany({
+      ip: ip,
+      url: url,
+      date: { $lte: tenSecondsAgo },
+    });
     return;
   }
 
   async find(ip: string, url: string, tenSecondsAgo: Date): Promise<number> {
-    const founded = await rateLimitCollection
-      .countDocuments({ ip: ip, url: url, date: { $gte: tenSecondsAgo } })
+    const founded = await rateLimitCollection.countDocuments({
+      ip: ip,
+      url: url,
+      date: { $gte: tenSecondsAgo },
+    });
     if (!founded) return 0;
     return founded;
   }
-};
+}

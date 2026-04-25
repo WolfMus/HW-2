@@ -12,8 +12,8 @@ export async function deleteOneDeviceHandler(
   res: Response,
 ) {
   try {
-      const deviceId = req.params.deviceId;
-      const userId = req.user.id;
+    const deviceId = req.params.deviceId;
+    const userId = req.user.id;
 
     // ПРОВЕРКА НА ДРУГОГО ЮЗЕРА
     const userId_2 = await securityService.findUserId(deviceId);

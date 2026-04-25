@@ -1,6 +1,6 @@
 import request from "supertest";
 import express from "express";
-import { describe, beforeAll, afterAll, it, expect } from '@jest/globals';
+import { describe, beforeAll, afterAll, it, expect } from "@jest/globals";
 import { setupApp } from "../../../src/setup-app";
 import { BlogInputModel } from "../../../src/blogs/dto/blog-input.dto";
 import { HttpStatus } from "../../../src/core/types/types";
@@ -31,7 +31,7 @@ describe("Blogs API", () => {
   afterAll(async () => {
     await clearDb(app);
     await stopDb();
-  })
+  });
 
   it("should return all blogs; GET /blogs", async () => {
     await request(app).get("/blogs").expect(HttpStatus.Ok);

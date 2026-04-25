@@ -1,4 +1,4 @@
-import { ObjectId, WithId} from "mongodb";
+import { ObjectId, WithId } from "mongodb";
 import { usersCollection } from "../../db/mongo.db";
 import { User } from "../type/user.type";
 import { UsersQueryInput } from "../input/users-query.input";
@@ -64,7 +64,7 @@ export class UsersQwRepository {
   }
 
   async findByIdInDbView(id: string): Promise<UserDb> {
-    const user = await usersCollection.findOne({_id: new ObjectId(id)});
+    const user = await usersCollection.findOne({ _id: new ObjectId(id) });
     if (!user) {
       throw new RepositoryNotFoundError("User not found", "id");
     }
@@ -79,9 +79,7 @@ export class UsersQwRepository {
     return user;
   }
 
-  async findLoginOrEmailOrFail(
-    loginOrEmail: string,
-  ): Promise<UserDb> {
+  async findLoginOrEmailOrFail(loginOrEmail: string): Promise<UserDb> {
     const user = await usersCollection.findOne({
       $or: [{ email: loginOrEmail }, { login: loginOrEmail }],
     });
@@ -155,4 +153,4 @@ export class UsersQwRepository {
       },
     };
   }
-};
+}

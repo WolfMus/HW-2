@@ -6,7 +6,9 @@ import { UnauthorizedError } from "../../core/errors/unauthorizedError.error";
 
 export class TokenQwRepository {
   async findById(refreshToken: string): Promise<TokenDbView> {
-    const token = await tokensCollection.findOne({ refreshToken: refreshToken });
+    const token = await tokensCollection.findOne({
+      refreshToken: refreshToken,
+    });
     if (!token) {
       throw new UnauthorizedError("Token id not found", "id");
     }
@@ -22,4 +24,4 @@ export class TokenQwRepository {
       expiresAt: token.expiresAt,
     };
   }
-};
+}
