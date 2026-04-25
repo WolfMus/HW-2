@@ -2,6 +2,7 @@ import { AuthService } from "./auth/application/authService";
 import { JwtService } from "./auth/application/jwtService";
 import { NodeMailerService } from "./auth/application/nodeMailerService";
 import { RateLimitRepository } from "./auth/repositories/rate-limit.repository";
+import { RecoveryCodeRepository } from "./auth/repositories/recovery-code.repository";
 import { TokenQwRepository } from "./auth/repositories/token-query.repository";
 import { TokenRepository } from "./auth/repositories/token.repository";
 import { AuthController } from "./auth/routers/auth-controller";
@@ -55,6 +56,7 @@ export const securityRepo = new SecurityDeviceRepository();
 export const securityService = new SecurityDeviceService(securityRepo);
 
 // AUTH
+export const recoveryCodeRepo = new RecoveryCodeRepository();
 export const rateLimitRepo = new RateLimitRepository();
 export const tokenRepo = new TokenRepository();
 export const tokenQueryRepo = new TokenQwRepository();
@@ -65,6 +67,8 @@ export const authService = new AuthService(
   cryptoService,
   jwtService,
   securityService,
+  emailService,
+  recoveryCodeRepo,
 );
 
 // COMMENTS

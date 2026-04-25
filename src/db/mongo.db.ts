@@ -7,6 +7,7 @@ import { Comment } from "../comments/types/comments";
 import { Token } from "../auth/types/tokens.types";
 import { RateLimit } from "../auth/types/rate-limit.type";
 import { DeviceType } from "../security/types/device.type";
+import { RecoveryCode } from "../auth/types/recovery-code.type";
 
 const TOKENS_COLLECTION_NAME = "tokens";
 const BLOGS_COLLECTION_NAME = "blogs";
@@ -15,6 +16,7 @@ const USERS_COLLECTION_NAME = "users";
 const COMMENTS_COLLECTION_NAME = "comments";
 const RATELIMIT_COLLECTION_NAME = "rate-limit";
 const DEVICE_COLLECTION_NAME = "device";
+const RECOVERYCODE_COLLECTION_NAME = "recovery-code";
 
 export let client: MongoClient;
 export let tokensCollection: Collection<Token>;
@@ -24,6 +26,7 @@ export let usersCollection: Collection<User>;
 export let commentsCollection: Collection<Comment>;
 export let rateLimitCollection: Collection<RateLimit>;
 export let securityDeviceCollection: Collection<DeviceType>;
+export let recoveryCodeCollection: Collection<RecoveryCode>;
 
 export async function runDb(url: string): Promise<void> {
   client = new MongoClient(url);
@@ -36,6 +39,7 @@ export async function runDb(url: string): Promise<void> {
   commentsCollection = db.collection<Comment>(COMMENTS_COLLECTION_NAME);
   rateLimitCollection = db.collection<RateLimit>(RATELIMIT_COLLECTION_NAME);
   securityDeviceCollection = db.collection<DeviceType>(DEVICE_COLLECTION_NAME);
+  recoveryCodeCollection = db.collection<RecoveryCode>(RECOVERYCODE_COLLECTION_NAME);
 
   try {
     await client.connect();

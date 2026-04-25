@@ -4,7 +4,9 @@ import {
   emailValidation,
   loginOrEmailValidation,
   loginValidation,
+  newPasswordValidation,
   passwordValidation,
+  recoveryCodeValidation,
 } from "../../users/validation/password.validation";
 import { inputValidationResultMiddleware } from "../../core/middlewares/validation/input-validation-result.middleware";
 import { confirmationCodeValidation } from "../validation/confirmation-code.validation";
@@ -63,15 +65,16 @@ authRouter
     rateLimitMiddleware,
     emailForResendingValidation,
     inputValidationResultMiddleware,
-    passwordRecoveryHandler,
+    authController.passwordRecovery.bind(authController),
   )
 
   .post(
     "/new-password",
     rateLimitMiddleware,
-    passwordValidation,
+    newPasswordValidation,
+    recoveryCodeValidation,
     inputValidationResultMiddleware,
-    newPasswordHandler
+    authController.newPassword.bind(authController),
   )
 
   

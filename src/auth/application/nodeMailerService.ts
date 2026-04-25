@@ -32,7 +32,7 @@ export class NodeMailerService {
     }
 
     // REAL ACCOUNT
-    // //eslint-disable-next-line @typescript-eslint/no-unused-vars
+    //eslint-disable-next-line @typescript-eslint/no-unused-vars
     // const info = await transporter.sendMail({
     //   from: 'mrsevere484@gmail.com',
     //   to: userEmail,
@@ -84,7 +84,7 @@ export class NodeMailerService {
     }
 
     // REAL ACCOUNT
-    // //eslint-disable-next-line @typescript-eslint/no-unused-vars
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     // const info = await transporter.sendMail({
     //   from: 'mrsevere484@gmail.com',
     //   to: userEmail,
