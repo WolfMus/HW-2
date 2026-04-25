@@ -56,4 +56,22 @@ authRouter
     emailForResendingValidation,
     inputValidationResultMiddleware,
     authController.emailResending.bind(authController),
-  );
+  )
+
+  .post(
+    "/password-recovery",
+    rateLimitMiddleware,
+    emailForResendingValidation,
+    inputValidationResultMiddleware,
+    passwordRecoveryHandler,
+  )
+
+  .post(
+    "/new-password",
+    rateLimitMiddleware,
+    passwordValidation,
+    inputValidationResultMiddleware,
+    newPasswordHandler
+  )
+
+  
