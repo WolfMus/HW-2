@@ -1,3 +1,5 @@
+import "reflect-metadata";
+import { inject, injectable } from "inversify";
 import { randomUUID } from "crypto";
 import jwt from "jsonwebtoken";
 import { UsersRepository } from "../../users/repository/users.repository";
@@ -11,32 +13,17 @@ import { SecurityDeviceService } from "../../security/application/securityDevice
 import { NodeMailerService } from "./nodeMailerService";
 import { RecoveryCodeRepository } from "../repositories/recovery-code.repository";
 
+@injectable()
 export class AuthService {
-  private usersRepo: UsersRepository;
-  private usersQueryRepo: UsersQwRepository;
-  private cryptoService: BcryptService;
-  private jwtService: JwtService;
-  private securityService: SecurityDeviceService;
-  private emailService: NodeMailerService;
-  private recoveryCodeRepo: RecoveryCodeRepository;
-
   constructor(
-    usersRepo: UsersRepository,
-    usersQueryRepo: UsersQwRepository,
-    cryptoService: BcryptService,
-    jwtService: JwtService,
-    securityService: SecurityDeviceService,
-    emailService: NodeMailerService,
-    recoveryCodeRepo: RecoveryCodeRepository
-  ) {
-    this.usersRepo = usersRepo;
-    this.usersQueryRepo = usersQueryRepo;
-    this.cryptoService = cryptoService;
-    this.jwtService = jwtService;
-    this.securityService = securityService;
-    this.emailService = emailService;
-    this.recoveryCodeRepo = recoveryCodeRepo;    
-  }
+    @inject(UsersRepository) protected usersRepo: UsersRepository,
+    @inject(UsersQwRepository) protected usersQueryRepo: UsersQwRepository,
+    @inject(BcryptService) protected cryptoService: BcryptService,
+    @inject(JwtService) protected jwtService: JwtService,
+    @inject(SecurityDeviceService) protected securityService: SecurityDeviceService,
+    @inject(NodeMailerService) protected emailService: NodeMailerService,
+    @inject(RecoveryCodeRepository) protected recoveryCodeRepo: RecoveryCodeRepository
+  ) {}
 
   async login(
     loginOrEmail: string,

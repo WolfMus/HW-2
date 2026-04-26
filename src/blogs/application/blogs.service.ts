@@ -1,18 +1,18 @@
+import "reflect-metadata";
 import { Blog } from "../types/blogs";
 import { BlogInputModel } from "../dto/blog-input.dto";
 import { BlogsRepository } from "../repositories/blogs.repository";
 import { BlogsQueryDtoInput } from "../input/blogs-query.input";
 import { WithId } from "mongodb";
 import { BlogsQwRepository } from "../repositories/blogs-query.repository";
+import { inject, injectable } from "inversify";
 
+@injectable()
 export class BlogsService {
-  private blogsRepo: BlogsRepository;
-  private blogsQueryRepo: BlogsQwRepository;
 
-  constructor(blogsRepo: BlogsRepository, blogsQueryRepo: BlogsQwRepository) {
-    this.blogsRepo = blogsRepo;
-    this.blogsQueryRepo = blogsQueryRepo;
-  }
+  constructor(
+    @inject(BlogsRepository) protected blogsRepo: BlogsRepository, 
+    @inject(BlogsQwRepository) protected blogsQueryRepo: BlogsQwRepository) {}
 
   async create(blogDto: BlogInputModel): Promise<string> {
     const newBlog: Blog = {

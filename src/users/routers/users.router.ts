@@ -10,7 +10,10 @@ import {
 import { paginationAndSortingValidation } from "../../core/middlewares/validation/query-pagination-sorting.validation-middleware";
 import { UsersSortField } from "../input/users-sort.input";
 import { loginAndEmailValidation } from "../validation/searchTerm.validation";
-import { usersController } from "../../composition-root";
+import { container } from "../../composition-root";
+import { UsersController } from "./users-controller";
+
+const usersController = container.get(UsersController);
 
 export const usersRouter = Router({});
 usersRouter

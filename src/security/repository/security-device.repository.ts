@@ -3,7 +3,9 @@ import { securityDeviceCollection } from "../../db/mongo.db";
 import { DeviceType } from "../types/device.type";
 import { RepositoryNotFoundError } from "../../core/errors/repository-not-found.error";
 import { UnauthorizedError } from "../../core/errors/unauthorizedError.error";
+import { injectable } from "inversify";
 
+@injectable()
 export class SecurityDeviceRepository {
   async create(deviceBody: DeviceType): Promise<void> {
     await securityDeviceCollection.insertOne(deviceBody);

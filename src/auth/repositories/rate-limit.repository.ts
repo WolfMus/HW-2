@@ -1,6 +1,8 @@
 import { rateLimitCollection } from "../../db/mongo.db";
 import { RateLimit } from "../types/rate-limit.type";
+import { injectable } from "inversify";
 
+@injectable()
 export class RateLimitRepository {
   async create(ip: string, url: string): Promise<void> {
     const rateBody: RateLimit = {

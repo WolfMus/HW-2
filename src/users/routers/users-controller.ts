@@ -13,15 +13,14 @@ import {
 import { errorsHandler } from "../../core/errors/errors.handler";
 import { UserInput } from "../type/user-input.interface";
 import { UsersService } from "../application/users.service";
+import { inject, injectable } from "inversify";
 
+@injectable()
 export class UsersController {
-  usersQueryRepo: UsersQwRepository;
-  usersService: UsersService;
-
-  constructor(usersQueryRepo: UsersQwRepository, usersService: UsersService) {
-    this.usersQueryRepo = usersQueryRepo;
-    this.usersService = usersService;
-  }
+  constructor(
+    @inject(UsersQwRepository) protected usersQueryRepo: UsersQwRepository,
+    @inject(UsersService) protected usersService: UsersService
+  ) {}
 
   async getUsersList(req: Request, res: Response<Pagination<UserView[]>>) {
     try {

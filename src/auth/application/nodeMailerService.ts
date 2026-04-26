@@ -1,7 +1,9 @@
 import nodemailer from "nodemailer";
 import dotenv from "dotenv";
 dotenv.config();
+import { injectable } from "inversify";
 
+@injectable()
 export class NodeMailerService {
   async sendEmail(userEmail: string, confirmationCode: string) {
     // REAL ACCOUNT

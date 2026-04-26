@@ -5,24 +5,16 @@ import { UsersQwRepository } from "../repository/usersQw.repository";
 import { UserDbView } from "../type/user.db.interface";
 import { add } from "date-fns";
 import { NodeMailerService } from "../../auth/application/nodeMailerService";
+import { inject, injectable } from "inversify";
 
+@injectable()
 export class UsersService {
-  public usersRepo: UsersRepository;
-  public usersQueryRepo: UsersQwRepository;
-  public cryptoService: BcryptService;
-  public emailService: NodeMailerService;
-
   constructor(
-    usersRepo: UsersRepository,
-    usersQueryRepo: UsersQwRepository,
-    cryptoService: BcryptService,
-    emailService: NodeMailerService,
-  ) {
-    this.usersRepo = usersRepo;
-    this.usersQueryRepo = usersQueryRepo;
-    this.cryptoService = cryptoService;
-    this.emailService = emailService;
-  }
+    @inject(UsersRepository) protected usersRepo: UsersRepository,
+    @inject(UsersQwRepository) protected usersQueryRepo: UsersQwRepository,
+    @inject(BcryptService) protected cryptoService: BcryptService,
+    @inject(NodeMailerService) protected emailService: NodeMailerService,
+  ) {}
 
   async create(
     login: string,

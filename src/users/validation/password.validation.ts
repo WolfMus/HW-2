@@ -1,5 +1,8 @@
 import { body } from "express-validator";
-import { usersQueryRepo } from "../../composition-root";
+import { container } from "../../composition-root";
+import { UsersQwRepository } from "../repository/usersQw.repository";
+
+const usersQueryRepo = container.get(UsersQwRepository)
 
 const LOGIN_REGEX = "^[a-zA-Z0-9_-]*$";
 const EMAIL_REGEX = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+.[A-Za-z]{2,}$";

@@ -1,12 +1,12 @@
 import { RecoveryCodeRepository } from "../repositories/recovery-code.repository"
 import { RecoveryCode } from "../types/recovery-code.type";
+import { inject, injectable } from "inversify";
 
+@injectable()
 export class RecoveryService {
-    private recoveryCodeRepo: RecoveryCodeRepository;
-
-    constructor(recoveryCodeRepo: RecoveryCodeRepository) {
-        this.recoveryCodeRepo = recoveryCodeRepo;
-    }
+       constructor(
+        @inject(RecoveryCodeRepository) protected recoveryCodeRepo: RecoveryCodeRepository
+    ) {}
 
     async find(recoveryCode: string): Promise<RecoveryCode> {
         const recoveryCodeBody = await this.recoveryCodeRepo.find(recoveryCode);

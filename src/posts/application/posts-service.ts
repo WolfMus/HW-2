@@ -6,15 +6,14 @@ import { Blog } from "../../blogs/types/blogs";
 import { PostInputForBlogModel } from "../dto/post-input-for-blog.dto";
 import { PostsQueryDtoInput } from "../input/post-query.input";
 import { PostsQwRepository } from "../repository/posts-query.repository";
-
+import { inject, injectable } from "inversify";
+@injectable()
 export class PostsService {
-  private postsRepo: PostsRepository;
-  private postsQueryRepo: PostsQwRepository;
 
-  constructor(postsRepo: PostsRepository, postsQueryRepo: PostsQwRepository) {
-    this.postsRepo = postsRepo;
-    this.postsQueryRepo = postsQueryRepo;
-  }
+  constructor(
+    @inject(PostsRepository) protected postsRepo: PostsRepository, 
+    @inject(PostsQwRepository) protected postsQueryRepo: PostsQwRepository
+  ) {}
 
   async create(dto: PostInputModel, blog: WithId<Blog>): Promise<string> {
     const newPost: Post = {

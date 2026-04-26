@@ -6,21 +6,15 @@ import { CommentsQwRepository } from "../repositories/comments-query.repository"
 import { UsersQwRepository } from "../../users/repository/usersQw.repository";
 import { CommentQueryDtoInput } from "../types/commentQueryDtoInput";
 import { Pagination } from "../../core/types/pagination.interface";
+import { inject, injectable } from "inversify";
 
+@injectable()
 export class CommentsService {
-  private commentsRepo: CommentsRepository;
-  private commentsQueryRepo: CommentsQwRepository;
-  private usersQueryRepo: UsersQwRepository;
-
   constructor(
-    commentsRepo: CommentsRepository,
-    commentsQueryRepo: CommentsQwRepository,
-    usersQueryRepo: UsersQwRepository,
-  ) {
-    this.commentsRepo = commentsRepo;
-    this.commentsQueryRepo = commentsQueryRepo;
-    this.usersQueryRepo = usersQueryRepo;
-  }
+    @inject(CommentsRepository) protected commentsRepo: CommentsRepository,
+    @inject(CommentsQwRepository) protected commentsQueryRepo: CommentsQwRepository,
+    @inject(UsersQwRepository) protected usersQueryRepo: UsersQwRepository,
+  ) {}
 
   async create(
     content: string,

@@ -3,7 +3,8 @@ import { PostsQueryDtoInput } from "../input/post-query.input";
 import { Post } from "../types/posts";
 import { postsCollection } from "../../db/mongo.db";
 import { RepositoryNotFoundError } from "../../core/errors/repository-not-found.error";
-
+import { injectable } from "inversify";
+@injectable()
 export class PostsQwRepository {
   async findAll(
     queryDto: PostsQueryDtoInput,

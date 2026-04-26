@@ -7,15 +7,14 @@ import { randomUUID } from "crypto";
 import { RefreshToken } from "../types/token-refresh.type";
 import { add } from "date-fns";
 import { Token } from "../types/tokens.types";
+import { inject, injectable } from "inversify";
 
+@injectable()
 export class JwtService {
-  private tokenRepo: TokenRepository;
-  private tokenQueryRepo: TokenQwRepository;
-
-  constructor(tokenRepo: TokenRepository, tokenQueryRepo: TokenQwRepository) {
-    this.tokenRepo = tokenRepo;
-    this.tokenQueryRepo = tokenQueryRepo;
-  }
+  constructor(
+    @inject(TokenRepository) protected tokenRepo: TokenRepository,
+    @inject(TokenQwRepository) protected tokenQueryRepo: TokenQwRepository
+  ) {}
 
   async createToken(userId: string): Promise<string> {
     const iat = new Date();

@@ -3,7 +3,10 @@ import { idValidation } from "../../core/middlewares/validation/params-id.valida
 import { inputValidationResultMiddleware } from "../../core/middlewares/validation/input-validation-result.middleware";
 import { tokenGuard } from "../../auth/middleware/tokenGuard.guard";
 import { commentsDtoValidation } from "../validation/commentsDtoValidation.middleware";
-import { commentsController } from "../../composition-root";
+import { container } from "../../composition-root";
+import { CommentsController } from "./comments-controller";
+
+const commentsController = container.get(CommentsController);
 
 export const commentsRouter = Router({});
 

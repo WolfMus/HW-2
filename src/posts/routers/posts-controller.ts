@@ -19,21 +19,16 @@ import { CommentQueryDtoInput } from "../../comments/types/commentQueryDtoInput"
 import { Post } from "../types/posts";
 import { IdType } from "../../core/types/id";
 import { CommentsService } from "../../comments/application/comments.service";
+import { inject, injectable } from "inversify";
 
+@injectable()
 export class PostsController {
-  private postsService: PostsService;
-  private blogsService: BlogsService;
-  private commentsService: CommentsService;
 
   constructor(
-    postsService: PostsService,
-    blogsService: BlogsService,
-    commentsService: CommentsService,
-  ) {
-    this.postsService = postsService;
-    this.blogsService = blogsService;
-    this.commentsService = commentsService;
-  }
+    @inject(PostsService) protected postsService: PostsService,
+    @inject(BlogsService) protected blogsService: BlogsService,
+    @inject(CommentsService) protected commentsService: CommentsService,
+  ) {}
 
   async getPostList(req: Request, res: Response) {
     try {

@@ -1,7 +1,10 @@
 import { NextFunction, Request, Response } from "express";
 import { HttpStatus } from "../../core/types/types";
 import { subSeconds } from "date-fns";
-import { rateLimitRepo } from "../../composition-root";
+import { container } from "../../composition-root";
+import { RateLimitRepository } from "../repositories/rate-limit.repository";
+
+const rateLimitRepo = container.get(RateLimitRepository)
 
 export const rateLimitMiddleware = async (
   req: Request,

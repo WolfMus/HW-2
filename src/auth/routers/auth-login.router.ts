@@ -1,3 +1,4 @@
+import "reflect-metadata";
 import { Router } from "express";
 import {
   emailForResendingValidation,
@@ -13,9 +14,10 @@ import { confirmationCodeValidation } from "../validation/confirmation-code.vali
 import { refreshTokenGuard } from "../middleware/refresh-token.guard";
 import { tokenGuard } from "../middleware/tokenGuard.guard";
 import { rateLimitMiddleware } from "../middleware/rate-limit.middleware";
-import { authController } from "../../composition-root";
-import { passwordRecoveryHandler } from "./handler/password-recovery.handler";
-import { newPasswordHandler } from "./handler/new-password.handler";
+import { container } from "../../composition-root";
+import { AuthController } from "./auth-controller";
+
+const authController = container.get(AuthController);
 
 export const authRouter = Router({});
 

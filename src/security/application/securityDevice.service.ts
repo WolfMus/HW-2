@@ -2,12 +2,13 @@ import { WithId } from "mongodb";
 import { SecurityDeviceRepository } from "../repository/security-device.repository";
 import { DeviceType } from "../types/device.type";
 import { DeviceViewType } from "../types/device-view.type";
+import { inject, injectable } from "inversify";
 
+@injectable()
 export class SecurityDeviceService {
-  private securityRepo: SecurityDeviceRepository;
-  constructor(securityRepo: SecurityDeviceRepository) {
-    this.securityRepo = securityRepo;
-  }
+  constructor(
+    @inject(SecurityDeviceRepository) protected securityRepo: SecurityDeviceRepository,
+  ) {}
 
   async add(
     userId: string,

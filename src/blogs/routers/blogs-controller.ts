@@ -1,3 +1,4 @@
+import "reflect-metadata";
 import { matchedData } from "express-validator";
 import { BlogsQueryDtoInput } from "../input/blogs-query.input";
 import { setDefaultSortAndPaginationIfNotExist } from "../../core/heplers/set-default-sort-and-pagination";
@@ -18,15 +19,15 @@ import { PostsService } from "../../posts/application/posts-service";
 import { BlogInputModel } from "../dto/blog-input.dto";
 import { PostInputForBlogModel } from "../../posts/dto/post-input-for-blog.dto";
 import { mapToPostViewModel } from "../../posts/routers/mapped/mapToPostViewModel";
+import { inject, injectable } from "inversify";
 
+@injectable()
 export class BlogsController {
-  private blogsService: BlogsService;
-  private postsService: PostsService;
 
-  constructor(blogsService: BlogsService, postsService: PostsService) {
-    this.blogsService = blogsService;
-    this.postsService = postsService;
-  }
+  constructor(
+    @inject(BlogsService) protected blogsService: BlogsService, 
+    @inject(PostsService) protected postsService: PostsService
+  ) {}
 
   async getBlogList(req: Request, res: Response) {
     try {

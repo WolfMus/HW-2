@@ -7,13 +7,12 @@ import {
   RequestWithParamsAndUserId,
 } from "../../core/types/types";
 import { CommentsService } from "../application/comments.service";
+import { inject, injectable } from "inversify";
 
+@injectable()
 export class CommentsController {
-  private commentsService: CommentsService;
 
-  constructor(commentsService: CommentsService) {
-    this.commentsService = commentsService;
-  }
+  constructor(@inject(CommentsService) protected commentsService: CommentsService) {}
 
   async getCommentHandler(
     req: RequestWithParams<{ id: string }>,

@@ -1,8 +1,15 @@
 import { NextFunction, Request, Response } from "express";
-import { jwtService, securityService, tokenRepo } from "../../composition-root";
+import { container } from "../../composition-root";
 import { errorsHandler } from "../../core/errors/errors.handler";
 import { IdType } from "../../core/types/id";
 import { UnauthorizedError } from "../../core/errors/unauthorizedError.error";
+import { JwtService } from "../application/jwtService";
+import { SecurityDeviceService } from "../../security/application/securityDevice.service";
+import { TokenRepository } from "../repositories/token.repository";
+
+const jwtService = container.get(JwtService)
+const securityService = container.get(SecurityDeviceService)
+const tokenRepo = container.get(TokenRepository)
 
 export const refreshTokenGuard = async (
   req: Request,

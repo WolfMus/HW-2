@@ -5,7 +5,9 @@ import { RepositoryNotFoundError } from "../../core/errors/repository-not-found.
 import { CommentViewModel } from "../types/commentViewModel";
 import { Pagination } from "../../core/types/pagination.interface";
 import { CommentQueryDtoInput } from "../types/commentQueryDtoInput";
+import { injectable } from "inversify";
 
+@injectable()
 export class CommentsQwRepository {
   async findByPostId(
     postId: string,

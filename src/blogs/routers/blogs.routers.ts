@@ -1,3 +1,4 @@
+import "reflect-metadata";
 import { Router } from "express";
 import { idValidation } from "../../core/middlewares/validation/params-id.validation-middleware";
 import { inputValidationResultMiddleware } from "../../core/middlewares/validation/input-validation-result.middleware";
@@ -8,7 +9,10 @@ import { BlogSortField } from "../input/blog-sort-field";
 import { postInputDtoValidation } from "../../posts/validation/postInputDtoValidation.middleware";
 import { PostSortField } from "../../posts/input/post-sort-field";
 import { searchNameTermValidation } from "../validation/searchTerm.validation";
-import { blogsController } from "../../composition-root";
+import { container } from "../../composition-root";
+import { BlogsController } from "./blogs-controller";
+
+const blogsController = container.get(BlogsController)
 
 export const blogsRouter = Router({});
 

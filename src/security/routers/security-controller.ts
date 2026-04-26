@@ -8,15 +8,15 @@ import {
 } from "../../core/types/types";
 import { SecurityDeviceService } from "../application/securityDevice.service";
 import { JwtService } from "../../auth/application/jwtService";
+import { inject, injectable } from "inversify";
 
+@injectable()
 export class SecurityController {
-  private securityService: SecurityDeviceService;
-  private jwtService: JwtService;
 
-  constructor(securityService: SecurityDeviceService, jwtService: JwtService) {
-    this.securityService = securityService;
-    this.jwtService = jwtService;
-  }
+  constructor(
+    @inject(SecurityDeviceService) protected securityService: SecurityDeviceService, 
+    @inject(JwtService) protected jwtService: JwtService
+  ) {}
 
   async getDevicesList(req: RequestWithUserId<IdType>, res: Response) {
     try {

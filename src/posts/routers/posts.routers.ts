@@ -8,7 +8,10 @@ import { PostSortField } from "../input/post-sort-field";
 import { CommentSortField } from "../../comments/types/commentSortField";
 import { tokenGuard } from "../../auth/middleware/tokenGuard.guard";
 import { commentsDtoValidation } from "../../comments/validation/commentsDtoValidation.middleware";
-import { postsController } from "../../composition-root";
+import { container } from "../../composition-root";
+import { PostsController } from "./posts-controller";
+
+const postsController = container.get(PostsController)
 
 export const postsRouters = Router({});
 

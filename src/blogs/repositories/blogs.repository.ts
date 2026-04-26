@@ -1,9 +1,12 @@
+import "reflect-metadata";
 import { Blog } from "../types/blogs";
 import { BlogInputModel } from "../dto/blog-input.dto";
 import { blogsCollection } from "../../db/mongo.db";
 import { ObjectId } from "mongodb";
 import { RepositoryNotFoundError } from "../../core/errors/repository-not-found.error";
+import { injectable } from "inversify";
 
+@injectable()
 export class BlogsRepository {
   async create(newBlog: Blog): Promise<string> {
     const insertResult = await blogsCollection.insertOne(newBlog);

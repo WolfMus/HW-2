@@ -3,7 +3,9 @@ import { usersCollection } from "../../db/mongo.db";
 import { RepositoryNotFoundError } from "../../core/errors/repository-not-found.error";
 import { UserDbView } from "../type/user.db.interface";
 import { BadRequestError } from "../../core/errors/bad-request.error";
+import { injectable } from "inversify";
 
+@injectable()
 export class UsersRepository {
   async create(userInput: UserDbView): Promise<string> {
     const createdUser = await usersCollection.insertOne(userInput);

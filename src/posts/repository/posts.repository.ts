@@ -3,7 +3,8 @@ import { postsCollection } from "../../db/mongo.db";
 import { PostInputModel } from "../dto/posts-input.dto";
 import { Post } from "../types/posts";
 import { RepositoryNotFoundError } from "../../core/errors/repository-not-found.error";
-
+import { injectable } from "inversify";
+@injectable()
 export class PostsRepository {
   async create(newPost: Post): Promise<string> {
     const createdPost = await postsCollection.insertOne(newPost);

@@ -9,7 +9,9 @@ import { UnauthorizedError } from "../../core/errors/unauthorizedError.error";
 import { UserDbView } from "../type/user.db.interface";
 import { BadRequestError } from "../../core/errors/bad-request.error";
 import { UserDb } from "../type/user-db-view.interface";
+import { injectable } from "inversify";
 
+@injectable()
 export class UsersQwRepository {
   async findAll(queryInput: UsersQueryInput): Promise<Pagination<UserView[]>> {
     const {

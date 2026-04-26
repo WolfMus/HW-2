@@ -1,3 +1,4 @@
+import "reflect-metadata";
 import { Response } from "express";
 import { errorsHandler } from "../../core/errors/errors.handler";
 import {
@@ -17,29 +18,18 @@ import { SecurityDeviceService } from "../../security/application/securityDevice
 import { NodeMailerService } from "../application/nodeMailerService";
 import { UsersService } from "../../users/application/users.service";
 import { NewPasswordRecoveryInputModel } from "../types/new-password-inputModel";
+import { inject, injectable } from "inversify";
 
+@injectable()
 export class AuthController {
-  authService: AuthService;
-  jwtService: JwtService;
-  emailService: NodeMailerService;
-  securityService: SecurityDeviceService;
-  usersService: UsersService;
-  usersQueryRepo: UsersQwRepository;
   constructor(
-    authService: AuthService,
-    jwtService: JwtService,
-    emailService: NodeMailerService,
-    securityService: SecurityDeviceService,
-    usersService: UsersService,
-    usersQueryRepo: UsersQwRepository,
-  ) {
-    this.authService = authService;
-    this.jwtService = jwtService;
-    this.emailService = emailService;
-    this.securityService = securityService;
-    this.usersService = usersService;
-    this.usersQueryRepo = usersQueryRepo;
-  }
+    @inject(AuthService) protected authService: AuthService,
+    @inject(JwtService) protected jwtService: JwtService,
+    @inject(NodeMailerService) protected emailService: NodeMailerService,
+    @inject(SecurityDeviceService) protected securityService: SecurityDeviceService,
+    @inject(UsersService) protected usersService: UsersService,
+    @inject(UsersQwRepository) protected usersQueryRepo: UsersQwRepository,
+  ) {}
 
   async authLogin(req: RequestWithBody<LoginInputModel>, res: Response) {
     try {

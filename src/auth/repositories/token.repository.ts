@@ -1,7 +1,9 @@
 import { Token } from "../types/tokens.types";
 import { tokensCollection } from "../../db/mongo.db";
 import { RepositoryNotFoundError } from "../../core/errors/repository-not-found.error";
+import { injectable } from "inversify";
 
+@injectable()
 export class TokenRepository {
   async create(refreshToken: Token): Promise<void> {
     await tokensCollection.insertOne(refreshToken);

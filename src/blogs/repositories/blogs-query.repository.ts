@@ -1,10 +1,14 @@
+import "reflect-metadata";
 import { ObjectId, WithId } from "mongodb";
 import { BlogsQueryDtoInput } from "../input/blogs-query.input";
 import { Blog } from "../types/blogs";
 import { blogsCollection } from "../../db/mongo.db";
 import { RepositoryNotFoundError } from "../../core/errors/repository-not-found.error";
+import { injectable } from "inversify";
 
+@injectable()
 export class BlogsQwRepository {
+
   async findAll(
     queryDto: BlogsQueryDtoInput,
   ): Promise<{ items: WithId<Blog>[]; totalCount: number }> {
