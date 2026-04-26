@@ -49,3 +49,10 @@ export const loginOrEmailValidation = body("loginOrEmail")
   .trim()
   .isLength({ min: 3, max: 25 })
   .withMessage("Login Or email has wrong input");
+
+export const newPasswordValidation = body("newPassword")
+  .isString()
+  .trim()
+  .isLength({ min: 6, max: 20 });
+
+export const recoveryCodeValidation = body("recoveryCode").isString();

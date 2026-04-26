@@ -8,6 +8,8 @@ import { BcryptService } from "../../core/heplers/bcrypt-service";
 import { UnauthorizedError } from "../../core/errors/unauthorizedError.error";
 import { JwtService } from "./jwtService";
 import { SecurityDeviceService } from "../../security/application/securityDevice.service";
+import { NodeMailerService } from "./nodeMailerService";
+import { RecoveryCodeRepository } from "../repositories/recovery-code.repository";
 
 export class AuthService {
   private usersRepo: UsersRepository;
@@ -15,6 +17,8 @@ export class AuthService {
   private cryptoService: BcryptService;
   private jwtService: JwtService;
   private securityService: SecurityDeviceService;
+  private emailService: NodeMailerService;
+  private recoveryCodeRepo: RecoveryCodeRepository;
 
   constructor(
     usersRepo: UsersRepository,
@@ -22,12 +26,16 @@ export class AuthService {
     cryptoService: BcryptService,
     jwtService: JwtService,
     securityService: SecurityDeviceService,
+    emailService: NodeMailerService,
+    recoveryCodeRepo: RecoveryCodeRepository
   ) {
     this.usersRepo = usersRepo;
     this.usersQueryRepo = usersQueryRepo;
     this.cryptoService = cryptoService;
     this.jwtService = jwtService;
     this.securityService = securityService;
+    this.emailService = emailService;
+    this.recoveryCodeRepo = recoveryCodeRepo;    
   }
 
   async login(
@@ -109,6 +117,22 @@ export class AuthService {
       throw new BadRequestError("User already confirmed", "email");
     }
 
+    return;
+  }
+
+  async passwordRecovery(email: string): Promise<void> {
+    const recoveryCode = randomUUID();
+    const recoveryCodeExpDate = add(new Date(), {minutes: 15});
+
+    await this.recoveryCodeRepo.create(recoveryCode, recoveryCodeExpDate, email);
+    await this.emailService.sendRecoveryCode(email, recoveryCode);
+    return;
+  }
+
+  async updatePassword(recoveryCode: string, password: string) {
+    const recoveryCodeBody = await this.recoveryCodeRepo.find(recoveryCode);
+    const {hash, salt} = await this.cryptoService.generateHash(password);
+    await this.usersRepo.updatePassword(recoveryCodeBody.email, hash, salt);
     return;
   }
 }

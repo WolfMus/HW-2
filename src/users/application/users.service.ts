@@ -92,4 +92,8 @@ export class UsersService {
     await this.usersRepo.delete(id);
     return;
   }
+
+  async changePassword(email: string, hash: string, salt: string): Promise<void> {
+    return await this.usersRepo.updatePassword(email, hash, salt);
+  }
 }

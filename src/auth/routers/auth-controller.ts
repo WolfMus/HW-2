@@ -16,22 +16,23 @@ import { JwtService } from "../application/jwtService";
 import { SecurityDeviceService } from "../../security/application/securityDevice.service";
 import { NodeMailerService } from "../application/nodeMailerService";
 import { UsersService } from "../../users/application/users.service";
+import { NewPasswordRecoveryInputModel } from "../types/new-password-inputModel";
 
 export class AuthController {
-    authService: AuthService;
-    jwtService: JwtService;
-    emailService: NodeMailerService;
-    securityService: SecurityDeviceService;
-    usersService: UsersService;
-    usersQueryRepo: UsersQwRepository;
+  authService: AuthService;
+  jwtService: JwtService;
+  emailService: NodeMailerService;
+  securityService: SecurityDeviceService;
+  usersService: UsersService;
+  usersQueryRepo: UsersQwRepository;
   constructor(
-    authService: AuthService, 
+    authService: AuthService,
     jwtService: JwtService,
     emailService: NodeMailerService,
     securityService: SecurityDeviceService,
     usersService: UsersService,
     usersQueryRepo: UsersQwRepository,
-) {
+  ) {
     this.authService = authService;
     this.jwtService = jwtService;
     this.emailService = emailService;
@@ -65,10 +66,7 @@ export class AuthController {
     }
   }
 
-  async getInformationAboutUser(
-    req: RequestWithUserId<IdType>,
-    res: Response,
-  ) {
+  async getInformationAboutUser(req: RequestWithUserId<IdType>, res: Response) {
     try {
       const userId = req.user.id;
       const me = await this.usersQueryRepo.findById(userId);
@@ -133,10 +131,7 @@ export class AuthController {
     }
   }
 
-  async refreshTokenLogout(
-    req: RequestWithUserId<IdType>,
-    res: Response,
-  ) {
+  async refreshTokenLogout(req: RequestWithUserId<IdType>, res: Response) {
     try {
       const userId = req.user.id;
       const refreshToken = await this.jwtService.decodeToken(
@@ -182,10 +177,7 @@ export class AuthController {
     }
   }
 
-  async emailResending(
-    req: RequestWithBody<{ email: string }>,
-    res: Response,
-  ) {
+  async emailResending(req: RequestWithBody<{ email: string }>, res: Response) {
     try {
       const email = req.body.email;
 
@@ -193,9 +185,8 @@ export class AuthController {
 
       await this.authService.isConfirmed(user.id);
 
-      const confirmationCode = await this.authService.updateConfirmationCodeForUser(
-        user.id,
-      );
+      const confirmationCode =
+        await this.authService.updateConfirmationCodeForUser(user.id);
 
       await this.emailService.sendEmail(email, confirmationCode);
 
@@ -204,4 +195,43 @@ export class AuthController {
       errorsHandler(e, res);
     }
   }
+
+  async passwordRecovery(
+    req: RequestWithBody<{ email: string }>,
+    res: Response,
+  ) {
+    try {
+      const email = req.body.email;
+      const user = await this.usersQueryRepo.findLoginOrEmail(email);
+
+      if (user) {
+        await this.authService.passwordRecovery(email);
+      }
+
+      res.sendStatus(HttpStatus.NoContent);
+    } catch (e) {
+      errorsHandler(e, res);
+    }
+  }
+
+  async newPassword(
+    req: RequestWithBody<NewPasswordRecoveryInputModel>,
+    res: Response,
+  ) {
+    try {
+      const recoveryCode = req.body.recoveryCode;
+      const newPassword = req.body.newPassword;
+
+      await this.authService.updatePassword(recoveryCode, newPassword);
+      res.sendStatus(HttpStatus.NoContent);
+    } catch (e) {
+      errorsHandler(e, res);
+    }
+  }
 }
+/**
+ * ПОИСК В БД РЕКАВЕРИ КОДА => ПОЛУЧИТЬ ПОЧТУ
+ * СОЗДАТЬ НОВЫЙ ХЭШ И СОЛЬ ИЗ НОВОГО ПАРОЛЯ
+ * ОБНОВИТЬ У ПОЛЬЗОВАТЕЛЯ ХЭШ И СОЛЬ
+ * 
+ */
