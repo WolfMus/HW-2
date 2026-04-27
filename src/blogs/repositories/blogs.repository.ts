@@ -1,21 +1,22 @@
-import "reflect-metadata";
 import { Blog } from "../types/blogs";
 import { BlogInputModel } from "../dto/blog-input.dto";
-import { blogsCollection } from "../../db/mongo.db";
 import { ObjectId } from "mongodb";
 import { RepositoryNotFoundError } from "../../core/errors/repository-not-found.error";
 import { injectable } from "inversify";
+import { BlogsModel } from "../models/blogs.scheme";
 
 @injectable()
 export class BlogsRepository {
   async create(newBlog: Blog): Promise<string> {
-    const insertResult = await blogsCollection.insertOne(newBlog);
+    const insertResult = await BlogsModel.insertOne(newBlog);
 
-    return insertResult.insertedId.toString();
+    console.log(insertResult._id.toString())
+
+    return insertResult._id.toString()
   }
 
   async update(id: string, dto: BlogInputModel): Promise<void> {
-    const updatedResult = await blogsCollection.updateOne(
+    const updatedResult = await BlogsModel.updateOne(
       { _id: new ObjectId(id) },
       {
         $set: {
@@ -34,7 +35,7 @@ export class BlogsRepository {
   }
 
   async delete(id: string): Promise<void> {
-    const deletedResult = await blogsCollection.deleteOne({
+    const deletedResult = await BlogsModel.deleteOne({
       _id: new ObjectId(id),
     });
 

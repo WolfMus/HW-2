@@ -1,10 +1,9 @@
-import "reflect-metadata";
 import { ObjectId, WithId } from "mongodb";
 import { BlogsQueryDtoInput } from "../input/blogs-query.input";
 import { Blog } from "../types/blogs";
-import { blogsCollection } from "../../db/mongo.db";
 import { RepositoryNotFoundError } from "../../core/errors/repository-not-found.error";
 import { injectable } from "inversify";
+import { BlogsModel } from "../models/blogs.scheme";
 
 @injectable()
 export class BlogsQwRepository {
@@ -24,20 +23,21 @@ export class BlogsQwRepository {
 
     const sortOrder = sortDirection === "asc" ? 1 : -1;
 
-    const items = await blogsCollection
+    const items = await BlogsModel
       .find(filter)
       .sort({ [sortBy]: sortOrder })
       .skip(skip)
       .limit(pageSize)
-      .toArray();
+      .lean();
 
-    const totalCount = await blogsCollection.countDocuments(filter);
+    // const totalCount = await blogsCollection.countDocuments(filter);
+    const totalCount = await BlogsModel.countDocuments(filter);
 
     return { items, totalCount };
   }
 
   async findById(id: string): Promise<WithId<Blog>> {
-    const blog = await blogsCollection.findOne({ _id: new ObjectId(id) });
+    const blog = await BlogsModel.findOne({ _id: new ObjectId(id) });
     if (!blog) {
       throw new RepositoryNotFoundError("Blog not found", "id");
     }
