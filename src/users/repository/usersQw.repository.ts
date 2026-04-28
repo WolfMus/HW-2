@@ -1,5 +1,4 @@
-import { ObjectId, WithId } from "mongodb";
-import { usersCollection } from "../../db/mongo.db";
+import { WithId } from "mongodb";
 import { User } from "../type/user.type";
 import { UsersQueryInput } from "../input/users-query.input";
 import { UserView } from "../type/user-view.interface";
@@ -10,6 +9,7 @@ import { UserDbView } from "../type/user.db.interface";
 import { BadRequestError } from "../../core/errors/bad-request.error";
 import { UserDb } from "../type/user-db-view.interface";
 import { injectable } from "inversify";
+import { usersModel } from "../models/users.schema";
 
 @injectable()
 export class UsersQwRepository {
@@ -39,26 +39,27 @@ export class UsersQwRepository {
     }
     const sortOrder = sortDirection === "asc" ? 1 : -1;
 
-    const items = await usersCollection
+    const items = await usersModel
       .find(filter)
       .sort({ [sortBy]: sortOrder })
       .skip(skip)
       .limit(pageSize)
-      .toArray();
+      .lean();
 
-    const totalCount = await usersCollection.countDocuments(filter);
+    const totalCount = await usersModel.countDocuments(filter);
 
     return {
       pagesCount: Math.ceil(totalCount / pageSize),
       page: pageNumber,
       pageSize: pageSize,
       totalCount,
-      items: items.map((u) => this._toViewModel(u)),
+      items: items.map((u) => this._toViewModel(u)), 
     };
   }
 
   async findById(id: string): Promise<UserView> {
-    const user = await usersCollection.findOne({ _id: new ObjectId(id) });
+    // const user = await usersModel.findOne({ _id: new ObjectId(id) });
+    const user = await usersModel.findById(id);
     if (!user) {
       throw new RepositoryNotFoundError("User not found", "id");
     }
@@ -66,7 +67,7 @@ export class UsersQwRepository {
   }
 
   async findByIdInDbView(id: string): Promise<UserDb> {
-    const user = await usersCollection.findOne({ _id: new ObjectId(id) });
+    const user = await usersModel.findById(id);
     if (!user) {
       throw new RepositoryNotFoundError("User not found", "id");
     }
@@ -74,7 +75,7 @@ export class UsersQwRepository {
   }
 
   async findLoginOrEmail(loginOrEmail: string): Promise<WithId<User> | null> {
-    const user = await usersCollection.findOne({
+    const user = await usersModel.findOne({
       $or: [{ email: loginOrEmail }, { login: loginOrEmail }],
     });
 
@@ -82,7 +83,7 @@ export class UsersQwRepository {
   }
 
   async findLoginOrEmailOrFail(loginOrEmail: string): Promise<UserDb> {
-    const user = await usersCollection.findOne({
+    const user = await usersModel.findOne({
       $or: [{ email: loginOrEmail }, { login: loginOrEmail }],
     });
 
@@ -94,7 +95,7 @@ export class UsersQwRepository {
   }
 
   async doesExistByLoginAndEmail(login: string, email: string): Promise<void> {
-    const user = await usersCollection.findOne({
+    const user = await usersModel.findOne({
       $or: [{ email: email }, { login: login }],
     });
 
@@ -110,7 +111,7 @@ export class UsersQwRepository {
   }
 
   async doesExistByLoginOrEmail(loginOrEmail: string): Promise<UserDb> {
-    const user = await usersCollection.findOne({
+    const user = await usersModel.findOne({
       $or: [{ email: loginOrEmail }, { login: loginOrEmail }],
     });
 
@@ -122,7 +123,7 @@ export class UsersQwRepository {
   }
 
   async findByConfirmationCode(code: string): Promise<UserDbView | null> {
-    const user = await usersCollection.findOne({
+    const user = await usersModel.findOne({
       "emailConfirmation.confirmationCode": code,
     });
     if (!user) {

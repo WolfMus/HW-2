@@ -12,7 +12,8 @@ import { getBlogsDto } from "../../utils/blogs/get-blogs-dto";
 import { createBlog } from "../../utils/blogs/create-blog";
 import { getBlogById } from "../../utils/blogs/get-blog-id";
 import { updateBlog } from "../../utils/blogs/update-blog";
-import { describe, beforeAll, it, expect } from "@jest/globals";
+import { describe, beforeAll, it, expect, afterAll } from "@jest/globals";
+import mongoose from "mongoose";
 
 describe("Blogs API", () => {
   const app = express();
@@ -21,9 +22,15 @@ describe("Blogs API", () => {
   const adminToken = generateAdminAuthToken();
 
   beforeAll(async () => {
-    await runDb(SETTINGS.MONGO_URL);
+    // await runDb(SETTINGS.MONGO_URL);
+    await mongoose.connect(SETTINGS.MONGO_URL)
     await clearDb(app);
   });
+
+  afterAll(async () => {
+    await clearDb(app);
+    await mongoose.connection.close();
+  })
 
   it("✅ should create blog; POST /blogs", async () => {
     const newBlog: BlogInputModel = {

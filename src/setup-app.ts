@@ -41,13 +41,13 @@ export const setupApp = (app: Express) => {
   app.use(express.json());
   app.use(cookieParser());
 
-  // app.use(TESTING_PATH, testingRouter);
-  // app.use(AUTH_PATH, authRouter);
+  app.use(TESTING_PATH, testingRouter);
+  app.use(AUTH_PATH, authRouter);
   app.use(BLOGS_PATH, blogsRouter);
-  // app.use(POSTS_PATH, postsRouters);
-  // app.use(USERS_PATH, usersRouter);
-  // app.use(COMMENT_PATH, commentsRouter);
-  // app.use(SECURITY_PATH, securityRouter);
+  app.use(POSTS_PATH, postsRouters);
+  app.use(USERS_PATH, usersRouter);
+  app.use(COMMENT_PATH, commentsRouter);
+  app.use(SECURITY_PATH, securityRouter);
 
   return app;
 };

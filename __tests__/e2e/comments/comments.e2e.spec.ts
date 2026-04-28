@@ -9,6 +9,7 @@ import { createPostsDto } from "../../utils/posts/create-post-dto";
 import { createBlog } from "../../utils/blogs/create-blog";
 import { Post } from "../../../src/posts/types/posts";
 import { describe, beforeAll, afterAll, it, expect } from "@jest/globals";
+import mongoose from "mongoose";
 
 describe("Comments API", () => {
   const app = express();
@@ -17,9 +18,15 @@ describe("Comments API", () => {
   const adminToken = generateAdminAuthToken();
 
   beforeAll(async () => {
-    await runDb(SETTINGS.MONGO_URL);
+    // await runDb(SETTINGS.MONGO_URL);
+    await mongoose.connect(SETTINGS.MONGO_URL);
     await clearDb(app);
   });
+
+  afterAll(async () => {
+    await clearDb(app);
+    mongoose.connection.close();
+  })
 
   it("should create comment; POST /posts, POST /post/:id/comments", async () => {
     const blog = await createBlog(app);

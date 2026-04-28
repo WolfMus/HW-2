@@ -3,7 +3,7 @@ import { BlogInputModel } from "../dto/blog-input.dto";
 import { ObjectId } from "mongodb";
 import { RepositoryNotFoundError } from "../../core/errors/repository-not-found.error";
 import { injectable } from "inversify";
-import { BlogsModel } from "../models/blogs.scheme";
+import { BlogsModel } from "../models/blogs.schema";
 
 @injectable()
 export class BlogsRepository {

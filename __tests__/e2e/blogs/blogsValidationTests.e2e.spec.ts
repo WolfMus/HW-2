@@ -9,6 +9,7 @@ import { clearDb } from "../../utils/clear-db";
 import { SETTINGS } from "../../../src/core/settings/settings";
 import { runDb, stopDb } from "../../../src/db/mongo.db";
 import { BLOGS_PATH } from "../../../src/core/paths/paths";
+import mongoose from "mongoose";
 
 describe("Blogs API", () => {
   const app = express();
@@ -24,13 +25,15 @@ describe("Blogs API", () => {
   };
 
   beforeAll(async () => {
-    await runDb(SETTINGS.MONGO_URL);
+    // await runDb(SETTINGS.MONGO_URL);
+    await mongoose.connect(SETTINGS.MONGO_URL);
     await clearDb(app);
   });
 
   afterAll(async () => {
     await clearDb(app);
-    await stopDb();
+    mongoose.connection.close();
+    // await stopDb();
   });
 
   it("should return all blogs; GET /blogs", async () => {

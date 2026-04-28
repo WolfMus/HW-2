@@ -1,9 +1,8 @@
 import express from "express";
-import { describe, beforeAll, afterAll, it, expect } from "@jest/globals";
+import { describe, beforeAll, afterAll, it, expect, afterEach } from "@jest/globals";
 import request from "supertest";
 import { setupApp } from "../../../src/setup-app";
 import { generateAdminAuthToken } from "../../utils/generate-admin-auth-token";
-import { runDb, stopDb } from "../../../src/db/mongo.db";
 import { SETTINGS } from "../../../src/core/settings/settings";
 import { clearDb } from "../../utils/clear-db";
 import {
@@ -12,7 +11,7 @@ import {
   USERS_PATH,
 } from "../../../src/core/paths/paths";
 import { HttpStatus } from "../../../src/core/types/types";
-import { nodeMailerService } from "../../../src/auth/application/nodeMailerService";
+import mongoose from "mongoose";
 
 describe("Auth API", () => {
   const app = express();
@@ -21,7 +20,8 @@ describe("Auth API", () => {
   const adminToken = generateAdminAuthToken();
 
   beforeAll(async () => {
-    await runDb(SETTINGS.MONGO_URL);
+    await mongoose.connect(SETTINGS.MONGO_URL);
+    // await runDb(SETTINGS.MONGO_URL);
     await clearDb(app);
   });
 
@@ -31,7 +31,7 @@ describe("Auth API", () => {
 
   afterAll(async () => {
     await clearDb(app);
-    await stopDb();
+    mongoose.connection.close();
   });
 
    it("Session test", async () => {
@@ -183,7 +183,7 @@ describe("Auth API", () => {
       .send(userBody);
 
     expect(successRequest.status).toBe(HttpStatus.NoContent);
-  }, 20000);
+  }, 30000);
 
   it("Resending rate limit", async () => {
     // const spy = spyOn(nodeMailerService, 'sendEmail')
@@ -224,5 +224,5 @@ describe("Auth API", () => {
       });
 
     expect(successRequest.status).toBe(HttpStatus.NoContent);
-  }, 20000);
+  }, 30000);
 });

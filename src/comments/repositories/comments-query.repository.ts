@@ -1,11 +1,11 @@
 import { ObjectId, WithId } from "mongodb";
 import { Comment } from "../types/comments";
-import { commentsCollection } from "../../db/mongo.db";
 import { RepositoryNotFoundError } from "../../core/errors/repository-not-found.error";
 import { CommentViewModel } from "../types/commentViewModel";
 import { Pagination } from "../../core/types/pagination.interface";
 import { CommentQueryDtoInput } from "../types/commentQueryDtoInput";
 import { injectable } from "inversify";
+import { commentsModel } from "../models/comments.schema";
 
 @injectable()
 export class CommentsQwRepository {
@@ -19,14 +19,14 @@ export class CommentsQwRepository {
     const filter = { postId: postId };
     const sortOrder = sortDirection === "asc" ? 1 : -1;
 
-    const items = await commentsCollection
+    const items = await commentsModel
       .find(filter)
       .sort({ [sortBy]: sortOrder })
       .skip(skip)
       .limit(pageSize)
-      .toArray();
+      .lean();
 
-    const totalCount = await commentsCollection.countDocuments(filter);
+    const totalCount = await commentsModel.countDocuments(filter);
 
     return {
       pagesCount: Math.ceil(totalCount / pageSize),
@@ -38,7 +38,7 @@ export class CommentsQwRepository {
   }
 
   async getCommentById(id: string): Promise<WithId<Comment>> {
-    const comment = await commentsCollection.findOne({ _id: new ObjectId(id) });
+    const comment = await commentsModel.findOne({ _id: new ObjectId(id) });
 
     if (!comment) {
       throw new RepositoryNotFoundError("Comment not found", "id");

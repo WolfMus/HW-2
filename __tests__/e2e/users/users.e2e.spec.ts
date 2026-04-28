@@ -10,6 +10,7 @@ import { USERS_PATH } from "../../../src/core/paths/paths";
 import { HttpStatus } from "../../../src/core/types/types";
 import request from "supertest";
 import { describe, beforeAll, afterAll, it, expect } from "@jest/globals";
+import mongoose from "mongoose";
 
 describe("Users API", () => {
   const app = express();
@@ -18,8 +19,14 @@ describe("Users API", () => {
   const adminToken = generateAdminAuthToken();
 
   beforeAll(async () => {
-    await runDb(SETTINGS.MONGO_URL);
+    await mongoose.connect(SETTINGS.MONGO_URL);
+    // await runDb(SETTINGS.MONGO_URL);
     await clearDb(app);
+  });
+
+  afterAll(async () => {
+    await clearDb(app);
+    mongoose.connection.close();
   });
 
   it("✅ should create users; POST /users", async () => {

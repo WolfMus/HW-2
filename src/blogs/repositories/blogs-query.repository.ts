@@ -3,7 +3,7 @@ import { BlogsQueryDtoInput } from "../input/blogs-query.input";
 import { Blog } from "../types/blogs";
 import { RepositoryNotFoundError } from "../../core/errors/repository-not-found.error";
 import { injectable } from "inversify";
-import { BlogsModel } from "../models/blogs.scheme";
+import { BlogsModel } from "../models/blogs.schema";
 
 @injectable()
 export class BlogsQwRepository {

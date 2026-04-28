@@ -1,19 +1,19 @@
 import { WithId } from "mongodb";
-import { securityDeviceCollection } from "../../db/mongo.db";
 import { DeviceType } from "../types/device.type";
 import { RepositoryNotFoundError } from "../../core/errors/repository-not-found.error";
 import { UnauthorizedError } from "../../core/errors/unauthorizedError.error";
 import { injectable } from "inversify";
+import { devicesModel } from "../models/device.Schema";
 
 @injectable()
 export class SecurityDeviceRepository {
   async create(deviceBody: DeviceType): Promise<void> {
-    await securityDeviceCollection.insertOne(deviceBody);
+    await devicesModel.insertOne(deviceBody);
     return;
   }
 
   async update(sessionBody: DeviceType): Promise<void> {
-    const updated = await securityDeviceCollection.updateOne(
+    const updated = await devicesModel.updateOne(
       {
         userId: sessionBody.userId,
         deviceId: sessionBody.deviceId,
@@ -27,7 +27,7 @@ export class SecurityDeviceRepository {
   }
 
   async deleteMany(userId: string, deviceId: string): Promise<void> {
-    await securityDeviceCollection.deleteMany({
+    await devicesModel.deleteMany({
       userId: userId,
       deviceId: { $ne: deviceId },
     });
@@ -35,7 +35,7 @@ export class SecurityDeviceRepository {
   }
 
   async delete(userId: string, deviceId: string): Promise<void> {
-    const deleted = await securityDeviceCollection.deleteOne({
+    const deleted = await devicesModel.deleteOne({
       userId: userId,
       deviceId: deviceId,
     });
@@ -46,14 +46,14 @@ export class SecurityDeviceRepository {
   }
 
   async findMany(userId: string): Promise<WithId<DeviceType>[]> {
-    const founded = await securityDeviceCollection
+    const founded = await devicesModel
       .find({ userId: userId })
-      .toArray();
+      .lean();
     return founded;
   }
 
   async findUserId(deviceId: string): Promise<WithId<DeviceType>> {
-    const founded = await securityDeviceCollection.findOne({
+    const founded = await devicesModel.findOne({
       deviceId: deviceId,
     });
     if (!founded) {
@@ -66,7 +66,7 @@ export class SecurityDeviceRepository {
     userId: string,
     deviceId: string,
   ): Promise<WithId<DeviceType> | null> {
-    const founded = await securityDeviceCollection.findOne({
+    const founded = await devicesModel.findOne({
       userId: userId,
       deviceId: deviceId,
     });

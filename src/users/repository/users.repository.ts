@@ -1,24 +1,24 @@
 import { ObjectId } from "mongodb";
-import { usersCollection } from "../../db/mongo.db";
 import { RepositoryNotFoundError } from "../../core/errors/repository-not-found.error";
 import { UserDbView } from "../type/user.db.interface";
 import { BadRequestError } from "../../core/errors/bad-request.error";
 import { injectable } from "inversify";
+import { usersModel } from "../models/users.schema";
 
 @injectable()
 export class UsersRepository {
   async create(userInput: UserDbView): Promise<string> {
-    const createdUser = await usersCollection.insertOne(userInput);
-    return createdUser.insertedId.toString();
+    const createdUser = await usersModel.insertOne(userInput);
+    return createdUser._id.toString();
   }
 
   async createByRegistration(userInput: UserDbView): Promise<string> {
-    const createdUser = await usersCollection.insertOne(userInput);
-    return createdUser.insertedId.toString();
+    const createdUser = await usersModel.insertOne(userInput);
+    return createdUser._id.toString();
   }
 
   async updateConfirmation(id: string): Promise<void> {
-    const updatedUser = await usersCollection.updateOne(
+    const updatedUser = await usersModel.updateOne(
       { _id: new ObjectId(id) },
       { $set: { "emailConfirmation.isConfirmed": true } },
     );
@@ -33,7 +33,7 @@ export class UsersRepository {
     confirmationCode: string,
     expiration: Date,
   ): Promise<void> {
-    const updatedUser = await usersCollection.updateOne(
+    const updatedUser = await usersModel.updateOne(
       { _id: new ObjectId(id) },
       {
         $set: {
@@ -51,7 +51,7 @@ export class UsersRepository {
   }
 
   async delete(id: string): Promise<void> {
-    const deletedUser = await usersCollection.deleteOne({
+    const deletedUser = await usersModel.deleteOne({
       _id: new ObjectId(id),
     });
     if (deletedUser.deletedCount < 1) {
@@ -61,7 +61,7 @@ export class UsersRepository {
   }
 
   async updatePassword(email: string, hash: string, salt: string): Promise<void> {
-    const updatedUser = await usersCollection.updateOne({email: email}, {$set: {
+    const updatedUser = await usersModel.updateOne({email: email}, {$set: {
       hash: hash,
       salt: salt,
     }})

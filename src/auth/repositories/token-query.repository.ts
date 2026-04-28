@@ -1,14 +1,14 @@
-import { tokensCollection } from "../../db/mongo.db";
 import { WithId } from "mongodb";
 import { Token } from "../types/tokens.types";
 import { TokenDbView } from "../types/token-db-view.type";
 import { UnauthorizedError } from "../../core/errors/unauthorizedError.error";
 import { injectable } from "inversify";
+import { tokensModel } from "../models/token.Schema";
 
 @injectable()
 export class TokenQwRepository {
   async findById(refreshToken: string): Promise<TokenDbView> {
-    const token = await tokensCollection.findOne({
+    const token = await tokensModel.findOne({
       refreshToken: refreshToken,
     });
     if (!token) {

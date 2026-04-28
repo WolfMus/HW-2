@@ -1,24 +1,22 @@
 import { ObjectId } from "mongodb";
-import { commentsCollection } from "../../db/mongo.db";
 import { Comment } from "../types/comments";
 import { RepositoryNotFoundError } from "../../core/errors/repository-not-found.error";
 import { injectable } from "inversify";
+import { commentsModel } from "../models/comments.schema";
 
 @injectable()
 export class CommentsRepository {
   async create(newComment: Comment): Promise<string> {
-    const insertResult = await commentsCollection.insertOne(newComment);
+    const insertResult = await commentsModel.insertOne(newComment);
 
-    return insertResult.insertedId.toString();
+    return insertResult._id.toString();
   }
 
   async update(id: string, content: string): Promise<void> {
-    const updatedResult = await commentsCollection.updateOne(
+    const updatedResult = await commentsModel.updateOne(
       { _id: new ObjectId(id) },
       {
-        $set: {
           content: content,
-        },
       },
     );
 
@@ -30,7 +28,7 @@ export class CommentsRepository {
   }
 
   async delete(id: string): Promise<void> {
-    const deletedComment = await commentsCollection.deleteOne({
+    const deletedComment = await commentsModel.deleteOne({
       _id: new ObjectId(id),
     });
     if (deletedComment.deletedCount < 1) {
