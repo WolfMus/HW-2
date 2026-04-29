@@ -1,14 +1,27 @@
-import { Collection, Db, MongoClient } from "mongodb";
 import { SETTINGS } from "../core/settings/settings";
-import { Blog } from "../blogs/types/blogs";
-import { Post } from "../posts/types/posts";
-import { User } from "../users/type/user.type";
-import { Comment } from "../comments/types/comments";
-import { Token } from "../auth/types/tokens.types";
-import { RateLimit } from "../auth/types/rate-limit.type";
-import { DeviceType } from "../security/types/device.type";
-import { RecoveryCode } from "../auth/types/recovery-code.type";
 import mongoose from "mongoose";
+
+export async function runDb(url: string): Promise<void> {
+
+  try {
+    await mongoose.connect(url, {dbName: SETTINGS.DB_NAME});
+    console.log("✅ Connected to the database");
+  } catch (e) {
+    console.error(e);
+    await mongoose.disconnect();
+  }
+}
+
+export async function stopDb() {
+  const isConnected = mongoose.connection.readyState === 1;
+  if (isConnected) {
+    await mongoose.disconnect();
+  }
+  throw new Error("❌ No active client");
+}
+
+
+
 
 // const TOKENS_COLLECTION_NAME = "tokens";
 // const BLOGS_COLLECTION_NAME = "blogs";
@@ -29,7 +42,6 @@ import mongoose from "mongoose";
 // export let securityDeviceCollection: Collection<DeviceType>;
 // export let recoveryCodeCollection: Collection<RecoveryCode>;
 
-export async function runDb(url: string): Promise<void> {
   // client = new MongoClient(url);
   // const db: Db = client.db(SETTINGS.DB_NAME);
 
@@ -41,23 +53,3 @@ export async function runDb(url: string): Promise<void> {
   // rateLimitCollection = db.collection<RateLimit>(RATELIMIT_COLLECTION_NAME);
   // securityDeviceCollection = db.collection<DeviceType>(DEVICE_COLLECTION_NAME);
   // recoveryCodeCollection = db.collection<RecoveryCode>(RECOVERYCODE_COLLECTION_NAME);
-
-  try {
-    // await client.connect();
-    await mongoose.connect(url, {dbName: SETTINGS.DB_NAME});
-    // await db.command({ ping: 1 });
-    console.log("✅ Connected to the database");
-  } catch (e) {
-    console.error(e);
-    await client.close();
-    throw new Error(`❌ Database not connected: ${e}`);
-  }
-}
-
-export async function stopDb() {
-  if (!client) {
-    throw new Error("❌ No active client");
-  }
-  await client.close();
-  await mongoose.disconnect();
-}

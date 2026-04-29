@@ -28,8 +28,14 @@ import { TokenQwRepository } from "./auth/repositories/token-query.repository";
 import { TokenRepository } from "./auth/repositories/token.repository";
 import { AuthController } from "./auth/routers/auth-controller";
 import { BcryptService } from "./core/heplers/bcrypt-service";
+import { LikesService } from "./likes/application/likes.service";
+import { LikesRepository } from "./likes/repository/likes.repository";
 
 export const container = new Container();
+
+// LIKES
+container.bind(LikesRepository).toSelf();
+container.bind(LikesService).toSelf();
 
 // BLOGS
 container.bind(BlogsRepository).toSelf();

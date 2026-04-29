@@ -18,7 +18,7 @@ export class JwtService {
 
   async createToken(userId: string): Promise<string> {
     const iat = new Date();
-    const exp = add(iat, { seconds: 10 });
+    const exp = add(iat, { minutes: 10 });
     const token = jwt.sign(
       {
         userId,

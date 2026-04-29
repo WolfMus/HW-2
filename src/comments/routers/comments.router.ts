@@ -11,24 +11,35 @@ const commentsController = container.get(CommentsController);
 export const commentsRouter = Router({});
 
 commentsRouter
+  // Get comm by id 
   .get(
     "/:id",
     idValidation,
     inputValidationResultMiddleware,
-    commentsController.getCommentHandler.bind(commentsController),
+    commentsController.getComment.bind(commentsController),
   )
+  // Update comm
   .put(
     "/:id",
     tokenGuard,
     idValidation,
     commentsDtoValidation,
     inputValidationResultMiddleware,
-    commentsController.updateCommentHandler.bind(commentsController),
+    commentsController.updateComment.bind(commentsController),
   )
+  // Delete comm
   .delete(
     "/:id",
     tokenGuard,
     idValidation,
     inputValidationResultMiddleware,
-    commentsController.deleteCommentHandler.bind(commentsController),
-  );
+    commentsController.deleteComment.bind(commentsController),
+  )
+  // Like comm
+  .put(
+    "/:id/like-status",
+    tokenGuard,
+    idValidation, //добав
+    inputValidationResultMiddleware,
+    commentsController.updateCommentStatus.bind(commentsController),
+  )
