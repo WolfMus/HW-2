@@ -58,7 +58,6 @@ export class UsersQwRepository {
   }
 
   async findById(id: string): Promise<UserView> {
-    // const user = await usersModel.findOne({ _id: new ObjectId(id) });
     const user = await usersModel.findById(id);
     if (!user) {
       throw new RepositoryNotFoundError("User not found", "id");

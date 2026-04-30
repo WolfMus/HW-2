@@ -30,11 +30,13 @@ import { AuthController } from "./auth/routers/auth-controller";
 import { BcryptService } from "./core/heplers/bcrypt-service";
 import { LikesService } from "./likes/application/likes.service";
 import { LikesRepository } from "./likes/repository/likes.repository";
+import { LikesQwRepository } from "./likes/repository/likes-query.repository";
 
 export const container = new Container();
 
 // LIKES
 container.bind(LikesRepository).toSelf();
+container.bind(LikesQwRepository).toSelf();
 container.bind(LikesService).toSelf();
 
 // BLOGS

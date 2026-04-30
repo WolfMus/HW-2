@@ -41,8 +41,6 @@ export class UsersController {
 
   async createUser(req: RequestWithBody<UserInput>, res: Response) {
     try {
-      console.log("Создание User");
-      
       const { login, password, email } = req.body;
 
       const userId = await this.usersService.create(login, password, email);

@@ -87,14 +87,25 @@ export class CommentsController {
     try {
       const commentId = req.params.id;
       const userId = req.user.id;
-      const likeStatus = req.body.likeStatus;
 
-      // ЗАПИСЬ В КОЛЛЕКЦИЮ ЛАЙКОВ
+      // Валидация статуса
+      const likeStatus = await this.likesService.isValidStatus(req.body.likeStatus);
+      
+      // Проверка стоял ли лайк и если что, то смена статуса в БД
+      let previousStatus = await this.likesService.previousStatus(commentId, userId)
+      if (previousStatus) {
+        await this.likesService.removeStatus(commentId, userId)
+      }
+      previousStatus = LikeStatus.None;
+
+      // Запись в коллекцию лайков
       const likeId = await this.likesService.setStatus(commentId, userId, likeStatus);
-      log(likeId);
+      log("Like id: ", likeId);
 
-      // УВЕЛИЧЕНИЕ СЧЕТЧИКА
+      // Изменение счетчика
+      await this.commentsService.changeStatus(commentId, likeStatus, previousStatus);
 
+      res.sendStatus(HttpStatus.NoContent);
     } catch (e) {
       errorsHandler(e, res);
     }

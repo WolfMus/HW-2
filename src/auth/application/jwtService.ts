@@ -73,8 +73,8 @@ export class JwtService {
       expiresAt: expiresAt,
     };
 
-    console.log("Refresh Token Created at: ", createdAt);
-    console.log("Device id after log in: ", deviceId);
+    // console.log("Refresh Token Created at: ", createdAt);
+    // console.log("Device id after log in: ", deviceId);
 
     await this.tokenRepo.create(tokenBody);
 
@@ -85,8 +85,8 @@ export class JwtService {
     const createdAt = new Date();
     const expiresAt = add(createdAt, { seconds: 20 });
 
-    console.log("New refresh token created at: ", createdAt);
-    console.log("Device id after updating refresh token: ", deviceId);
+    // console.log("New refresh token created at: ", createdAt);
+    // console.log("Device id after updating refresh token: ", deviceId);
 
     const refreshToken = jwt.sign(
       {

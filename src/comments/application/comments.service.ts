@@ -1,18 +1,20 @@
 import { WithId } from "mongodb";
 import { CommentsRepository } from "../repositories/comments.repository";
-import { Comment } from "../types/comments";
+import { Comment } from "../types/comments.type";
 import { CommentViewModel } from "../types/commentViewModel";
 import { CommentsQwRepository } from "../repositories/comments-query.repository";
 import { UsersQwRepository } from "../../users/repository/usersQw.repository";
 import { CommentQueryDtoInput } from "../types/commentQueryDtoInput";
 import { Pagination } from "../../core/types/pagination.interface";
 import { inject, injectable } from "inversify";
+import { LikeStatus } from "../types/likeComments.enum";
 
 @injectable()
 export class CommentsService {
   constructor(
     @inject(CommentsRepository) protected commentsRepo: CommentsRepository,
-    @inject(CommentsQwRepository) protected commentsQueryRepo: CommentsQwRepository,
+    @inject(CommentsQwRepository)
+    protected commentsQueryRepo: CommentsQwRepository,
     @inject(UsersQwRepository) protected usersQueryRepo: UsersQwRepository,
   ) {}
 
@@ -24,11 +26,18 @@ export class CommentsService {
     const user = await this.usersQueryRepo.findById(userId);
 
     const newComment: Comment = {
-      postId: postId,
       content: content,
-      userId: userId,
-      userLogin: user.login,
+      postId: postId,
+      commentatorInfo: {
+        userId: userId,
+        userLogin: user.login,
+      },
       createdAt: new Date(),
+      likesInfo: {
+        likesCount: 0,
+        dislikesCount: 0,
+        myStatus: LikeStatus.None,
+      },
     };
 
     const commentId = await this.commentsRepo.create(newComment);
@@ -57,15 +66,38 @@ export class CommentsService {
     return this._getToViewModel(comment);
   }
 
+  async changeStatus(id: string, currentStatus: string, previousStatus: string): Promise<void> {
+    let decrStatus = "None";
+    let incrStatus = "None";
+
+    // Если не None, то уменьшается previousStatus
+    if (previousStatus !== LikeStatus.None) {
+      decrStatus = previousStatus.toLowerCase(); 
+    }
+    // Если не None, то увеличивается currentStatus
+    if (currentStatus !== LikeStatus.None) {
+      incrStatus = currentStatus.toLowerCase();
+    }
+
+    console.log(`Увеличиваем ${incrStatus}, уменьшаем ${decrStatus}`)
+    await this.commentsRepo.changeStatus(id, incrStatus, decrStatus)
+    return
+  }
+
   _getToViewModel(model: WithId<Comment>): CommentViewModel {
     return {
       id: model._id.toString(),
       content: model.content,
       commentatorInfo: {
-        userId: model.userId,
-        userLogin: model.userLogin,
+        userId: model.commentatorInfo.userId,
+        userLogin: model.commentatorInfo.userLogin,
       },
       createdAt: model.createdAt,
+      likesInfo: {
+        likesCount: model.likesInfo.likesCount,
+        dislikesCount: model.likesInfo.dislikesCount,
+        myStatus: model.likesInfo.myStatus,
+      },
     };
   }
 }

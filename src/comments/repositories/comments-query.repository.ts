@@ -1,5 +1,5 @@
-import { ObjectId, WithId } from "mongodb";
-import { Comment } from "../types/comments";
+import { WithId } from "mongodb";
+import { Comment } from "../types/comments.type";
 import { RepositoryNotFoundError } from "../../core/errors/repository-not-found.error";
 import { CommentViewModel } from "../types/commentViewModel";
 import { Pagination } from "../../core/types/pagination.interface";
@@ -38,8 +38,8 @@ export class CommentsQwRepository {
   }
 
   async getCommentById(id: string): Promise<WithId<Comment>> {
-    const comment = await commentsModel.findOne({ _id: new ObjectId(id) });
-
+    const comment = await commentsModel.findById(id);
+    console.log(comment);
     if (!comment) {
       throw new RepositoryNotFoundError("Comment not found", "id");
     }
@@ -52,10 +52,15 @@ export class CommentsQwRepository {
       id: model._id.toString(),
       content: model.content,
       commentatorInfo: {
-        userId: model.userId,
-        userLogin: model.userLogin,
+        userId: model.commentatorInfo.userId,
+        userLogin: model.commentatorInfo.userLogin,
       },
       createdAt: model.createdAt,
+      likesInfo: {
+        likesCount: model.likesInfo.likesCount,
+        dislikesCount: model.likesInfo.dislikesCount,
+        myStatus: model.likesInfo.myStatus,
+      },
     };
   }
 }

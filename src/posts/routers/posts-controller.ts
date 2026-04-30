@@ -109,13 +109,13 @@ export class PostsController {
     try {
       const postId = req.params.id;
       const content = req.body.content;
-      const userId = req.user?.id as string;
+      const userId = req.user.id;
 
-      const post = await this.postsService.findById(postId);
+      await this.postsService.findById(postId);
 
       const newCommentId = await this.commentsService.create(
         content,
-        post._id.toString(),
+        postId,
         userId,
       );
 
