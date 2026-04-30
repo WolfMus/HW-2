@@ -3,7 +3,6 @@ import { Comment } from "../types/comments.type";
 import { RepositoryNotFoundError } from "../../core/errors/repository-not-found.error";
 import { injectable } from "inversify";
 import { commentsModel } from "../models/comments.schema";
-import { log } from "console";
 
 @injectable()
 export class CommentsRepository {
@@ -35,38 +34,30 @@ export class CommentsRepository {
   ): Promise<void> {
     const obj: Record<string, number> = {};
 
-    if (incrStatus !== "None" || decrStatus !== "None") {
-      obj[`${incrStatus}sCount`] = +1;
-      obj[`${decrStatus}sCount`] = -1;
+    if (incrStatus !== "None" && decrStatus !== "None") {
+      obj[`likesInfo.${incrStatus}sCount`] = +1;
+      obj[`likesInfo.${decrStatus}sCount`] = -1;
     }
-    
+
     if (incrStatus === "None" && decrStatus !== "None") {
-      obj[`${decrStatus}sCount`] = -1;
+      obj[`likesInfo.${decrStatus}sCount`] = -1;
     }
 
     if (incrStatus !== "None" && decrStatus === "None") {
-      obj[`${incrStatus}sCount`] = +1;
+      obj[`likesInfo.${incrStatus}sCount`] = +1;
     }
 
-    log("Object: ", obj);
-    
-    const updatedResult = await commentsModel.updateOne(
-      { id },
-      {
-        likesInfo: {
-          $inc: obj
-        }
-      },
-    );
-    
-    delete obj[0];
-    log("Object: ", obj);
+    const updatedResult = await commentsModel.updateOne({
+      _id: id
+    }, {
+      $inc: obj,
+    });
 
-    if (updatedResult.matchedCount < 1) {
+    if (updatedResult.modifiedCount < 1) {
       throw new RepositoryNotFoundError("Comment not found", "id");
     }
 
-    return
+    return;
   }
 
   async delete(id: string): Promise<void> {

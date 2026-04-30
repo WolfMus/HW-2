@@ -1,19 +1,16 @@
 import { NextFunction, Request, Response } from "express";
-import { HttpStatus } from "../../core/types/types";
 import { IdType } from "../../core/types/id";
-import { JwtService } from "../application/jwtService";
-import { container } from "../../composition-root";
+import { HttpStatus } from "../../core/types/types";
+import { jwtService } from "./tokenGuard.guard";
 
-export const jwtService = container.get(JwtService)
-
-export const tokenGuard = async (
+export const optionalTokenGuard = async (
   req: Request,
   res: Response,
   next: NextFunction,
 ) => {
-  // ЕСТЬ ЛИ АВТОРИЗАЦИЯ
+    // ЕСТЬ ЛИ АВТОРИЗАЦИЯ
   if (!req.headers.authorization) {
-    res.sendStatus(HttpStatus.Unauthorized);
+    next();
     return;
   }
 

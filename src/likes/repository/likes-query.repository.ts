@@ -10,12 +10,23 @@ export class LikesQwRepository {
       userId: userId,
     });
 
-    console.log("Previous Status: ", status);
-
     if (!status) {
         return null
     }
 
     return status.likeStatus
+  }
+
+  async getStatus(commentId: string, userId: string): Promise<LikeStatus | null> {
+    const like = await LikeForCommentModel.findOne({
+      commentId: commentId,
+      userId: userId,
+    });
+
+    if (!like) {
+      return null
+    }
+
+    return like.likeStatus
   }
 }

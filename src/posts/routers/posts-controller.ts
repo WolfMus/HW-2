@@ -119,7 +119,7 @@ export class PostsController {
         userId,
       );
 
-      const comment = await this.commentsService.getById(newCommentId);
+      const comment = await this.commentsService.getById(newCommentId, userId);
 
       res.status(HttpStatus.Created).send(comment);
     } catch (e) {

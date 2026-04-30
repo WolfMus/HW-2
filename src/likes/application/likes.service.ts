@@ -12,15 +12,15 @@ export class LikesService {
         @inject(LikesQwRepository) protected likesQueryRepo: LikesQwRepository,
     ){}
 
-    async setStatus(commentId: string, userId: string, likeStatus: LikeStatus): Promise<string> {
+    async setStatus(commentId: string, userId: string, likeStatus: LikeStatus): Promise<void> {
         const statusBody: LikesInfo = {
             commentId: commentId,
             userId: userId,
             likeStatus: likeStatus,
         };
 
-        const likeId = await this.likesRepo.create(statusBody);
-        return likeId;
+        await this.likesRepo.create(statusBody);
+        return;
     }
 
     async isValidStatus(status: string): Promise<LikeStatus> {

@@ -8,9 +8,9 @@ const commentatorInfoSchema = new mongoose.Schema<CommentatorInfo>({
 });
 
 const likesInfoSchema = new mongoose.Schema<likesInfoForComms>({
-  likesCount: { type: Number, required: true },
-  dislikesCount: { type: Number, required: true },
-  myStatus: { type: String, required: true },
+  likesCount: { type: Number, required: true, default: 0 },
+  dislikesCount: { type: Number, required: true, default: 0 },
+  myStatus: { type: String, required: true, default: "None" },
 });
 
 const commentsSchema = new mongoose.Schema<Comment>({

@@ -38,8 +38,8 @@ export class CommentsQwRepository {
   }
 
   async getCommentById(id: string): Promise<WithId<Comment>> {
-    const comment = await commentsModel.findById(id);
-    console.log(comment);
+    const comment = await commentsModel.findOne({_id: id});
+    console.log(comment)
     if (!comment) {
       throw new RepositoryNotFoundError("Comment not found", "id");
     }

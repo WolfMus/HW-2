@@ -8,14 +8,15 @@ import { CommentQueryDtoInput } from "../types/commentQueryDtoInput";
 import { Pagination } from "../../core/types/pagination.interface";
 import { inject, injectable } from "inversify";
 import { LikeStatus } from "../types/likeComments.enum";
+import { LikesQwRepository } from "../../likes/repository/likes-query.repository";
 
 @injectable()
 export class CommentsService {
   constructor(
     @inject(CommentsRepository) protected commentsRepo: CommentsRepository,
-    @inject(CommentsQwRepository)
-    protected commentsQueryRepo: CommentsQwRepository,
+    @inject(CommentsQwRepository) protected commentsQueryRepo: CommentsQwRepository,
     @inject(UsersQwRepository) protected usersQueryRepo: UsersQwRepository,
+    @inject(LikesQwRepository) protected likesQueryRepo: LikesQwRepository,
   ) {}
 
   async create(
@@ -60,10 +61,18 @@ export class CommentsService {
     return await this.commentsQueryRepo.findByPostId(postId, query);
   }
 
-  async getById(id: string): Promise<CommentViewModel> {
-    const comment = await this.commentsQueryRepo.getCommentById(id);
+  async getById(commentId: string, userId: string | null): Promise<CommentViewModel> {
+    const comment = await this.commentsQueryRepo.getCommentById(commentId);
+    if (userId === null) {
+      return this._getToViewModel(comment);
+    }
 
-    return this._getToViewModel(comment);
+    const myStatus = await this.likesQueryRepo.getStatus(commentId, userId)
+    if (myStatus) {
+      comment.likesInfo.myStatus = myStatus!.toString()
+      return this._getToViewModel(comment);
+    }
+    return this._getToViewModel(comment)
   }
 
   async changeStatus(id: string, currentStatus: string, previousStatus: string): Promise<void> {
@@ -72,14 +81,15 @@ export class CommentsService {
 
     // Если не None, то уменьшается previousStatus
     if (previousStatus !== LikeStatus.None) {
+      console.log(`${previousStatus} уменьшится`)
       decrStatus = previousStatus.toLowerCase(); 
     }
     // Если не None, то увеличивается currentStatus
     if (currentStatus !== LikeStatus.None) {
+      console.log(`${currentStatus} увеличится`)
       incrStatus = currentStatus.toLowerCase();
     }
 
-    console.log(`Увеличиваем ${incrStatus}, уменьшаем ${decrStatus}`)
     await this.commentsRepo.changeStatus(id, incrStatus, decrStatus)
     return
   }

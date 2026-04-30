@@ -5,6 +5,7 @@ import { tokenGuard } from "../../auth/middleware/tokenGuard.guard";
 import { commentsDtoValidation } from "../validation/commentsDtoValidation.middleware";
 import { container } from "../../composition-root";
 import { CommentsController } from "./comments-controller";
+import { optionalTokenGuard } from "../../auth/middleware/optional-tokenGuard.guard";
 
 const commentsController = container.get(CommentsController);
 
@@ -14,6 +15,7 @@ commentsRouter
   // Get comm by id 
   .get(
     "/:id",
+    optionalTokenGuard,
     idValidation,
     inputValidationResultMiddleware,
     commentsController.getComment.bind(commentsController),

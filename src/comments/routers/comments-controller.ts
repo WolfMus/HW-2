@@ -1,7 +1,6 @@
 import { Response } from "express";
 import { errorsHandler } from "../../core/errors/errors.handler";
 import {
-  RequestWithParams,
   HttpStatus,
   RequestWithParamsAndBodyAndUserId,
   RequestWithParamsAndUserId,
@@ -11,7 +10,7 @@ import { inject, injectable } from "inversify";
 import { IdType } from "../../core/types/id";
 import { LikesService } from "../../likes/application/likes.service";
 import { LikeStatus } from "../types/likeComments.enum";
-import { log } from "console";
+import { UsersQwRepository } from "../../users/repository/usersQw.repository";
 
 @injectable()
 export class CommentsController {
@@ -19,15 +18,17 @@ export class CommentsController {
   constructor(
     @inject(CommentsService) protected commentsService: CommentsService,
     @inject(LikesService) protected likesService: LikesService,
+    @inject(UsersQwRepository) protected usersQueryRepo: UsersQwRepository,
   ) {}
 
   async getComment(
-    req: RequestWithParams<{ id: string }>,
+    req: RequestWithParamsAndUserId<{ id: string }, IdType>,
     res: Response,
   ) {
     try {
-      const id = req.params.id;
-      const comment = await this.commentsService.getById(id);
+      const commentId = req.params.id;
+      const userId = req?.user.id;
+      const comment = await this.commentsService.getById(commentId, userId);
       res.status(HttpStatus.Ok).send(comment);
     } catch (e) {
       errorsHandler(e, res);
@@ -47,7 +48,8 @@ export class CommentsController {
       const commentContent = req.body.content;
       const userId = req.user.id;
 
-      const comment = await this.commentsService.getById(commentId);
+      const comment = await this.commentsService.getById(commentId, userId);
+
       if (comment.commentatorInfo.userId !== userId) {
         res.sendStatus(HttpStatus.Forbidden);
         return;
@@ -61,15 +63,20 @@ export class CommentsController {
   }
 
   async deleteComment(
-    req: RequestWithParamsAndUserId<{ id: string }, { id: string }>,
+    req: RequestWithParamsAndUserId<{ id: string }, IdType>,
     res: Response,
   ) {
     try {
       const commentId = req.params.id;
       const userId = req.user.id;
-      const comment = await this.commentsService.getById(commentId);
 
-      if (comment.commentatorInfo.userId !== userId) {
+      // Получаем комментарий
+      const comment = await this.commentsService.getById(commentId, userId);
+      console.log(comment)
+      // Находит userLogin
+      const user = await this.usersQueryRepo.findById(userId);
+
+      if (comment.commentatorInfo.userLogin !== user.login) {
         return res.sendStatus(HttpStatus.Forbidden);
       }
 
@@ -88,19 +95,30 @@ export class CommentsController {
       const commentId = req.params.id;
       const userId = req.user.id;
 
+      // Существует ли комментарий
+      await this.commentsService.getById(commentId, userId);
+
       // Валидация статуса
       const likeStatus = await this.likesService.isValidStatus(req.body.likeStatus);
       
-      // Проверка стоял ли лайк и если что, то смена статуса в БД
+      // Стоял ли лайк
       let previousStatus = await this.likesService.previousStatus(commentId, userId)
+
+      // Повторение реакции
+      if (previousStatus === likeStatus) {
+        return res.sendStatus(HttpStatus.NoContent);
+      }
+
+      // Удаление предыдущего запроса
       if (previousStatus) {
         await this.likesService.removeStatus(commentId, userId)
       }
-      previousStatus = LikeStatus.None;
+      if (previousStatus === null){
+        previousStatus = LikeStatus.None;
+      }
 
       // Запись в коллекцию лайков
-      const likeId = await this.likesService.setStatus(commentId, userId, likeStatus);
-      log("Like id: ", likeId);
+      await this.likesService.setStatus(commentId, userId, likeStatus);
 
       // Изменение счетчика
       await this.commentsService.changeStatus(commentId, likeStatus, previousStatus);
