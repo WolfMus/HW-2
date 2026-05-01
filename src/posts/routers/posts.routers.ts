@@ -10,6 +10,7 @@ import { tokenGuard } from "../../auth/middleware/tokenGuard.guard";
 import { commentsDtoValidation } from "../../comments/validation/commentsDtoValidation.middleware";
 import { container } from "../../composition-root";
 import { PostsController } from "./posts-controller";
+import { optionalTokenGuard } from "../../auth/middleware/optional-tokenGuard.guard";
 
 const postsController = container.get(PostsController)
 
@@ -67,6 +68,7 @@ postsRouters
 
   .get(
     "/:id/comments",
+    optionalTokenGuard,
     paginationAndSortingValidation(CommentSortField),
     idValidation,
     inputValidationResultMiddleware,

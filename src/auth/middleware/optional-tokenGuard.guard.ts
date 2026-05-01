@@ -10,25 +10,21 @@ export const optionalTokenGuard = async (
 ) => {
     // ЕСТЬ ЛИ АВТОРИЗАЦИЯ
   if (!req.headers.authorization) {
-    next();
-    return;
+    return next();
   }
 
   // ТИП АВТОРИЗАЦИИ
   const auth = req.header("Authorization");
   if (typeof auth !== "string") {
-    res.sendStatus(HttpStatus.Unauthorized);
-    return;
+    return res.sendStatus(HttpStatus.Unauthorized);
   }
 
   const [authType, token] = auth!.split(" ");
   if (authType !== "Bearer") {
-    res.sendStatus(HttpStatus.Unauthorized);
-    return;
+    return res.sendStatus(HttpStatus.Unauthorized);
   }
   if (!token) {
-    res.sendStatus(HttpStatus.Unauthorized);
-    return;
+    return res.sendStatus(HttpStatus.Unauthorized);
   }
 
   const payload = await jwtService.verifyToken(token);
@@ -38,10 +34,8 @@ export const optionalTokenGuard = async (
 
     req.user = { id: userId } as IdType;
 
-    next();
-    return;
+    return next();
   }
 
-  res.sendStatus(HttpStatus.Unauthorized);
-  return;
+  return res.sendStatus(HttpStatus.Unauthorized);
 };

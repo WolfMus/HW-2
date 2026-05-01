@@ -29,4 +29,12 @@ export class LikesQwRepository {
 
     return like.likeStatus
   }
+
+  async findMany(commentsInfo: string[], userId: string): Promise<[string, string][]> {
+    const reactions = await LikeForCommentModel.find({
+      commentId: commentsInfo,
+      userId: userId,
+    })
+    return reactions.map(i => [i.commentId, i.likeStatus])
+  }
 }

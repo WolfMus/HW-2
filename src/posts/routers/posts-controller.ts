@@ -6,6 +6,7 @@ import {
   RequestWithParams,
   RequestWithParamsAndBody,
   RequestWithParamsAndBodyAndUserId,
+  RequestWithParamsAndUserId,
 } from "../../core/types/types";
 import { matchedData } from "express-validator";
 import { setDefaultSortAndPaginationIfNotExist } from "../../core/heplers/set-default-sort-and-pagination";
@@ -127,9 +128,11 @@ export class PostsController {
     }
   }
 
-  async getListOfCommentsById(req: Request<{ id: string }>, res: Response) {
+  async getListOfCommentsById(req: RequestWithParamsAndUserId<{ id: string }, IdType>, res: Response) {
     try {
       const id = req.params.id;
+      const userId = req.user?.id;
+
       await this.postsService.findById(id);
 
       const sanitizedQuery = matchedData(req, {
@@ -137,7 +140,7 @@ export class PostsController {
       }) as CommentQueryDtoInput;
       const queryInput = setDefaultSortAndPaginationIfNotExist(sanitizedQuery);
 
-      const comments = await this.commentsService.findByPostId(id, queryInput);
+      const comments = await this.commentsService.findByPostId(id, queryInput, userId);
       res.status(HttpStatus.Ok).send(comments);
     } catch (e) {
       errorsHandler(e, res);

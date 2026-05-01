@@ -57,13 +57,43 @@ export class CommentsService {
   async findByPostId(
     postId: string,
     query: CommentQueryDtoInput,
+    userId: string,
   ): Promise<Pagination<CommentViewModel[]>> {
-    return await this.commentsQueryRepo.findByPostId(postId, query);
+  // ): Promise<void> {
+    const comments = await this.commentsQueryRepo.findByPostId(postId, query);
+
+    // Получил айдишники комментариев
+    const commentsInfo: string[] = comments.items.map(item =>
+      item.id
+    )
+
+    // Нашел комментарии с которыми пользователь взаимодействовал
+    const statuses = await this.likesQueryRepo.findMany(commentsInfo, userId);
+    // Если комметариев нет, то ничего не меняем
+    if (!statuses) {
+      return comments
+    }
+
+    const statusMap = Object.fromEntries(statuses);
+    const changedComments = comments.items.map(comment => {
+        return {
+          ...comment,
+          likesInfo: {
+            ...comment.likesInfo,
+            myStatus: statusMap[comment.id] || "None" 
+        },
+    }})
+
+    // console.log(commentsInfo)
+    return {
+      ...comments,
+      items: changedComments,
+    };
   }
 
   async getById(commentId: string, userId: string | null): Promise<CommentViewModel> {
-    const comment = await this.commentsQueryRepo.getCommentById(commentId);
-    if (userId === null) {
+    const comment = await this.commentsQueryRepo.getCommentById(commentId, );
+    if (userId !== comment.commentatorInfo.userId) {
       return this._getToViewModel(comment);
     }
 

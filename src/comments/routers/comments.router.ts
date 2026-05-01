@@ -41,7 +41,7 @@ commentsRouter
   .put(
     "/:id/like-status",
     tokenGuard,
-    idValidation, //добав
+    idValidation, //добавить валидацию статуса лайка
     inputValidationResultMiddleware,
     commentsController.updateCommentStatus.bind(commentsController),
   )
