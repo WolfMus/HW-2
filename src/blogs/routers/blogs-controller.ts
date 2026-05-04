@@ -31,7 +31,6 @@ export class BlogsController {
 
   async getBlogList(req: Request, res: Response) {
     try {
-      console.log("Пришел в getBlogList")
       const sanitizedQuery = matchedData(req, {
         includeOptionals: true,
       }) as BlogsQueryDtoInput;

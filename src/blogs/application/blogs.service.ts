@@ -10,40 +10,38 @@ import { BlogsModel } from "../models/blogs.schema";
 
 @injectable()
 export class BlogsService {
-
   constructor(
-    @inject(BlogsRepository) protected blogsRepo: BlogsRepository, 
-    @inject(BlogsQwRepository) protected blogsQueryRepo: BlogsQwRepository) {}
+    @inject(BlogsRepository) protected blogsRepo: BlogsRepository,
+    @inject(BlogsQwRepository) protected blogsQueryRepo: BlogsQwRepository,
+  ) {}
 
+  // Create blog
   async create(blogDto: CreateBlogDto): Promise<string> {
-    /* const newBlog: Blog = {
-      name: blogDto.name,
-      description: blogDto.description,
-      websiteUrl: blogDto.websiteUrl,
-      createdAt: new Date(),
-      isMembership: false,
-    }; */
     const blog = await BlogsModel.create(blogDto);
-
-    const blogsId = await this.blogsRepo.create(blog);
-
-    return blogsId;
+    return await this.blogsRepo.create(blog);;
   }
 
+  // Update blog
   async update(id: string, dto: CreateBlogDto): Promise<void> {
-    return await this.blogsRepo.update(id, dto);
+    const blog = await this.blogsQueryRepo.findById(id);
+    blog.update(dto);
+    return await this.blogsRepo.update(blog);
   }
 
+  // Delete blog
   async delete(id: string): Promise<void> {
+    await this.blogsQueryRepo.findById(id);
     return await this.blogsRepo.delete(id);
   }
 
+  // Find list of blogs
   async findAll(
     queryDto: BlogsQueryDtoInput,
   ): Promise<{ items: WithId<Blog>[]; totalCount: number }> {
     return await this.blogsQueryRepo.findAll(queryDto);
   }
 
+  // Find blog by id
   async findById(id: string): Promise<WithId<Blog>> {
     return await this.blogsQueryRepo.findById(id);
   }

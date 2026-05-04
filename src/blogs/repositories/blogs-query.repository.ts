@@ -1,9 +1,9 @@
-import { ObjectId, WithId } from "mongodb";
+import { WithId } from "mongodb";
 import { BlogsQueryDtoInput } from "../input/blogs-query.input";
 import { Blog } from "../types/blogs.type";
 import { RepositoryNotFoundError } from "../../core/errors/repository-not-found.error";
 import { injectable } from "inversify";
-import { BlogsModel } from "../models/blogs.schema";
+import { BlogsDocument, BlogsModel } from "../models/blogs.schema";
 
 @injectable()
 export class BlogsQwRepository {
@@ -30,18 +30,18 @@ export class BlogsQwRepository {
       .limit(pageSize)
       .lean();
 
-    // const totalCount = await blogsCollection.countDocuments(filter);
     const totalCount = await BlogsModel.countDocuments(filter);
 
     return { items, totalCount };
   }
 
-  async findById(id: string): Promise<WithId<Blog>> {
-    const blog = await BlogsModel.findOne({ _id: new ObjectId(id) });
+  async findById(id: string): Promise<BlogsDocument> {
+    const blog = await BlogsModel.findById({_id: id});
     if (!blog) {
       throw new RepositoryNotFoundError("Blog not found", "id");
     }
 
     return blog;
   }
+
 }
