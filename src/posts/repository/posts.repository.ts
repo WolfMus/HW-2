@@ -1,5 +1,5 @@
 import { ObjectId } from "mongodb";
-import { PostInputModel } from "../dto/posts-input.dto";
+import { PostInputModel } from "../types/createPostsDto.type";
 import { Post } from "../types/posts";
 import { RepositoryNotFoundError } from "../../core/errors/repository-not-found.error";
 import { injectable } from "inversify";

@@ -14,7 +14,7 @@ import { PostsQueryDtoInput } from "../input/post-query.input";
 import { mapToPostsListPaginatedOutput } from "./mapped/mapToPostListPaginatedOutput";
 import { PostsService } from "../application/posts-service";
 import { mapToPostViewModel } from "./mapped/mapToPostViewModel";
-import { PostInputModel } from "../dto/posts-input.dto";
+import { PostInputModel } from "../types/createPostsDto.type";
 import { BlogsService } from "../../blogs/application/blogs.service";
 import { CommentQueryDtoInput } from "../../comments/types/commentQueryDtoInput";
 import { Post } from "../types/posts";

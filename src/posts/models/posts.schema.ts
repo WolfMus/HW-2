@@ -1,5 +1,14 @@
-import mongoose, { model } from "mongoose";
+import mongoose, { HydratedDocument, model } from "mongoose";
 import { Post } from "../types/posts";
+import { CreatePostDto } from "../types/createPostsDto.type";
+
+interface PostsMethods {
+  update(dto: CreatePostDto): void;
+}
+
+type PostsStatics = typeof PostsEntity;
+type PostsModel = Model<Post, {}, PostsMethods & PostsStatics>;
+export type PostsDocument = HydratedDocument<Post, PostsMethods>;
 
 const postsScheme = new mongoose.Schema<Post>({
   title: {type: String, required: true},
@@ -10,4 +19,18 @@ const postsScheme = new mongoose.Schema<Post>({
   createdAt: {type: Date, required: true},
 })
 
-export const PostsModel = model<Post>('Posts', postsScheme);
+class PostsEntity {
+  private constructor(
+public title: string,
+public shortDescription: string,
+public content: string,
+public blogId: string,
+public blogName: string,
+public createdAt: Date,
+  ) {}
+
+}
+
+postsScheme.loadClass(PostsEntity);
+
+export const PostsModel = model<Post, PostsModel>('Posts', postsScheme);
