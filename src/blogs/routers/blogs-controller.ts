@@ -16,7 +16,7 @@ import { mapToBlogViewModel } from "./mappers/mapToBlogViewModel";
 import { PostsQueryDtoInput } from "../../posts/input/post-query.input";
 import { mapToPostsListPaginatedOutput } from "../../posts/routers/mapped/mapToPostListPaginatedOutput";
 import { PostsService } from "../../posts/application/posts-service";
-import { BlogInputModel } from "../dto/blog-input.dto";
+import { CreateBlogDto } from "../types/createBlogDto.type";
 import { PostInputForBlogModel } from "../../posts/dto/post-input-for-blog.dto";
 import { mapToPostViewModel } from "../../posts/routers/mapped/mapToPostViewModel";
 import { inject, injectable } from "inversify";
@@ -88,9 +88,10 @@ export class BlogsController {
     }
   }
 
-  async createBlog(req: RequestWithBody<BlogInputModel>, res: Response) {
+  async createBlog(req: RequestWithBody<CreateBlogDto>, res: Response) {
     try {
       const blogsId = await this.blogsService.create(req.body);
+      console.log(blogsId)
       const createdBlog = await this.blogsService.findById(blogsId);
 
       const blogToViewModel = mapToBlogViewModel(createdBlog);
@@ -123,7 +124,7 @@ export class BlogsController {
   }
 
   async updateBlog(
-    req: RequestWithParamsAndBody<{ id: string }, BlogInputModel>,
+    req: RequestWithParamsAndBody<{ id: string }, CreateBlogDto>,
     res: Response,
   ) {
     try {

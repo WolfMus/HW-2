@@ -2,7 +2,7 @@ import { WithId } from "mongodb";
 import { PostInputModel } from "../dto/posts-input.dto";
 import { Post } from "../types/posts";
 import { PostsRepository } from "../repository/posts.repository";
-import { Blog } from "../../blogs/types/blogs";
+import { Blog } from "../../blogs/types/blogs.type";
 import { PostInputForBlogModel } from "../dto/post-input-for-blog.dto";
 import { PostsQueryDtoInput } from "../input/post-query.input";
 import { PostsQwRepository } from "../repository/posts-query.repository";

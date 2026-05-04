@@ -1,21 +1,23 @@
-import { Blog } from "../types/blogs";
-import { BlogInputModel } from "../dto/blog-input.dto";
+import { CreateBlogDto } from "../types/createBlogDto.type";
 import { ObjectId } from "mongodb";
 import { RepositoryNotFoundError } from "../../core/errors/repository-not-found.error";
 import { injectable } from "inversify";
-import { BlogsModel } from "../models/blogs.schema";
+import { BlogsDocument, BlogsModel } from "../models/blogs.schema";
 
 @injectable()
 export class BlogsRepository {
-  async create(newBlog: Blog): Promise<string> {
-    const insertResult = await BlogsModel.insertOne(newBlog);
+  async create(blog: BlogsDocument): Promise<string> {
+    blog.save();
+    return blog._id.toString();
+    // const insertResult = await BlogsModel.insertOne(blog);
 
-    console.log(insertResult._id.toString())
+    // console.log("blogs id: ", insertResult._id.toString())
+    // console.log(insertResult.toJSON())
 
-    return insertResult._id.toString()
+    // return insertResult._id.toString()
   }
 
-  async update(id: string, dto: BlogInputModel): Promise<void> {
+  async update(id: string, dto: CreateBlogDto): Promise<void> {
     const updatedResult = await BlogsModel.updateOne(
       { _id: new ObjectId(id) },
       {

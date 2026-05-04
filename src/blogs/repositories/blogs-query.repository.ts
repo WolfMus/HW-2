@@ -1,6 +1,6 @@
 import { ObjectId, WithId } from "mongodb";
 import { BlogsQueryDtoInput } from "../input/blogs-query.input";
-import { Blog } from "../types/blogs";
+import { Blog } from "../types/blogs.type";
 import { RepositoryNotFoundError } from "../../core/errors/repository-not-found.error";
 import { injectable } from "inversify";
 import { BlogsModel } from "../models/blogs.schema";
