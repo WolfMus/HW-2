@@ -1,6 +1,6 @@
 import { Request, Response, Router } from "express";
 import { HttpStatus } from "../core/types/types";
-import { BlogsModel } from "../blogs/models/blogs.schema";
+import { BlogsModel } from "../blogs/domain/blogs.model";
 import { PostsModel } from "../posts/models/posts.schema";
 import { usersModel } from "../users/models/users.schema";
 import { commentsModel } from "../comments/models/comments.schema";

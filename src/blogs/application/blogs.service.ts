@@ -6,7 +6,7 @@ import { BlogsQueryDtoInput } from "../input/blogs-query.input";
 import { WithId } from "mongodb";
 import { BlogsQwRepository } from "../repositories/blogs-query.repository";
 import { inject, injectable } from "inversify";
-import { BlogsModel } from "../models/blogs.schema";
+import { BlogsDocument, BlogsModel } from "../domain/blogs.model";
 
 @injectable()
 export class BlogsService {
@@ -17,7 +17,7 @@ export class BlogsService {
 
   // Create blog
   async create(blogDto: CreateBlogDto): Promise<string> {
-    const blog = await BlogsModel.create(blogDto);
+    const blog = BlogsModel.createBlog(blogDto)
     return await this.blogsRepo.create(blog);;
   }
 
@@ -42,7 +42,7 @@ export class BlogsService {
   }
 
   // Find blog by id
-  async findById(id: string): Promise<WithId<Blog>> {
+  async findById(id: string): Promise<BlogsDocument> {
     return await this.blogsQueryRepo.findById(id);
   }
 }

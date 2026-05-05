@@ -14,7 +14,7 @@ import { PostsQueryDtoInput } from "../input/post-query.input";
 import { mapToPostsListPaginatedOutput } from "./mapped/mapToPostListPaginatedOutput";
 import { PostsService } from "../application/posts-service";
 import { mapToPostViewModel } from "./mapped/mapToPostViewModel";
-import { PostInputModel } from "../types/createPostsDto.type";
+import { CreatePostDto } from "../types/createPostsDto.type";
 import { BlogsService } from "../../blogs/application/blogs.service";
 import { CommentQueryDtoInput } from "../../comments/types/commentQueryDtoInput";
 import { Post } from "../types/posts";
@@ -62,11 +62,12 @@ export class PostsController {
     }
   }
 
-  async createPost(req: RequestWithBody<PostInputModel>, res: Response) {
+  async createPost(req: RequestWithBody<CreatePostDto>, res: Response) {
     try {
+      const postDto = req.body;
       const blog = await this.blogsService.findById(req.body.blogId);
 
-      const createdPostId = await this.postsService.create(req.body, blog);
+      const createdPostId = await this.postsService.create(postDto, blog.name);
       const post = await this.postsService.findById(createdPostId);
       const postToViewModel = mapToPostViewModel(post);
 
