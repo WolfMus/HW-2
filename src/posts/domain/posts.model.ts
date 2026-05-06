@@ -7,7 +7,7 @@ interface PostsMethods {
 }
 
 type PostsStatics = typeof PostsEntity;
-type PostsModel = Model<Post, {}, PostsMethods> & PostsStatics;
+type PostsModel = Model<Post, unknown, PostsMethods> & PostsStatics;
 export type PostsDocument = HydratedDocument<Post, PostsMethods>;
 
 const postsScheme = new mongoose.Schema<Post>({
@@ -29,11 +29,18 @@ class PostsEntity {
     public createdAt: Date,
   ) {}
 
-  static create(dto: CreatePostDto, blogName: string) {
+  static createPost(dto: CreatePostDto, blogName: string) {
     const post = new PostsModel({ dto });
     post.blogName = blogName;
     post.createdAt = new Date();
     return post;
+  }
+
+  async update(dto: CreatePostDto): Promise<void> {
+    this.title = dto.title;
+    this.shortDescription = dto.shortDescription;
+    this.content = dto.content;
+    return;
   }
 }
 

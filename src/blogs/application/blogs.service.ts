@@ -17,14 +17,14 @@ export class BlogsService {
 
   // Create blog
   async create(blogDto: CreateBlogDto): Promise<string> {
-    const blog = BlogsModel.createBlog(blogDto)
-    return await this.blogsRepo.create(blog);;
+    const blog = BlogsModel.createBlog(blogDto);
+    return await this.blogsRepo.create(blog);
   }
 
   // Update blog
   async update(id: string, dto: CreateBlogDto): Promise<void> {
     const blog = await this.blogsQueryRepo.findById(id);
-    blog.update(dto);
+    await blog.update(dto);
     return await this.blogsRepo.update(blog);
   }
 

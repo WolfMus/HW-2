@@ -36,11 +36,10 @@ export class BlogsQwRepository {
   }
 
   async findById(id: string): Promise<BlogsDocument> {
-    const blog = await BlogsModel.findById({_id: id});
+    const blog = await BlogsModel.findById(id);
     if (!blog) {
       throw new RepositoryNotFoundError("Blog not found", "id");
     }
-
     return blog;
   }
 

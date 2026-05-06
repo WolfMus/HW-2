@@ -17,9 +17,9 @@ import { PostsQueryDtoInput } from "../../posts/input/post-query.input";
 import { mapToPostsListPaginatedOutput } from "../../posts/routers/mapped/mapToPostListPaginatedOutput";
 import { PostsService } from "../../posts/application/posts-service";
 import { CreateBlogDto } from "../types/createBlogDto.type";
-import { PostInputForBlogModel } from "../../posts/dto/post-input-for-blog.dto";
 import { mapToPostViewModel } from "../../posts/routers/mapped/mapToPostViewModel";
 import { inject, injectable } from "inversify";
+import { CreatePostDto } from "../../posts/types/createPostsDto.type";
 
 @injectable()
 export class BlogsController {
@@ -92,6 +92,7 @@ export class BlogsController {
       const blogsId = await this.blogsService.create(req.body);
       console.log(blogsId)
       const createdBlog = await this.blogsService.findById(blogsId);
+      console.log(createdBlog);
 
       const blogToViewModel = mapToBlogViewModel(createdBlog);
 
@@ -102,16 +103,17 @@ export class BlogsController {
   }
 
   async createPostForBlog(
-    req: RequestWithParamsAndBody<{ id: string }, PostInputForBlogModel>,
+    req: RequestWithParamsAndBody<{ id: string }, CreatePostDto>,
     res: Response,
   ) {
     try {
       const id = req.params.id;
+      const postDto = req.body;
       const blog = await this.blogsService.findById(id);
 
       const createdPostId = await this.postsService.createForBlog(
-        req.body,
-        blog,
+        postDto,
+        blog.name,
       );
       const post = await this.postsService.findById(createdPostId);
       const postToViewModel = mapToPostViewModel(post);

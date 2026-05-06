@@ -7,7 +7,7 @@ interface BlogsMethods {
 }
 
 type BlogsStatics = typeof BlogsEntity;
-type BlogsModel = Model<Blog, {}, BlogsMethods> & BlogsStatics;
+type BlogsModel = Model<Blog, unknown, BlogsMethods> & BlogsStatics;
 export type BlogsDocument = HydratedDocument<Blog, BlogsMethods>;
 
 const blogsScheme = new mongoose.Schema<Blog, BlogsModel, BlogsMethods>({
@@ -24,11 +24,11 @@ class BlogsEntity {
     public description: string,
     public websiteUrl: string,
     public createdAt: Date,
-    public isMemberShip: boolean,
+    public isMembership: boolean,
   ) {}
 
   static createBlog(dto: CreateBlogDto) {
-    const blog = new BlogsModel({ dto });
+    const blog = new BlogsModel({...dto});
     blog.createdAt = new Date();
     blog.isMembership = false;
 

@@ -1,9 +1,9 @@
-import { ObjectId, WithId } from "mongodb";
+import { WithId } from "mongodb";
 import { PostsQueryDtoInput } from "../input/post-query.input";
 import { Post } from "../types/posts";
 import { RepositoryNotFoundError } from "../../core/errors/repository-not-found.error";
 import { injectable } from "inversify";
-import { PostsModel } from "../models/posts.schema";
+import { PostsDocument, PostsModel } from "../domain/posts.model";
 @injectable()
 export class PostsQwRepository {
   async findAll(
@@ -50,8 +50,8 @@ export class PostsQwRepository {
     return { items, totalCount };
   }
 
-  async findById(id: string): Promise<WithId<Post>> {
-    const post = await PostsModel.findOne({ _id: new ObjectId(id) });
+  async findById(id: string): Promise<PostsDocument> {
+    const post = await PostsModel.findOne({ _id: id });
 
     if (!post) {
       throw new RepositoryNotFoundError("Post id not found", "id");

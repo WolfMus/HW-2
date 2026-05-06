@@ -1,6 +1,6 @@
 import { RepositoryNotFoundError } from "../../core/errors/repository-not-found.error";
 import { injectable } from "inversify";
-import { PostsDocument, PostsModel } from "../models/posts.schema";
+import { PostsDocument, PostsModel } from "../domain/posts.model";
 @injectable()
 export class PostsRepository {
   
@@ -12,24 +12,6 @@ export class PostsRepository {
   async update(post: PostsDocument): Promise<void> {
     post.save();
   }
-
-  // async update(id: string, body: CreatePostDto): Promise<void> {
-  //   const updatedPost = await PostsModel.updateOne(
-  //     { _id: new ObjectId(id) },
-  //     {
-  //       $set: {
-  //         title: body.title,
-  //         shortDescription: body.shortDescription,
-  //         content: body.content,
-  //         blogId: body.blogId,
-  //       },
-  //     },
-  //   );
-  //   if (updatedPost.matchedCount < 1) {
-  //     throw new RepositoryNotFoundError("Post id not found", "id");
-  //   }
-  //   return;
-  // }
 
   async delete(id: string): Promise<void> {
     const deletedPost = await PostsModel.deleteOne({
