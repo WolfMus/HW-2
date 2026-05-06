@@ -2,6 +2,7 @@ import mongoose, { HydratedDocument, Model, model } from "mongoose";
 import { Post } from "../types/posts";
 import { CreatePostDto } from "../types/createPostsDto.type";
 import { BadRequestError } from "../../core/errors/bad-request.error";
+import { LikeStatus } from "../../comments/types/likeComments.enum";
 
 interface PostsMethods {
   update(dto: CreatePostDto): void;
@@ -18,9 +19,30 @@ const postsScheme = new mongoose.Schema<Post>({
   blogId: { type: String, required: true },
   blogName: { type: String, required: true },
   createdAt: { type: Date, required: true },
+  extendedLikesInfo: {
+    likesCount: { type: Number, default: 0, required: true },
+    dislikesCount: { type: Number, default: 0,required: true},
+    myStatus: { type: String, enum: LikeStatus, default: LikeStatus.None, required: true },
+    newestLikes: {
+      type: [{
+        addedAt: { type: Date, required: true },
+        userId: { type: String, required: true },
+        login: { type: String, required: true },
+      }],
+      required: false,
+      default: [],
+
+    }
+  }
 });
 
 class PostsEntity {
+  public extendedLikesInfo: {
+    likesCount: number,
+    dislikesCount: number,
+    myStatus: LikeStatus,
+    newestLikes: [],
+  }
   private constructor(
     public title: string,
     public shortDescription: string,
@@ -28,12 +50,28 @@ class PostsEntity {
     public blogId: string,
     public blogName: string,
     public createdAt: Date,
-  ) {}
+  ) {
+    this.extendedLikesInfo = {
+      likesCount: 0,
+      dislikesCount: 0,
+      myStatus: LikeStatus.None,
+      newestLikes: [],
+    }
+  }
 
   static createPost(dto: CreatePostDto, blogName: string) {
-    const post = new PostsModel({ dto });
-    post.blogName = blogName;
-    post.createdAt = new Date();
+    const post = new PostsModel({ 
+      ...dto,
+      blogName: blogName,
+      createdAt: new Date(),
+      extendedLikesInfo: {
+        likesCount: 0,
+        dislikesCount: 0,
+        muStatus: LikeStatus.None,
+        newestLikes: [],
+      }
+    });
+
     return post;
   }
 
@@ -51,11 +89,9 @@ class PostsEntity {
       throw new BadRequestError("Content is invalid", "content");
     }
 
-    if (dto.title, dto.shortDescription, dto.content) {
-      this.title = dto.title;
-      this.shortDescription = dto.shortDescription;
-      this.content = dto.content;
-    }
+    this.title = dto.title;
+    this.shortDescription = dto.shortDescription;
+    this.content = dto.content;
 
     return;
   }

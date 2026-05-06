@@ -49,4 +49,7 @@ export class PostsService {
     return await this.postsQueryRepo.findByBlogId(id, queryDto);
   }
 
+  // LIKES
+  
+
 }
