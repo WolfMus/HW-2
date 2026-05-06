@@ -1,6 +1,7 @@
 import mongoose, { HydratedDocument, Model, model } from "mongoose";
 import { Post } from "../types/posts";
 import { CreatePostDto } from "../types/createPostsDto.type";
+import { BadRequestError } from "../../core/errors/bad-request.error";
 
 interface PostsMethods {
   update(dto: CreatePostDto): void;
@@ -37,9 +38,25 @@ class PostsEntity {
   }
 
   async update(dto: CreatePostDto): Promise<void> {
-    this.title = dto.title;
-    this.shortDescription = dto.shortDescription;
-    this.content = dto.content;
+
+    if (!dto.title || dto.title.length < 1 || dto.title.length > 30) {
+      throw new BadRequestError("Title is invalid", "title");
+    }
+
+    if (!dto.shortDescription || dto.shortDescription.length < 1 || dto.shortDescription.length > 100) {
+      throw new BadRequestError("ShortDescription is invalid", "shortDescription");
+    }
+
+    if (!dto.content || dto.content.length < 1 || dto.content.length > 1000) {
+      throw new BadRequestError("Content is invalid", "content");
+    }
+
+    if (dto.title, dto.shortDescription, dto.content) {
+      this.title = dto.title;
+      this.shortDescription = dto.shortDescription;
+      this.content = dto.content;
+    }
+
     return;
   }
 }

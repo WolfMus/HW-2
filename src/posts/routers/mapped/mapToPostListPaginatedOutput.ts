@@ -1,10 +1,9 @@
-import { WithId } from "mongodb";
-import { Post } from "../../types/posts";
 import { PostViewModel } from "../../types/postViewModel";
 import { PostListPaginatedOutput } from "../../output/postsListPaginatedOutput";
+import { PostsDocument } from "../../domain/posts.model";
 
 export function mapToPostsListPaginatedOutput(
-  newPost: WithId<Post>[],
+  newPost: PostsDocument[],
   params: {
     pageNumber: number;
     pageSize: number;

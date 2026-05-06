@@ -4,19 +4,17 @@ import { PostsDocument, PostsModel } from "../domain/posts.model";
 @injectable()
 export class PostsRepository {
   
-  async save(post: PostsDocument): Promise<string> {
+  async create(post: PostsDocument): Promise<string> {
     post.save();
     return post._id.toString();
   }
 
-  async update(post: PostsDocument): Promise<void> {
+  async save(post: PostsDocument): Promise<void> {
     post.save();
   }
 
   async delete(id: string): Promise<void> {
-    const deletedPost = await PostsModel.deleteOne({
-      _id: id,
-    });
+    const deletedPost = await PostsModel.deleteOne({ _id: id });
     if (deletedPost.deletedCount < 1) {
       throw new RepositoryNotFoundError("Post id not found", "id");
     }
