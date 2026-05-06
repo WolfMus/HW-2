@@ -1,6 +1,4 @@
-import { WithId } from "mongodb";
 import { BlogsQueryDtoInput } from "../input/blogs-query.input";
-import { Blog } from "../types/blogs.type";
 import { RepositoryNotFoundError } from "../../core/errors/repository-not-found.error";
 import { injectable } from "inversify";
 import { BlogsDocument, BlogsModel } from "../domain/blogs.model";
@@ -10,7 +8,7 @@ export class BlogsQwRepository {
 
   async findAll(
     queryDto: BlogsQueryDtoInput,
-  ): Promise<{ items: WithId<Blog>[]; totalCount: number }> {
+  ): Promise<{ items: BlogsDocument[]; totalCount: number }> {
     const { pageNumber, pageSize, sortBy, sortDirection, searchNameTerm } =
       queryDto;
 
@@ -28,7 +26,6 @@ export class BlogsQwRepository {
       .sort({ [sortBy]: sortOrder })
       .skip(skip)
       .limit(pageSize)
-      .lean();
 
     const totalCount = await BlogsModel.countDocuments(filter);
 

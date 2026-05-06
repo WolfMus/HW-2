@@ -1,9 +1,7 @@
 import "reflect-metadata";
-import { Blog } from "../types/blogs.type";
 import { CreateBlogDto } from "../types/createBlogDto.type";
 import { BlogsRepository } from "../repositories/blogs.repository";
 import { BlogsQueryDtoInput } from "../input/blogs-query.input";
-import { WithId } from "mongodb";
 import { BlogsQwRepository } from "../repositories/blogs-query.repository";
 import { inject, injectable } from "inversify";
 import { BlogsDocument, BlogsModel } from "../domain/blogs.model";
@@ -24,8 +22,8 @@ export class BlogsService {
   // Update blog
   async update(id: string, dto: CreateBlogDto): Promise<void> {
     const blog = await this.blogsQueryRepo.findById(id);
-    await blog.update(dto);
-    return await this.blogsRepo.update(blog);
+    blog.update(dto);
+    return await this.blogsRepo.save(blog);
   }
 
   // Delete blog
@@ -37,7 +35,7 @@ export class BlogsService {
   // Find list of blogs
   async findAll(
     queryDto: BlogsQueryDtoInput,
-  ): Promise<{ items: WithId<Blog>[]; totalCount: number }> {
+  ): Promise<{ items: BlogsDocument[]; totalCount: number }> {
     return await this.blogsQueryRepo.findAll(queryDto);
   }
 

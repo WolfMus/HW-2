@@ -9,7 +9,7 @@ export class BlogsRepository {
     return blog._id.toString();
   }
 
-  async update(blog: BlogsDocument): Promise<void> {
+  async save(blog: BlogsDocument): Promise<void> {
     blog.save();
   }
 

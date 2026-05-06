@@ -53,8 +53,8 @@ export class BlogsController {
   async getBlog(req: RequestWithParams<{ id: string }>, res: Response) {
     try {
       const id = req.params.id;
-      const blog = await this.blogsService.findById(id);
 
+      const blog = await this.blogsService.findById(id);
       return res.status(HttpStatus.Ok).send(mapToBlogViewModel(blog));
     } catch (e: unknown) {
       errorsHandler(e, res);
@@ -64,17 +64,13 @@ export class BlogsController {
   async getPostListForBlog(req: Request<{ id: string }>, res: Response) {
     try {
       const id = req.params.id;
+
       await this.blogsService.findById(id);
 
-      const sanitizedQuery = matchedData(req, {
-        includeOptionals: true,
-      }) as PostsQueryDtoInput;
+      const sanitizedQuery = matchedData(req, { includeOptionals: true }) as PostsQueryDtoInput;
       const queryInput = setDefaultSortAndPaginationIfNotExist(sanitizedQuery);
 
-      const { items, totalCount } = await this.postsService.findByBlogId(
-        id,
-        queryInput,
-      );
+      const { items, totalCount } = await this.postsService.findByBlogId(id, queryInput);
       const postsListOutput = mapToPostsListPaginatedOutput(items, {
         pageNumber: queryInput.pageNumber,
         pageSize: queryInput.pageSize,
@@ -90,11 +86,8 @@ export class BlogsController {
   async createBlog(req: RequestWithBody<CreateBlogDto>, res: Response) {
     try {
       const blogsId = await this.blogsService.create(req.body);
-      console.log(blogsId)
-      const createdBlog = await this.blogsService.findById(blogsId);
-      console.log(createdBlog);
-
-      const blogToViewModel = mapToBlogViewModel(createdBlog);
+      const blog = await this.blogsService.findById(blogsId);
+      const blogToViewModel = mapToBlogViewModel(blog);
 
       res.status(HttpStatus.Created).send(blogToViewModel);
     } catch (e: unknown) {
@@ -111,10 +104,7 @@ export class BlogsController {
       const postDto = req.body;
       const blog = await this.blogsService.findById(id);
 
-      const createdPostId = await this.postsService.createForBlog(
-        postDto,
-        blog.name,
-      );
+      const createdPostId = await this.postsService.createForBlog(postDto, blog.name);
       const post = await this.postsService.findById(createdPostId);
       const postToViewModel = mapToPostViewModel(post);
 
@@ -142,6 +132,7 @@ export class BlogsController {
   async deleteBlog(req: RequestWithParams<{ id: string }>, res: Response) {
     try {
       const id = req.params.id;
+      
       await this.blogsService.delete(id);
       return res.sendStatus(HttpStatus.NoContent);
     } catch (e: unknown) {

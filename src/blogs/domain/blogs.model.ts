@@ -1,6 +1,7 @@
 import mongoose, { HydratedDocument, Model, model } from "mongoose";
 import { Blog } from "../types/blogs.type";
 import { CreateBlogDto } from "../types/createBlogDto.type";
+import { BadRequestError } from "../../core/errors/bad-request.error";
 
 interface BlogsMethods {
   update(dto: CreateBlogDto): void;
@@ -28,7 +29,7 @@ class BlogsEntity {
   ) {}
 
   static createBlog(dto: CreateBlogDto) {
-    const blog = new BlogsModel({...dto});
+    const blog = new BlogsModel({ ...dto });
     blog.createdAt = new Date();
     blog.isMembership = false;
 
@@ -36,9 +37,23 @@ class BlogsEntity {
   }
 
   async update(dto: CreateBlogDto): Promise<void> {
-    this.name = dto.name;
-    this.description = dto.description;
-    this.websiteUrl = dto.websiteUrl;
+
+    if ( !dto.name || dto.name.length < 1 || dto.name.length > 15 ) {
+      throw new BadRequestError("Invalid name", "name");
+    }
+    if ( !dto.description || dto.description.length < 1 || dto.description.length > 500 ) {
+      throw new BadRequestError("Invalid description", "description");
+    }
+    const regExpUrl = RegExp("^https://([a-zA-Z0-9_-]+\\.)+[a-zA-Z0-9_-]+(/[a-zA-Z0-9_-]+)*\\/?$");
+    if (!dto.websiteUrl ||!regExpUrl.test(dto.websiteUrl) || dto.websiteUrl.length > 100) {
+      throw new BadRequestError("Invalid websiteUrl", "websiteUrl");
+    }
+
+    if (dto.name && dto.description && dto.websiteUrl) {
+      this.name = dto.name;
+      this.description = dto.description;
+      this.websiteUrl = dto.websiteUrl;
+    }
     return;
   }
 }
