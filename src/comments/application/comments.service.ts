@@ -8,7 +8,7 @@ import { CommentQueryDtoInput } from "../types/commentQueryDtoInput";
 import { Pagination } from "../../core/types/pagination.interface";
 import { inject, injectable } from "inversify";
 import { LikeStatus } from "../types/likeComments.enum";
-import { LikesQwRepository } from "../../likes/repository/likes-query.repository";
+import { LikesForCommsQwRepository } from "../../likes/forComments/repository/likes-comms-query.repository";
 
 @injectable()
 export class CommentsService {
@@ -16,7 +16,7 @@ export class CommentsService {
     @inject(CommentsRepository) protected commentsRepo: CommentsRepository,
     @inject(CommentsQwRepository) protected commentsQueryRepo: CommentsQwRepository,
     @inject(UsersQwRepository) protected usersQueryRepo: UsersQwRepository,
-    @inject(LikesQwRepository) protected likesQueryRepo: LikesQwRepository,
+    @inject(LikesForCommsQwRepository) protected likesQueryRepo: LikesForCommsQwRepository,
   ) {}
 
   async create(
@@ -59,7 +59,6 @@ export class CommentsService {
     query: CommentQueryDtoInput,
     userId: string,
   ): Promise<Pagination<CommentViewModel[]>> {
-  // ): Promise<void> {
     const comments = await this.commentsQueryRepo.findByPostId(postId, query);
 
     // Получил айдишники комментариев
@@ -84,7 +83,6 @@ export class CommentsService {
         },
     }})
 
-    // console.log(commentsInfo)
     return {
       ...comments,
       items: changedComments,

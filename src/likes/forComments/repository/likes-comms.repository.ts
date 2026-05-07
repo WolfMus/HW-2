@@ -1,11 +1,10 @@
 import { injectable } from "inversify";
-import { LikeForCommentModel } from "../models/likeComments.schema";
-import { LikesInfo } from "../../comments/types/like-status.type";
+import { LikeForCommentModel, LikesForComms } from "../models/like-comments.schema";
 
 @injectable()
-export class LikesRepository {
+export class LikesForCommsRepository {
     costructor(){}
-    async create(likesBody: LikesInfo): Promise<void> {
+    async create(likesBody: LikesForComms): Promise<void> {
         await LikeForCommentModel.insertOne(likesBody);
         return;
     }

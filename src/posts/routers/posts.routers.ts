@@ -73,4 +73,13 @@ postsRouters
     idValidation,
     inputValidationResultMiddleware,
     postsController.getListOfCommentsById.bind(postsController),
-  );
+  )
+
+  // LIKES
+  .post(
+    "/:id/like-status",
+    tokenGuard,
+    idValidation,
+    inputValidationResultMiddleware,
+    postsController.changeStatus.bind(postsController),
+  )

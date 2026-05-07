@@ -8,16 +8,16 @@ import {
 import { CommentsService } from "../application/comments.service";
 import { inject, injectable } from "inversify";
 import { IdType } from "../../core/types/id";
-import { LikesService } from "../../likes/application/likes.service";
 import { LikeStatus } from "../types/likeComments.enum";
 import { UsersQwRepository } from "../../users/repository/usersQw.repository";
+import { LikesForCommsService } from "../../likes/forComments/application/likes-comments.service";
 
 @injectable()
 export class CommentsController {
 
   constructor(
     @inject(CommentsService) protected commentsService: CommentsService,
-    @inject(LikesService) protected likesService: LikesService,
+    @inject(LikesForCommsService) protected likesCommsService: LikesForCommsService,
     @inject(UsersQwRepository) protected usersQueryRepo: UsersQwRepository,
   ) {}
 
@@ -100,10 +100,10 @@ export class CommentsController {
       await this.commentsService.getById(commentId, userId);
 
       // Валидация статуса
-      const likeStatus = await this.likesService.isValidStatus(req.body.likeStatus);
+      const likeStatus = await this.likesCommsService.isValidStatus(req.body.likeStatus);
       
       // Стоял ли лайк
-      let previousStatus = await this.likesService.previousStatus(commentId, userId)
+      let previousStatus = await this.likesCommsService.previousStatus(commentId, userId)
 
       // Повторение реакции
       if (previousStatus === likeStatus) {
@@ -112,14 +112,14 @@ export class CommentsController {
 
       // Удаление предыдущего запроса
       if (previousStatus) {
-        await this.likesService.removeStatus(commentId, userId)
+        await this.likesCommsService.removeStatus(commentId, userId)
       }
       if (previousStatus === null){
         previousStatus = LikeStatus.None;
       }
 
       // Запись в коллекцию лайков
-      await this.likesService.setStatus(commentId, userId, likeStatus);
+      await this.likesCommsService.setStatus(commentId, userId, likeStatus);
 
       // Изменение счетчика
       await this.commentsService.changeStatus(commentId, likeStatus, previousStatus);

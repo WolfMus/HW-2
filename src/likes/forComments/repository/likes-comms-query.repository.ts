@@ -1,9 +1,9 @@
 import { injectable } from "inversify";
-import { LikeForCommentModel } from "../models/likeComments.schema";
-import { LikeStatus } from "../../comments/types/likeComments.enum";
+import { LikeForCommentModel } from "../models/like-comments.schema";
+import { LikeStatus } from "../../../comments/types/likeComments.enum";
 
 @injectable()
-export class LikesQwRepository {
+export class LikesForCommsQwRepository {
   async findStatus(commentId: string, userId: string): Promise<LikeStatus | null> {
     const status = await LikeForCommentModel.findOne({
       commentId: commentId,

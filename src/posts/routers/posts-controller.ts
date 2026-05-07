@@ -21,6 +21,8 @@ import { Post } from "../types/posts";
 import { IdType } from "../../core/types/id";
 import { CommentsService } from "../../comments/application/comments.service";
 import { inject, injectable } from "inversify";
+import { CreateLikeDto } from "../../likes/types/likesDto.type";
+import { LikesForPostsService } from "../../likes/forPosts/application/likes-posts.service";
 
 @injectable()
 export class PostsController {
@@ -29,7 +31,10 @@ export class PostsController {
     @inject(PostsService) protected postsService: PostsService,
     @inject(BlogsService) protected blogsService: BlogsService,
     @inject(CommentsService) protected commentsService: CommentsService,
+    @inject(LikesForPostsService) protected likesPostsService: LikesForPostsService,
   ) {}
+
+  // ==========POSTS==========
 
   async getPostList(req: Request, res: Response) {
     try {
@@ -100,6 +105,8 @@ export class PostsController {
     }
   }
 
+  // ==========COMMENTS==========
+
   async createComment(
     req: RequestWithParamsAndBodyAndUserId<
       { id: string },
@@ -146,5 +153,16 @@ export class PostsController {
     } catch (e) {
       errorsHandler(e, res);
     }
+  }
+
+  // ==========LIKES==========
+
+  async changeStatus(req: RequestWithParamsAndBodyAndUserId< {id: string}, CreateLikeDto, IdType >, res: Response) {
+    const postId = req.params.id;
+    const userId = req.user.id;
+    const likeStatus = req.body.likeStatus;
+
+    await this.likesPostsService.create( postId, userId, likeStatus );
+    res.sendStatus(HttpStatus.NoContent);
   }
 }

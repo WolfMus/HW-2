@@ -28,16 +28,24 @@ import { TokenQwRepository } from "./auth/repositories/token-query.repository";
 import { TokenRepository } from "./auth/repositories/token.repository";
 import { AuthController } from "./auth/routers/auth-controller";
 import { BcryptService } from "./core/heplers/bcrypt-service";
-import { LikesService } from "./likes/application/likes.service";
-import { LikesRepository } from "./likes/repository/likes.repository";
-import { LikesQwRepository } from "./likes/repository/likes-query.repository";
+import { LikesForCommsRepository } from "./likes/forComments/repository/likes-comms.repository";
+import { LikesForCommsQwRepository } from "./likes/forComments/repository/likes-comms-query.repository";
+import { LikesForCommsService } from "./likes/forComments/application/likes-comments.service";
+import { LikesForPostsRepository } from "./likes/forPosts/repository/likes-posts.repository";
+import { LikesForPostsService } from "./likes/forPosts/application/likes-posts.service";
+import { LikesForPostsQwRepository } from "./likes/forPosts/repository/likes-posts-query.repository";
 
 export const container = new Container();
 
-// LIKES
-container.bind(LikesRepository).toSelf();
-container.bind(LikesQwRepository).toSelf();
-container.bind(LikesService).toSelf();
+// LIKES FOR COMMS
+container.bind(LikesForCommsRepository).toSelf();
+container.bind(LikesForCommsQwRepository).toSelf();
+container.bind(LikesForCommsService).toSelf();
+
+// LIKES FOR POSTS
+container.bind(LikesForPostsRepository).toSelf();
+container.bind(LikesForPostsQwRepository).toSelf();
+container.bind(LikesForPostsService).toSelf();
 
 // BLOGS
 container.bind(BlogsRepository).toSelf();

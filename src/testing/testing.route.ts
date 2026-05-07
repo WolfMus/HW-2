@@ -7,7 +7,8 @@ import { commentsModel } from "../comments/models/comments.schema";
 import { devicesModel } from "../security/models/device.Schema";
 import { tokensModel } from "../auth/models/token.Schema";
 import { rateLimitModel } from "../auth/models/rateLimit.Schema";
-import { LikeForCommentModel } from "../likes/models/likeComments.schema";
+import { LikeForCommentModel } from "../likes/forComments/models/like-comments.schema";
+import { LikesForPostModel } from "../likes/forPosts/models/like-posts.model";
 
 
 export const testingRouter = Router({});
@@ -22,6 +23,7 @@ testingRouter.delete("/all-data", async (req: Request, res: Response) => {
     tokensModel.deleteMany({}),
     rateLimitModel.deleteMany({}),
     LikeForCommentModel.deleteMany({}),
+    LikesForPostModel.deleteMany({}),
   ]);
 
   res.sendStatus(HttpStatus.NoContent);
