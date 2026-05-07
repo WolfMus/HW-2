@@ -81,5 +81,5 @@ postsRouters
     tokenGuard,
     idValidation,
     inputValidationResultMiddleware,
-    postsController.changeStatus.bind(postsController),
+    postsController.changeLikeStatus.bind(postsController),
   )

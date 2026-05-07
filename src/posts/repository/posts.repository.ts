@@ -20,4 +20,12 @@ export class PostsRepository {
     }
     return;
   }
+
+  async findById(id: string): Promise<PostsDocument> {
+    const post = await PostsModel.findById(id)
+    if (!post) {
+      throw new RepositoryNotFoundError("Post not found", "id")
+    }
+    return post;
+  }
 }

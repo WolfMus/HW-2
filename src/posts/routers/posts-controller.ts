@@ -59,6 +59,7 @@ export class PostsController {
   async getPost(req: RequestWithParams<{ id: string }>, res: Response) {
     try {
       const post = await this.postsService.findById(req.params.id);
+      console.log(post)
       const postToViewModel = mapToPostViewModel(post);
 
       return res.status(HttpStatus.Ok).send(postToViewModel);
@@ -157,12 +158,17 @@ export class PostsController {
 
   // ==========LIKES==========
 
-  async changeStatus(req: RequestWithParamsAndBodyAndUserId< {id: string}, CreateLikeDto, IdType >, res: Response) {
-    const postId = req.params.id;
-    const userId = req.user.id;
-    const likeStatus = req.body.likeStatus;
+  async changeLikeStatus(req: RequestWithParamsAndBodyAndUserId< {id: string}, CreateLikeDto, IdType >, res: Response) {
+    try {
+      const postId = req.params.id;
+      const userId = req.user.id;
+      const likeStatus = req.body.likeStatus;
 
-    await this.likesPostsService.create( postId, userId, likeStatus );
-    res.sendStatus(HttpStatus.NoContent);
+      await this.postsService.findById(postId);
+      await this.likesPostsService.create( postId, userId, likeStatus );
+      res.sendStatus(HttpStatus.NoContent);
+    } catch (e) {
+      errorsHandler(e, res);
+    }
   }
 }

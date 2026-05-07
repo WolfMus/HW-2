@@ -4,13 +4,17 @@ import { PostsQueryDtoInput } from "../input/post-query.input";
 import { PostsQwRepository } from "../repository/posts-query.repository";
 import { inject, injectable } from "inversify";
 import { PostsDocument, PostsModel } from "../domain/posts.model";
+import { LikeStatus } from "../../comments/types/likeComments.enum";
+import { LikesForPostsQwRepository } from "../../likes/forPosts/repository/likes-posts-query.repository";
+import { LikesForPostDocument } from "../../likes/forPosts/models/like-posts.model";
 
 @injectable()
 export class PostsService {
 
   constructor(
     @inject(PostsRepository) protected postsRepo: PostsRepository, 
-    @inject(PostsQwRepository) protected postsQueryRepo: PostsQwRepository
+    @inject(PostsQwRepository) protected postsQueryRepo: PostsQwRepository,
+    @inject(LikesForPostsQwRepository) protected likesPostsQueryRepo: LikesForPostsQwRepository,
   ) {}
 
   async create(dto: CreatePostDto, blogName: string): Promise<string> {
@@ -35,7 +39,11 @@ export class PostsService {
   }
   
   async findById(id: string): Promise<PostsDocument> {
-    return await this.postsQueryRepo.findById(id);
+    const post = await this.postsRepo.findById(id);
+    const newestLikes: LikesForPostDocument[] = await this.likesPostsQueryRepo.findNewestLikes(id);
+    post.updateNewestLikes(newestLikes);
+    await this.postsRepo.save(post);
+    return post
   }
 
 
@@ -50,6 +58,11 @@ export class PostsService {
   }
 
   // LIKES
-  
+  async changeLikeStatus(postId: string,  likePrev: LikeStatus, likeCurrent: LikeStatus) {
+    const post = await this.postsRepo.findById(postId);
+    post.updateStatus(likePrev, likeCurrent);
+    await this.postsRepo.save(post);
+    return;
+  }
 
 }

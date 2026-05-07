@@ -1,5 +1,6 @@
 import { PostViewModel } from "../../types/postViewModel";
 import { PostsDocument } from "../../domain/posts.model";
+import { LikeStatus } from "../../../comments/types/likeComments.enum";
 
 export function mapToPostViewModel(post: PostsDocument): PostViewModel {
   return {
@@ -10,5 +11,13 @@ export function mapToPostViewModel(post: PostsDocument): PostViewModel {
     blogId: post.blogId,
     blogName: post.blogName,
     createdAt: post.createdAt,
+    extendedLikesInfo: {
+        likesCount: post.extendedLikesInfo.likesCount,
+        dislikesCount: post.extendedLikesInfo.dislikesCount,
+        myStatus: post.extendedLikesInfo.myStatus,
+        newestLikes: {
+            addedAt: new Date(),
+            userId: 0,
+            login: 0,
   };
 }

@@ -3,9 +3,12 @@ import { Post } from "../types/posts";
 import { CreatePostDto } from "../types/createPostsDto.type";
 import { BadRequestError } from "../../core/errors/bad-request.error";
 import { LikeStatus } from "../../comments/types/likeComments.enum";
+import { LikesForPostDocument } from "../../likes/forPosts/models/like-posts.model";
 
 interface PostsMethods {
   update(dto: CreatePostDto): void;
+  updateStatus(likePrev: LikeStatus, likeCurrent: LikeStatus): void;
+  updateNewestLikes(newestLikes: LikesForPostDocument): void;
 }
 
 type PostsStatics = typeof PostsEntity;
@@ -29,7 +32,7 @@ const postsScheme = new mongoose.Schema<Post>({
         userId: { type: String, required: true },
         login: { type: String, required: true },
       }],
-      required: false,
+      required: true,
       default: [],
 
     }
@@ -37,7 +40,7 @@ const postsScheme = new mongoose.Schema<Post>({
 });
 
 class PostsEntity {
-  public extendedLikesInfo: {
+  private extendedLikesInfo: {
     likesCount: number,
     dislikesCount: number,
     myStatus: LikeStatus,
@@ -67,7 +70,7 @@ class PostsEntity {
       extendedLikesInfo: {
         likesCount: 0,
         dislikesCount: 0,
-        muStatus: LikeStatus.None,
+        myStatus: LikeStatus.None,
         newestLikes: [],
       }
     });
@@ -94,6 +97,34 @@ class PostsEntity {
     this.content = dto.content;
 
     return;
+  }
+
+  async updateStatus(likePrev: LikeStatus, likeCurrent: LikeStatus): Promise<void> {
+    // likePrev - что стояло
+    // likeCurrent - что ставим
+
+    if (likePrev === LikeStatus.Like) {
+      if (this.extendedLikesInfo.likesCount > 0) {
+        this.extendedLikesInfo.likesCount--;
+      }
+    } else if (likePrev === LikeStatus.Dislike) {
+      if (this.extendedLikesInfo.likesCount > 0) {
+        this.extendedLikesInfo.dislikesCount--;
+      }
+    }
+    
+    if (likeCurrent === LikeStatus.Dislike) {
+      this.extendedLikesInfo.dislikesCount++;
+    } else if (likeCurrent === LikeStatus.Like) {
+      this.extendedLikesInfo.likesCount++;
+    }
+    
+    this.extendedLikesInfo.myStatus = likeCurrent;
+    return;
+  }
+
+  async updateNewestLikes(newestLikes: LikesForPostDocument): void {
+    this.extendedLikesInfo.newestLikes. = 
   }
 }
 
