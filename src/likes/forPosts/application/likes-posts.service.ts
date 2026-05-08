@@ -48,18 +48,17 @@ export class LikesForPostsService {
 
     // Есть статус =>
     if (likePrev) {
-
       // => Если None => удаляем из БД => меняем счетчик
       if (likeStatus === LikeStatus.None) {
-        await this.LikesPostsRepo.delete(likePrev.id);
         await this.PostsService.changeLikeStatus(postId, likePrev.likeStatus, likeStatus);
+        await this.LikesPostsRepo.delete(likePrev.id);
         return;
       }
-
+      
       // => меняем статус и дату => меняем счетчик => сохраняем
-      const likeChanged = await likePrev.updateStatus(likeStatus);
-      await this.LikesPostsRepo.save(likeChanged);
       await this.PostsService.changeLikeStatus(postId, likePrev.likeStatus, likeStatus);
+      likePrev.updateStatus(likeStatus);
+      await this.LikesPostsRepo.save(likePrev);
       return;
     }
   }

@@ -3,10 +3,11 @@ import { PostsRepository } from "../repository/posts.repository";
 import { PostsQueryDtoInput } from "../input/post-query.input";
 import { PostsQwRepository } from "../repository/posts-query.repository";
 import { inject, injectable } from "inversify";
-import { PostsDocument, PostsModel } from "../domain/posts.model";
+import { NewestLikes, PostsDocument, PostsModel } from "../domain/posts.model";
 import { LikeStatus } from "../../comments/types/likeComments.enum";
 import { LikesForPostsQwRepository } from "../../likes/forPosts/repository/likes-posts-query.repository";
 import { LikesForPostDocument } from "../../likes/forPosts/models/like-posts.model";
+import { PostViewModel } from "../types/postViewModel";
 
 @injectable()
 export class PostsService {
@@ -17,9 +18,10 @@ export class PostsService {
     @inject(LikesForPostsQwRepository) protected likesPostsQueryRepo: LikesForPostsQwRepository,
   ) {}
 
-  async create(dto: CreatePostDto, blogName: string): Promise<string> {
+  async create(dto: CreatePostDto, blogName: string): Promise<PostViewModel> {
     const post = PostsModel.createPost(dto, blogName);
-    return await this.postsRepo.create(post);
+    await this.postsRepo.create(post);
+    return await this._ToViewModel(post);
   }
   
   async update(id: string, body: CreatePostDto): Promise<void> {
@@ -38,19 +40,38 @@ export class PostsService {
     return await this.postsQueryRepo.findAll(queryDto);
   }
   
-  async findById(id: string): Promise<PostsDocument> {
+  async findById(id: string, userId?: string): Promise<PostViewModel> {
     const post = await this.postsRepo.findById(id);
-    const newestLikes: LikesForPostDocument[] = await this.likesPostsQueryRepo.findNewestLikes(id);
-    post.updateNewestLikes(newestLikes);
-    await this.postsRepo.save(post);
-    return post
+
+    // Нахождение 3 последних лайков
+    const lastThreeLikes: LikesForPostDocument[] = await this.likesPostsQueryRepo.findNewestLikes(id);
+    const newestLikes: NewestLikes[] = [];
+    if (newestLikes) {
+      for(let i = 0; i < lastThreeLikes.length; i++) {
+        newestLikes.push({
+          addedAt: lastThreeLikes[i]!.addedAt,
+          userId: lastThreeLikes[i]!.userId,
+          login: "ABOBA",
+        })
+    }
+    }
+
+    // Получение статуса пользователя
+    if (userId) {
+      const likeDocument = await this.likesPostsQueryRepo.findByPostAndUserId(id, userId);
+      if (likeDocument) {
+        return this._ToViewModel(post, newestLikes, likeDocument.likeStatus)
+      }
+    }
+
+    return this._ToViewModel(post, newestLikes)
   }
 
-
   // FOR BLOG 
-  async createForBlog(dto: CreatePostDto, blogName: string): Promise<string> {
+  async createForBlog(dto: CreatePostDto, blogName: string): Promise<PostViewModel> {
     const post = PostsModel.createPost(dto, blogName);
-    return await this.postsRepo.create(post);
+    const savedPost = await this.postsRepo.create(post);
+    return await this._ToViewModel(savedPost)
   }
 
   async findByBlogId(id: string, queryDto: PostsQueryDtoInput): Promise<{ items: PostsDocument[]; totalCount: number }> {
@@ -65,4 +86,21 @@ export class PostsService {
     return;
   }
 
+  async _ToViewModel(post: PostsDocument, newestLikes?: NewestLikes[], likeStatus?: LikeStatus ): Promise<PostViewModel> {
+    return {
+      id: post._id.toString(),
+      title: post.title,
+      shortDescription: post.shortDescription,
+      content: post.content,
+      blogId: post.blogId,
+      blogName: post.blogName,
+      createdAt: post.createdAt,
+      extendedLikesInfo: {
+          likesCount: post.extendedLikesInfo.likesCount,
+          dislikesCount: post.extendedLikesInfo.dislikesCount,
+          myStatus: likeStatus || post.extendedLikesInfo.myStatus,
+          newestLikes: newestLikes || [],
+      }
+    }
+  }
 }

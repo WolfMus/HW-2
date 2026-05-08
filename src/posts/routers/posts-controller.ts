@@ -13,7 +13,6 @@ import { setDefaultSortAndPaginationIfNotExist } from "../../core/heplers/set-de
 import { PostsQueryDtoInput } from "../input/post-query.input";
 import { mapToPostsListPaginatedOutput } from "./mapped/mapToPostListPaginatedOutput";
 import { PostsService } from "../application/posts-service";
-import { mapToPostViewModel } from "./mapped/mapToPostViewModel";
 import { CreatePostDto } from "../types/createPostsDto.type";
 import { BlogsService } from "../../blogs/application/blogs.service";
 import { CommentQueryDtoInput } from "../../comments/types/commentQueryDtoInput";
@@ -56,13 +55,11 @@ export class PostsController {
     }
   }
 
-  async getPost(req: RequestWithParams<{ id: string }>, res: Response) {
+  async getPost(req: RequestWithParamsAndUserId<{ id: string }, IdType>, res: Response) {
     try {
-      const post = await this.postsService.findById(req.params.id);
-      console.log(post)
-      const postToViewModel = mapToPostViewModel(post);
-
-      return res.status(HttpStatus.Ok).send(postToViewModel);
+      const userId = req.user?.id;
+      const post = await this.postsService.findById(req.params.id, userId);
+      return res.status(HttpStatus.Ok).send(post);
     } catch (e: unknown) {
       errorsHandler(e, res);
     }
@@ -73,11 +70,8 @@ export class PostsController {
       const postDto = req.body;
       const blog = await this.blogsService.findById(req.body.blogId);
 
-      const createdPostId = await this.postsService.create(postDto, blog.name);
-      const post = await this.postsService.findById(createdPostId);
-      const postToViewModel = mapToPostViewModel(post);
-
-      res.status(HttpStatus.Created).send(postToViewModel);
+      const createdPost = await this.postsService.create(postDto, blog.name);
+      res.status(HttpStatus.Created).send(createdPost);
     } catch (e: unknown) {
       errorsHandler(e, res);
     }
@@ -164,11 +158,12 @@ export class PostsController {
       const userId = req.user.id;
       const likeStatus = req.body.likeStatus;
 
-      await this.postsService.findById(postId);
+      // Поменять на проверку существования поста
+      await this.postsService.findById( postId );
       await this.likesPostsService.create( postId, userId, likeStatus );
-      res.sendStatus(HttpStatus.NoContent);
-    } catch (e) {
-      errorsHandler(e, res);
+      res.sendStatus( HttpStatus.NoContent );
+    } catch ( e ) {
+      errorsHandler( e, res );
     }
   }
 }

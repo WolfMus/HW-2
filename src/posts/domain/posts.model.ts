@@ -5,6 +5,18 @@ import { BadRequestError } from "../../core/errors/bad-request.error";
 import { LikeStatus } from "../../comments/types/likeComments.enum";
 import { LikesForPostDocument } from "../../likes/forPosts/models/like-posts.model";
 
+export type NewestLikes = {
+  addedAt: Date | null,
+  userId: string | null,
+  login: string | null,
+}
+
+const newestLikesSchema = new mongoose.Schema<NewestLikes>({
+  addedAt: { type: Date, required: true },
+  userId: { type: String, required: true },
+  login: { type: String, required: true },
+})
+
 interface PostsMethods {
   update(dto: CreatePostDto): void;
   updateStatus(likePrev: LikeStatus, likeCurrent: LikeStatus): void;
@@ -27,14 +39,9 @@ const postsScheme = new mongoose.Schema<Post>({
     dislikesCount: { type: Number, default: 0,required: true},
     myStatus: { type: String, enum: LikeStatus, default: LikeStatus.None, required: true },
     newestLikes: {
-      type: [{
-        addedAt: { type: Date, required: true },
-        userId: { type: String, required: true },
-        login: { type: String, required: true },
-      }],
+      type: [newestLikesSchema],
       required: true,
       default: [],
-
     }
   }
 });
@@ -108,7 +115,7 @@ class PostsEntity {
         this.extendedLikesInfo.likesCount--;
       }
     } else if (likePrev === LikeStatus.Dislike) {
-      if (this.extendedLikesInfo.likesCount > 0) {
+      if (this.extendedLikesInfo.dislikesCount > 0) {
         this.extendedLikesInfo.dislikesCount--;
       }
     }
@@ -119,12 +126,7 @@ class PostsEntity {
       this.extendedLikesInfo.likesCount++;
     }
     
-    this.extendedLikesInfo.myStatus = likeCurrent;
     return;
-  }
-
-  async updateNewestLikes(newestLikes: LikesForPostDocument): void {
-    this.extendedLikesInfo.newestLikes. = 
   }
 }
 

@@ -6,7 +6,7 @@ export class LikesForPostsRepository {
     constructor(){}
     
     async save(like: LikesForPostDocument): Promise<void> {
-        like.save();
+        await like.save();
         return;
     }
 

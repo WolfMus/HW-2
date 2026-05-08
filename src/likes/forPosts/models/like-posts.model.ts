@@ -9,7 +9,7 @@ export type LikesForPost = {
 };
 
 interface LikesForPostMethods {
-    updateStatus(dto: string): LikesForPostDocument,
+    updateStatus(dto: string): void,
 }
 
 type LikesForPostStatics = typeof LikesForPostEntity;
@@ -45,7 +45,7 @@ class LikesForPostEntity {
   async updateStatus(status: string) {
     this.likeStatus = status as LikeStatus;
     this.addedAt = new Date();
-    return this
+    return
   };
 }
 

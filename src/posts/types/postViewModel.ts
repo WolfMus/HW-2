@@ -1,4 +1,5 @@
 import { LikeStatus } from "../../comments/types/likeComments.enum";
+import { NewestLikes } from "../domain/posts.model";
 
 export type PostViewModel = {
   id: string;
@@ -12,10 +13,6 @@ export type PostViewModel = {
       likesCount: number;
       dislikesCount: number;
       myStatus: LikeStatus;
-      newestLikes: [
-        addedAt: Date, 
-        userId: string, 
-        login: string
-      ];
+      newestLikes: NewestLikes[];
     };
 };

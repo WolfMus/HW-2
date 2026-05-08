@@ -4,9 +4,9 @@ import { PostsDocument, PostsModel } from "../domain/posts.model";
 @injectable()
 export class PostsRepository {
   
-  async create(post: PostsDocument): Promise<string> {
+  async create(post: PostsDocument): Promise<PostsDocument> {
     post.save();
-    return post._id.toString();
+    return post;
   }
 
   async save(post: PostsDocument): Promise<void> {

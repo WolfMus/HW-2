@@ -1,6 +1,5 @@
 import { PostViewModel } from "../../types/postViewModel";
 import { PostsDocument } from "../../domain/posts.model";
-import { LikeStatus } from "../../../comments/types/likeComments.enum";
 
 export function mapToPostViewModel(post: PostsDocument): PostViewModel {
   return {
@@ -21,3 +20,4 @@ export function mapToPostViewModel(post: PostsDocument): PostViewModel {
             login: 0,
   };
 }
+  }}
