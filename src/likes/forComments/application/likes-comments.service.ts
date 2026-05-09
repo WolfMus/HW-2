@@ -1,7 +1,7 @@
 import { inject, injectable } from "inversify";
 import { LikesForCommsRepository } from "../repository/likes-comms.repository";
 import { LikesForCommsQwRepository } from "../repository/likes-comms-query.repository";
-import { LikeStatus } from "../../../comments/types/likeComments.enum";
+import { LikeStatus } from "../../types/likeComments.enum";
 import { BadRequestError } from "../../../core/errors/bad-request.error";
 import { LikesForComms } from "../models/like-comments.schema";
 

@@ -212,16 +212,15 @@ export class AuthController {
       const recoveryCode = req.body.recoveryCode;
       const newPassword = req.body.newPassword;
 
-      await this.authService.updatePassword(recoveryCode, newPassword);
+      // проверка recoveryCode и создание hash, salt
+      const {hash, salt, recoveryCodeEmail} = await this.authService.updatePassword(recoveryCode, newPassword);
+
+      // сохранение новых данных
+      await this.usersService.changePassword(hash, salt, recoveryCodeEmail);
       res.sendStatus(HttpStatus.NoContent);
     } catch (e) {
       errorsHandler(e, res);
     }
   }
 }
-/**
- * ПОИСК В БД РЕКАВЕРИ КОДА => ПОЛУЧИТЬ ПОЧТУ
- * СОЗДАТЬ НОВЫЙ ХЭШ И СОЛЬ ИЗ НОВОГО ПАРОЛЯ
- * ОБНОВИТЬ У ПОЛЬЗОВАТЕЛЯ ХЭШ И СОЛЬ
- * 
- */
+

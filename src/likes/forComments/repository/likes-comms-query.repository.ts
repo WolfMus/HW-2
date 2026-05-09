@@ -1,6 +1,6 @@
 import { injectable } from "inversify";
 import { LikeForCommentModel } from "../models/like-comments.schema";
-import { LikeStatus } from "../../../comments/types/likeComments.enum";
+import { LikeStatus } from "../../types/likeComments.enum";
 
 @injectable()
 export class LikesForCommsQwRepository {

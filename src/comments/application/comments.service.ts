@@ -7,8 +7,9 @@ import { UsersQwRepository } from "../../users/repository/usersQw.repository";
 import { CommentQueryDtoInput } from "../types/commentQueryDtoInput";
 import { Pagination } from "../../core/types/pagination.interface";
 import { inject, injectable } from "inversify";
-import { LikeStatus } from "../types/likeComments.enum";
+import { LikeStatus } from "../../likes/types/likeComments.enum";
 import { LikesForCommsQwRepository } from "../../likes/forComments/repository/likes-comms-query.repository";
+import { UsersRepository } from "../../users/repository/users.repository";
 
 @injectable()
 export class CommentsService {
@@ -16,6 +17,7 @@ export class CommentsService {
     @inject(CommentsRepository) protected commentsRepo: CommentsRepository,
     @inject(CommentsQwRepository) protected commentsQueryRepo: CommentsQwRepository,
     @inject(UsersQwRepository) protected usersQueryRepo: UsersQwRepository,
+    @inject(UsersRepository) protected usersRepo: UsersRepository,
     @inject(LikesForCommsQwRepository) protected likesQueryRepo: LikesForCommsQwRepository,
   ) {}
 
@@ -24,7 +26,7 @@ export class CommentsService {
     postId: string,
     userId: string,
   ): Promise<string> {
-    const user = await this.usersQueryRepo.findById(userId);
+    const user = await this.usersRepo.findById(userId);
 
     const newComment: Comment = {
       content: content,

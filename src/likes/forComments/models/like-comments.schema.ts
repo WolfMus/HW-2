@@ -1,5 +1,5 @@
 import mongoose, { model } from "mongoose";
-import { LikeStatus } from "../../../comments/types/likeComments.enum";
+import { LikeStatus } from "../../types/likeComments.enum";
 
 export type LikesForComms = {
     commentId: string,

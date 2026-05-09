@@ -1,11 +1,9 @@
-import { randomUUID } from "crypto";
 import { BcryptService } from "../../core/heplers/bcrypt-service";
 import { UsersRepository } from "../repository/users.repository";
 import { UsersQwRepository } from "../repository/usersQw.repository";
-import { UserDbView } from "../type/user.db.interface";
-import { add } from "date-fns";
 import { NodeMailerService } from "../../auth/application/nodeMailerService";
 import { inject, injectable } from "inversify";
+import { UsersModel } from "../models/users.schema";
 
 @injectable()
 export class UsersService {
@@ -16,68 +14,50 @@ export class UsersService {
     @inject(NodeMailerService) protected emailService: NodeMailerService,
   ) {}
 
+  // Создание пользователя админом
   async create(
     login: string,
     password: string,
     email: string,
   ): Promise<string> {
-    const saltAndHash = await this.cryptoService.generateHash(password);
 
-    const userInputBody: UserDbView = {
-      login: login,
-      email: email,
-      hash: saltAndHash.hash,
-      salt: saltAndHash.salt,
-      createdAt: new Date(),
-      emailConfirmation: {
-        confirmationCode: randomUUID(),
-        expirationCode: add(new Date(), {
-          minutes: 5,
-        }),
-        isConfirmed: true,
-      },
-    };
+    // Создание Salt, Hash
+    const saltAndHash: {salt: string, hash: string} = await this.cryptoService.generateHash(password);
 
-    const createdUserId = await this.usersRepo.create(userInputBody);
-
-    return createdUserId;
+    // Создание User'а и смена статуса почты на true
+    const user = UsersModel.createUser(login, email, saltAndHash);
+    user.updateEmailConfirmStatus(true);
+    return this.usersRepo.saveAndReturnId(user);
   }
 
+  // Регистрация пользователя
   async registerUser(
     login: string,
     email: string,
     password: string,
-  ): Promise<UserDbView | null> {
+  ): Promise<void> {
+
+    // Проверка существования User'а
     await this.usersQueryRepo.doesExistByLoginAndEmail(login, email);
 
-    const { salt, hash } = await this.cryptoService.generateHash(password);
+    // Создание Salt, Hash
+    const saltAndHash: { salt: string, hash: string } = await this.cryptoService.generateHash(password);
 
-    const newUser: UserDbView = {
-      login: login,
-      email: email,
-      hash: hash,
-      salt: salt,
-      createdAt: new Date(),
-      emailConfirmation: {
-        confirmationCode: randomUUID(),
-        expirationCode: add(new Date(), {
-          minutes: 5,
-        }),
-        isConfirmed: false,
-      },
-    };
+    // Создаем и сохраняем user'а
+    const user = UsersModel.createUser(login, email, saltAndHash);
+    await this.usersRepo.save(user);
 
-    await this.usersRepo.createByRegistration(newUser);
+    // Отправляем на почту confirmationCode
     try {
       await this.emailService.sendEmail(
-        newUser.email,
-        newUser.emailConfirmation.confirmationCode,
+        user.email,
+        user.emailConfirmation.confirmationCode,
       );
     } catch (e: unknown) {
       console.error(e);
     }
 
-    return newUser;
+    return;
   }
 
   async delete(id: string): Promise<void> {
@@ -86,6 +66,8 @@ export class UsersService {
   }
 
   async changePassword(email: string, hash: string, salt: string): Promise<void> {
-    return await this.usersRepo.updatePassword(email, hash, salt);
+    const user = await this.usersQueryRepo.findLoginOrEmail(email);
+    user.updatePassword(hash, salt);
+    return await this.usersRepo.save(user);
   }
 }

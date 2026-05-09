@@ -2,9 +2,10 @@ import { injectable, inject } from "inversify";
 import { LikesForPostsRepository } from "../repository/likes-posts.repository";
 import { LikesForPostsQwRepository } from "../repository/likes-posts-query.repository";
 import { LikesForPostModel } from "../models/like-posts.model";
-import { LikeStatus } from "../../../comments/types/likeComments.enum";
+import { LikeStatus } from "../../types/likeComments.enum";
 import { BadRequestError } from "../../../core/errors/bad-request.error";
 import { PostsService } from "../../../posts/application/posts-service";
+import { UsersQwRepository } from "../../../users/repository/usersQw.repository";
 
 @injectable()
 export class LikesForPostsService {
@@ -15,6 +16,8 @@ export class LikesForPostsService {
     protected LikesPostsQueryRepo: LikesForPostsQwRepository,
     @inject(PostsService)
     protected PostsService: PostsService,
+    @inject(UsersQwRepository)
+    protected UsersQueryRepo: UsersQwRepository,
   ) {}
 
   async create(postId: string, userId: string, likeStatus: LikeStatus): Promise<void> {
@@ -33,9 +36,12 @@ export class LikesForPostsService {
       userId,
     )
 
+    // Находим логин
+    const user = await this.UsersQueryRepo.findById(userId);
+
     // Нет статуса => создаем лайк => сохраняем => меняем счетчик
     if (likePrev === null && likeStatus !== LikeStatus.None) {
-      const like = LikesForPostModel.createLike(likeStatus, postId, userId);
+      const like = LikesForPostModel.createLike(likeStatus, postId, userId, user.login);
       await this.LikesPostsRepo.save(like);
       await this.PostsService.changeLikeStatus(postId, LikeStatus.None, likeStatus);
       return;

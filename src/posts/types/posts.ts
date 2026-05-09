@@ -1,4 +1,4 @@
-import { LikeStatus } from "../../comments/types/likeComments.enum";
+import { LikeStatus } from "../../likes/types/likeComments.enum";
 
 export type Post = {
   title: string;

@@ -17,7 +17,6 @@ import { PostsQueryDtoInput } from "../../posts/input/post-query.input";
 import { mapToPostsListPaginatedOutput } from "../../posts/routers/mapped/mapToPostListPaginatedOutput";
 import { PostsService } from "../../posts/application/posts-service";
 import { CreateBlogDto } from "../types/createBlogDto.type";
-import { mapToPostViewModel } from "../../posts/routers/mapped/mapToPostViewModel";
 import { inject, injectable } from "inversify";
 import { CreatePostDto } from "../../posts/types/createPostsDto.type";
 
@@ -104,11 +103,9 @@ export class BlogsController {
       const postDto = req.body;
       const blog = await this.blogsService.findById(id);
 
-      const createdPostId = await this.postsService.createForBlog(postDto, blog.name);
-      const post = await this.postsService.findById(createdPostId);
-      const postToViewModel = mapToPostViewModel(post);
+      const createdPost = await this.postsService.createForBlog(postDto, blog.name);
 
-      res.status(HttpStatus.Created).send(postToViewModel);
+      res.status(HttpStatus.Created).send(createdPost);
     } catch (e: unknown) {
       errorsHandler(e, res);
     }

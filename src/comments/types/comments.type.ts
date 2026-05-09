@@ -1,9 +1,10 @@
+import { LikeStatus } from "../../likes/types/likeComments.enum";
 import { CommentatorInfo } from "./commentUserInfo";
 
 export type likesInfoForComms = {
   likesCount: number;
   dislikesCount: number;
-  myStatus: string;
+  myStatus: LikeStatus;
 }
 
 export type Comment = {

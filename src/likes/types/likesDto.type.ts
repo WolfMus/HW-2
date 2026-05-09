@@ -1,4 +1,4 @@
-import { LikeStatus } from "../../comments/types/likeComments.enum";
+import { LikeStatus } from "./likeComments.enum";
 
 export type CreateLikeDto = {
     likeStatus: LikeStatus,

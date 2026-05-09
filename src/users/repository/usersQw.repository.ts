@@ -9,7 +9,7 @@ import { UserDbView } from "../type/user.db.interface";
 import { BadRequestError } from "../../core/errors/bad-request.error";
 import { UserDb } from "../type/user-db-view.interface";
 import { injectable } from "inversify";
-import { usersModel } from "../models/users.schema";
+import { UsersDocument, UsersModel, usersModel } from "../models/users.schema";
 
 @injectable()
 export class UsersQwRepository {
@@ -59,7 +59,6 @@ export class UsersQwRepository {
 
   async findById(id: string): Promise<UserView> {
     const user = await usersModel.findById(id);
-    console.log(user)
     if (!user) {
       throw new RepositoryNotFoundError("User not found", "id");
     }
@@ -74,16 +73,8 @@ export class UsersQwRepository {
     return this._toDbModel(user);
   }
 
-  async findLoginOrEmail(loginOrEmail: string): Promise<WithId<User> | null> {
-    const user = await usersModel.findOne({
-      $or: [{ email: loginOrEmail }, { login: loginOrEmail }],
-    });
-
-    return user;
-  }
-
-  async findLoginOrEmailOrFail(loginOrEmail: string): Promise<UserDb> {
-    const user = await usersModel.findOne({
+  async findLoginOrEmail(loginOrEmail: string): Promise<UsersDocument> {
+    const user = await UsersModel.findOne({
       $or: [{ email: loginOrEmail }, { login: loginOrEmail }],
     });
 
@@ -91,8 +82,20 @@ export class UsersQwRepository {
       throw new UnauthorizedError("User not found", "login or email");
     }
 
-    return this._toDbModel(user);
+    return user;
   }
+
+  // async findLoginOrEmailOrFail(loginOrEmail: string): Promise<UserDb> {
+  //   const user = await usersModel.findOne({
+  //     $or: [{ email: loginOrEmail }, { login: loginOrEmail }],
+  //   });
+
+  //   if (!user) {
+  //     throw new UnauthorizedError("User not found", "login or email");
+  //   }
+
+  //   return this._toDbModel(user);
+  // }
 
   async doesExistByLoginAndEmail(login: string, email: string): Promise<void> {
     const user = await usersModel.findOne({
@@ -102,7 +105,6 @@ export class UsersQwRepository {
     if (user?.email === email) {
       throw new BadRequestError("User with same email exists", "email");
     }
-
     if (user?.login === login) {
       throw new BadRequestError("User with same login exists", "login");
     }

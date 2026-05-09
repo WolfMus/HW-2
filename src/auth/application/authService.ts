@@ -35,8 +35,8 @@ export class AuthService {
     refreshToken: string;
     refreshTokenBody: jwt.JwtPayload;
   }> {
-    // Проверка пароля
-    const user = await this.usersQueryRepo.findLoginOrEmailOrFail(loginOrEmail);
+    // Поис
+    const user = await this.usersQueryRepo.findLoginOrEmail(loginOrEmail);
     const ispasswordCorrect = await this.cryptoService.checkPassword(
       password,
       user.hash,
@@ -116,10 +116,10 @@ export class AuthService {
     return;
   }
 
-  async updatePassword(recoveryCode: string, password: string) {
-    const recoveryCodeBody = await this.recoveryCodeRepo.find(recoveryCode);
+  // RecoveyCodeRepo поменять
+  async updatePassword(recoveryCode: string, password: string): Promise<{hash: string, salt: string, recoveryCodeEmail: string}> {
+    const recoveryCodeEmail = await this.recoveryCodeRepo.find(recoveryCode);
     const {hash, salt} = await this.cryptoService.generateHash(password);
-    await this.usersRepo.updatePassword(recoveryCodeBody.email, hash, salt);
-    return;
+    return {hash, salt, recoveryCodeEmail};
   }
 }

@@ -8,7 +8,7 @@ import {
 import { CommentsService } from "../application/comments.service";
 import { inject, injectable } from "inversify";
 import { IdType } from "../../core/types/id";
-import { LikeStatus } from "../types/likeComments.enum";
+import { LikeStatus } from "../../likes/types/likeComments.enum";
 import { UsersQwRepository } from "../../users/repository/usersQw.repository";
 import { LikesForCommsService } from "../../likes/forComments/application/likes-comments.service";
 

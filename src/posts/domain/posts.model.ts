@@ -2,7 +2,7 @@ import mongoose, { HydratedDocument, Model, model } from "mongoose";
 import { Post } from "../types/posts";
 import { CreatePostDto } from "../types/createPostsDto.type";
 import { BadRequestError } from "../../core/errors/bad-request.error";
-import { LikeStatus } from "../../comments/types/likeComments.enum";
+import { LikeStatus } from "../../likes/types/likeComments.enum";
 import { LikesForPostDocument } from "../../likes/forPosts/models/like-posts.model";
 
 export type NewestLikes = {

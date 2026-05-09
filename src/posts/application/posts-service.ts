@@ -4,7 +4,7 @@ import { PostsQueryDtoInput } from "../input/post-query.input";
 import { PostsQwRepository } from "../repository/posts-query.repository";
 import { inject, injectable } from "inversify";
 import { NewestLikes, PostsDocument, PostsModel } from "../domain/posts.model";
-import { LikeStatus } from "../../comments/types/likeComments.enum";
+import { LikeStatus } from "../../likes/types/likeComments.enum";
 import { LikesForPostsQwRepository } from "../../likes/forPosts/repository/likes-posts-query.repository";
 import { LikesForPostDocument } from "../../likes/forPosts/models/like-posts.model";
 import { PostViewModel } from "../types/postViewModel";
