@@ -9,7 +9,7 @@ import { UserDbView } from "../type/user.db.interface";
 import { BadRequestError } from "../../core/errors/bad-request.error";
 import { UserDb } from "../type/user-db-view.interface";
 import { injectable } from "inversify";
-import { UsersDocument, UsersModel, usersModel } from "../models/users.schema";
+import { UsersDocument, UsersModel } from "../models/users.schema";
 
 @injectable()
 export class UsersQwRepository {
@@ -39,14 +39,14 @@ export class UsersQwRepository {
     }
     const sortOrder = sortDirection === "asc" ? 1 : -1;
 
-    const items = await usersModel
+    const items = await UsersModel
       .find(filter)
       .sort({ [sortBy]: sortOrder })
       .skip(skip)
       .limit(pageSize)
       .lean();
 
-    const totalCount = await usersModel.countDocuments(filter);
+    const totalCount = await UsersModel.countDocuments(filter);
 
     return {
       pagesCount: Math.ceil(totalCount / pageSize),
@@ -58,7 +58,7 @@ export class UsersQwRepository {
   }
 
   async findById(id: string): Promise<UserView> {
-    const user = await usersModel.findById(id);
+    const user = await UsersModel.findById(id);
     if (!user) {
       throw new RepositoryNotFoundError("User not found", "id");
     }
@@ -66,7 +66,7 @@ export class UsersQwRepository {
   }
 
   async findByIdInDbView(id: string): Promise<UserDb> {
-    const user = await usersModel.findById(id);
+    const user = await UsersModel.findById(id);
     if (!user) {
       throw new RepositoryNotFoundError("User not found", "id");
     }
@@ -98,7 +98,7 @@ export class UsersQwRepository {
   // }
 
   async doesExistByLoginAndEmail(login: string, email: string): Promise<void> {
-    const user = await usersModel.findOne({
+    const user = await UsersModel.findOne({
       $or: [{ email: email }, { login: login }],
     });
 
@@ -113,7 +113,7 @@ export class UsersQwRepository {
   }
 
   async doesExistByLoginOrEmail(loginOrEmail: string): Promise<UserDb> {
-    const user = await usersModel.findOne({
+    const user = await UsersModel.findOne({
       $or: [{ email: loginOrEmail }, { login: loginOrEmail }],
     });
 
@@ -124,8 +124,8 @@ export class UsersQwRepository {
     return this._toDbModel(user);
   }
 
-  async findByConfirmationCode(code: string): Promise<UserDbView | null> {
-    const user = await usersModel.findOne({
+  async findByConfirmationCode(code: string): Promise<UserDbView> {
+    const user = await UsersModel.findOne({
       "emailConfirmation.confirmationCode": code,
     });
     if (!user) {

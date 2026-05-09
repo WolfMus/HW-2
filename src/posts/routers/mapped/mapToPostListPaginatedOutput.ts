@@ -1,7 +1,6 @@
 import { PostViewModel } from "../../types/postViewModel";
 import { PostListPaginatedOutput } from "../../output/postsListPaginatedOutput";
 import { PostsDocument } from "../../domain/posts.model";
-import { LikeStatus } from "../../../likes/types/likeComments.enum";
 
 export function mapToPostsListPaginatedOutput(
   newPost: PostsDocument[],
@@ -28,8 +27,8 @@ export function mapToPostsListPaginatedOutput(
         extendedLikesInfo: {
           likesCount: post.extendedLikesInfo.likesCount,
           dislikesCount: post.extendedLikesInfo.dislikesCount,
-          myStatus: LikeStatus || post.extendedLikesInfo.myStatus,
-          newestLikes: newestLikes || [],
+          myStatus: post.extendedLikesInfo.myStatus,
+          newestLikes: [],
       }
       }),
     ),

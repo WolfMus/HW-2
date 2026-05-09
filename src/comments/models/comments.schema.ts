@@ -3,7 +3,9 @@ import { Comment, likesInfoForComms } from "../types/comments.type";
 import { CommentatorInfo } from "../types/commentUserInfo";
 import { LikeStatus } from "../../likes/types/likeComments.enum";
 
-interface CommentsMethods {}
+interface CommentsMethods {
+  updateContent(content: string): void;
+}
 
 type CommentsStatics = typeof CommentsEntity;
 type CommentsModel = Model<Comment, unknown, CommentsMethods> & CommentsStatics;
@@ -44,13 +46,24 @@ class CommentsEntity {
     }
   ) {}
 
-  static createComment(dto: Comment) {
-    const comment = new commentsModel({
-      ...dto
+  static createComment(content: string, postId: string, userId: string, login: string) {
+    const comment = new CommentsModel({
+      content: content,
+      postId: postId,
+      commentatorInfo: {
+        userId: userId,
+        userLogin: login,
+      },
+      createdAt: new Date(),
     });
-    return comment
+    return comment;
+  }
+
+  updateContent(content: string) {
+    this.content = content;
+    return;
   }
 }
 
 commentsSchema.loadClass(CommentsEntity);
-export const commentsModel = model<Comment, CommentsModel>("Comments", commentsSchema);
+export const CommentsModel = model<Comment, CommentsModel>("Comments", commentsSchema);

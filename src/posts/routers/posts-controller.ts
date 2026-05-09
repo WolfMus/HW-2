@@ -136,7 +136,7 @@ export class PostsController {
       const id = req.params.id;
       const userId = req.user?.id;
 
-      await this.postsService.findById(id);
+      await this.postsService.isPostExist(id);
 
       const sanitizedQuery = matchedData(req, {
         includeOptionals: true,

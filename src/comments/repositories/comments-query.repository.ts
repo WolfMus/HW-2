@@ -5,7 +5,7 @@ import { CommentViewModel } from "../types/commentViewModel";
 import { Pagination } from "../../core/types/pagination.interface";
 import { CommentQueryDtoInput } from "../types/commentQueryDtoInput";
 import { injectable } from "inversify";
-import { commentsModel } from "../models/comments.schema";
+import { CommentsModel } from "../models/comments.schema";
 
 @injectable()
 export class CommentsQwRepository {
@@ -19,14 +19,14 @@ export class CommentsQwRepository {
     const filter = { postId: postId };
     const sortOrder = sortDirection === "asc" ? 1 : -1;
 
-    const items = await commentsModel
+    const items = await CommentsModel
       .find(filter)
       .sort({ [sortBy]: sortOrder })
       .skip(skip)
       .limit(pageSize)
       .lean();
 
-    const totalCount = await commentsModel.countDocuments(filter);
+    const totalCount = await CommentsModel.countDocuments(filter);
 
     return {
       pagesCount: Math.ceil(totalCount / pageSize),
@@ -38,7 +38,7 @@ export class CommentsQwRepository {
   }
 
   async getCommentById(id: string): Promise<WithId<Comment>> {
-    const comment = await commentsModel.findOne({_id: id});
+    const comment = await CommentsModel.findOne({_id: id});
     if (!comment) {
       throw new RepositoryNotFoundError("Comment not found", "id");
     }

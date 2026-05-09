@@ -9,13 +9,13 @@ export class RecoveryCodeRepository {
         return;
     }
 
-    async find(code: string): Promise<string> {
+    async find(code: string): Promise<{ recoveryCode: string; expirationDate: NativeDate; email: string; }> {
         const recoveryCode = await recoveryCodeModel.findOne({recoveryCode: code});
 
         if (!recoveryCode) {
             throw new BadRequestError("Recovery code not found", "recoveryCode");
         }
 
-        return recoveryCode.email;
+        return recoveryCode;
     }
 }

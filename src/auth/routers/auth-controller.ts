@@ -19,6 +19,7 @@ import { NodeMailerService } from "../application/nodeMailerService";
 import { UsersService } from "../../users/application/users.service";
 import { NewPasswordRecoveryInputModel } from "../types/new-password-inputModel";
 import { inject, injectable } from "inversify";
+import { UsersRepository } from "../../users/repository/users.repository";
 
 @injectable()
 export class AuthController {
@@ -27,11 +28,13 @@ export class AuthController {
     @inject(JwtService) protected jwtService: JwtService,
     @inject(NodeMailerService) protected emailService: NodeMailerService,
     @inject(SecurityDeviceService) protected securityService: SecurityDeviceService,
-    @inject(UsersService) protected usersService: UsersService,
+    @inject(UsersRepository) protected usersRepo: UsersRepository,
     @inject(UsersQwRepository) protected usersQueryRepo: UsersQwRepository,
+    @inject(UsersService) protected usersService: UsersService,
   ) {}
 
   async authLogin(req: RequestWithBody<LoginInputModel>, res: Response) {
+
     try {
       const loginOrEmail = req.body.loginOrEmail;
       const password = req.body.password;
@@ -56,10 +59,11 @@ export class AuthController {
     }
   }
 
+  // ✅ Переделал
   async getInformationAboutUser(req: RequestWithUserId<IdType>, res: Response) {
     try {
       const userId = req.user.id;
-      const me = await this.usersQueryRepo.findById(userId);
+      const me = await this.usersService.findById(userId);
 
       const meToView = {
         email: me.email,
@@ -139,6 +143,7 @@ export class AuthController {
     }
   }
 
+  // ✅ Переделал
   async registration(req: RequestWithBody<UserInput>, res: Response) {
     try {
       const login = req.body.login;
@@ -152,58 +157,50 @@ export class AuthController {
     }
   }
 
+  // ✅ Переделал
   async confirmation(
     req: RequestWithBody<ConfirmationCodeType>,
     res: Response,
   ) {
     try {
       const code = req.body.code;
-
-      await this.authService.checkConfirmationCode(code);
-
+      await this.usersService.checkConfirmationCode(code);
       res.sendStatus(HttpStatus.NoContent);
     } catch (error) {
       errorsHandler(error, res);
     }
   }
 
+  // ✅ Переделал
   async emailResending(req: RequestWithBody<{ email: string }>, res: Response) {
     try {
       const email = req.body.email;
 
-      const user = await this.usersQueryRepo.doesExistByLoginOrEmail(email);
-
-      await this.authService.isConfirmed(user.id);
-
-      const confirmationCode =
-        await this.authService.updateConfirmationCodeForUser(user.id);
-
+      const confirmationCode = await this.usersService.updateConfirmationCode(email)
       await this.emailService.sendEmail(email, confirmationCode);
-
       res.sendStatus(HttpStatus.NoContent);
     } catch (e) {
       errorsHandler(e, res);
     }
   }
 
+  // ✅ Переделал
   async passwordRecovery(
     req: RequestWithBody<{ email: string }>,
     res: Response,
   ) {
     try {
       const email = req.body.email;
-      const user = await this.usersQueryRepo.findLoginOrEmail(email);
 
-      if (user) {
-        await this.authService.passwordRecovery(email);
-      }
-
+      const recoveryCode = await this.usersService.updateRecoveryCode(email);
+      await this.emailService.sendRecoveryCode(email, recoveryCode);
       res.sendStatus(HttpStatus.NoContent);
     } catch (e) {
       errorsHandler(e, res);
     }
   }
 
+  // ✅ Переделал
   async newPassword(
     req: RequestWithBody<NewPasswordRecoveryInputModel>,
     res: Response,
@@ -212,11 +209,8 @@ export class AuthController {
       const recoveryCode = req.body.recoveryCode;
       const newPassword = req.body.newPassword;
 
-      // проверка recoveryCode и создание hash, salt
-      const {hash, salt, recoveryCodeEmail} = await this.authService.updatePassword(recoveryCode, newPassword);
-
-      // сохранение новых данных
-      await this.usersService.changePassword(hash, salt, recoveryCodeEmail);
+      const {hash, salt} = await this.authService.generateHashAndSalt(newPassword);
+      await this.usersService.changePassword(hash, salt, recoveryCode);
       res.sendStatus(HttpStatus.NoContent);
     } catch (e) {
       errorsHandler(e, res);

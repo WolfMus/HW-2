@@ -17,6 +17,30 @@ export class UsersRepository {
     return createdUser._id.toString();
   }
 
+  async findById(id: string): Promise<UsersDocument> {
+    const user = await UsersModel.findById({_id: id})
+    if (!user) {
+      throw new RepositoryNotFoundError("User not found", "id");
+    }
+    return user
+  }
+
+  async findByConfirmationCode(code: string): Promise<UsersDocument> {
+    const user = await UsersModel.findOne({"emailConfirmation.confirmationCode": code});
+    if (!user) {
+      throw new BadRequestError("Bad Request", "confirmationCode");
+    }
+    return user;
+  }
+
+  async findByRecoveryCode(recoveryCode: string): Promise<UsersDocument> {
+    const user = await UsersModel.findOne({"recovery.recoveryCode": recoveryCode});
+    if (!user) {
+      throw new BadRequestError("Bad Request", "confirmationCode");
+    }
+    return user;
+  }
+
   async save(user: UsersDocument): Promise<void> {
     user.save();
     return;

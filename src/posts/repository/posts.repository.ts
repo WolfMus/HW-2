@@ -28,4 +28,12 @@ export class PostsRepository {
     }
     return post;
   }
+
+  async isExist(id: string): Promise<void> {
+    const post = await PostsModel.findById(id)
+    if (!post) {
+      throw new RepositoryNotFoundError("Post not found", "id")
+    }
+    return;
+  }
 }

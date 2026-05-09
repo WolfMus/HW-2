@@ -3,7 +3,7 @@ import { UsersRepository } from "../repository/users.repository";
 import { UsersQwRepository } from "../repository/usersQw.repository";
 import { NodeMailerService } from "../../auth/application/nodeMailerService";
 import { inject, injectable } from "inversify";
-import { UsersModel } from "../models/users.schema";
+import { UsersDocument, UsersModel } from "../models/users.schema";
 
 @injectable()
 export class UsersService {
@@ -14,7 +14,7 @@ export class UsersService {
     @inject(NodeMailerService) protected emailService: NodeMailerService,
   ) {}
 
-  // Создание пользователя админом
+  // REGISTRATION
   async create(
     login: string,
     password: string,
@@ -26,11 +26,10 @@ export class UsersService {
 
     // Создание User'а и смена статуса почты на true
     const user = UsersModel.createUser(login, email, saltAndHash);
-    user.updateEmailConfirmStatus(true);
+    user.updateConfirmationCodeStatus();
     return this.usersRepo.saveAndReturnId(user);
   }
 
-  // Регистрация пользователя
   async registerUser(
     login: string,
     email: string,
@@ -51,7 +50,7 @@ export class UsersService {
     try {
       await this.emailService.sendEmail(
         user.email,
-        user.emailConfirmation.confirmationCode,
+        user.emailConfirmation.confirmationCode!,
       );
     } catch (e: unknown) {
       console.error(e);
@@ -65,9 +64,35 @@ export class UsersService {
     return;
   }
 
-  async changePassword(email: string, hash: string, salt: string): Promise<void> {
-    const user = await this.usersQueryRepo.findLoginOrEmail(email);
+  async findById(id: string): Promise<UsersDocument> {
+    return await this.usersRepo.findById(id);
+  }
+
+  async changePassword(hash: string, salt: string, recoveryCode: string): Promise<void> {
+    const user = await this.usersRepo.findByRecoveryCode(recoveryCode);
     user.updatePassword(hash, salt);
     return await this.usersRepo.save(user);
+  }
+
+
+  // CONFIRMATION CODE
+  async checkConfirmationCode(code: string): Promise<void> {
+    const user = await this.usersRepo.findByConfirmationCode(code);
+    user.updateConfirmationCodeStatus();
+    return await this.usersRepo.save(user);
+  }
+
+  async updateConfirmationCode(email: string): Promise<string> {
+    const user = await this.usersQueryRepo.findLoginOrEmail(email);
+    const confirmationCode = user.updateConfirmCode();
+    return confirmationCode
+  }
+  
+
+  // RECOVERY CODE
+  async updateRecoveryCode(email: string): Promise<string> {
+    const user = await this.usersQueryRepo.findLoginOrEmail(email);
+    const recoveryCode = user.updateRecoveryCode();
+    return recoveryCode;
   }
 }

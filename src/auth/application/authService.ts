@@ -35,7 +35,7 @@ export class AuthService {
     refreshToken: string;
     refreshTokenBody: jwt.JwtPayload;
   }> {
-    // Поис
+    // Поиск
     const user = await this.usersQueryRepo.findLoginOrEmail(loginOrEmail);
     const ispasswordCorrect = await this.cryptoService.checkPassword(
       password,
@@ -62,29 +62,6 @@ export class AuthService {
     return { accessToken, refreshToken, refreshTokenBody };
   }
 
-  async checkConfirmationCode(code: string): Promise<void> {
-    const userConfirmation =
-      await this.usersQueryRepo.findByConfirmationCode(code);
-
-    if (userConfirmation!.emailConfirmation.expirationCode < new Date()) {
-      throw new BadRequestError("CONFIRMATION CODE EXPIRED", "code");
-    }
-
-    if (userConfirmation?.emailConfirmation.isConfirmed === true) {
-      throw new BadRequestError(
-        "Confirmation code is already confirmed",
-        "code",
-      );
-    }
-
-    const user = await this.usersQueryRepo.findLoginOrEmail(
-      userConfirmation!.login,
-    );
-
-    await this.usersRepo.updateConfirmation(user!._id.toString());
-    return;
-  }
-
   async updateConfirmationCodeForUser(id: string): Promise<string> {
     const confirmationCode = randomUUID();
     const expiration = add(new Date(), {
@@ -107,19 +84,9 @@ export class AuthService {
     return;
   }
 
-  async passwordRecovery(email: string): Promise<void> {
-    const recoveryCode = randomUUID();
-    const recoveryCodeExpDate = add(new Date(), {minutes: 15});
-
-    await this.recoveryCodeRepo.create(recoveryCode, recoveryCodeExpDate, email);
-    await this.emailService.sendRecoveryCode(email, recoveryCode);
-    return;
-  }
-
   // RecoveyCodeRepo поменять
-  async updatePassword(recoveryCode: string, password: string): Promise<{hash: string, salt: string, recoveryCodeEmail: string}> {
-    const recoveryCodeEmail = await this.recoveryCodeRepo.find(recoveryCode);
+  async generateHashAndSalt(password: string): Promise<{hash: string, salt: string}> {
     const {hash, salt} = await this.cryptoService.generateHash(password);
-    return {hash, salt, recoveryCodeEmail};
+    return {hash, salt};
   }
 }

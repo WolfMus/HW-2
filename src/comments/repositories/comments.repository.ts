@@ -1,30 +1,27 @@
 import { ObjectId } from "mongodb";
-import { Comment } from "../types/comments.type";
 import { RepositoryNotFoundError } from "../../core/errors/repository-not-found.error";
 import { injectable } from "inversify";
-import { commentsModel } from "../models/comments.schema";
+import { CommentsDocument, CommentsModel } from "../models/comments.schema";
 
 @injectable()
 export class CommentsRepository {
-  async create(newComment: Comment): Promise<string> {
-    const insertResult = await commentsModel.insertOne(newComment);
 
-    return insertResult._id.toString();
+  async save(comment: CommentsDocument): Promise<void> {
+    comment.save();
+    return;
   }
 
-  async update(id: string, content: string): Promise<void> {
-    const updatedResult = await commentsModel.updateOne(
-      { _id: new ObjectId(id) },
-      {
-        content: content,
-      },
-    );
+  async saveAndReturnId(comment: CommentsDocument): Promise<string> {
+    comment.save();
+    return comment._id.toString();
+  }
 
-    if (updatedResult.matchedCount < 1) {
+  async findById(id: string): Promise<CommentsDocument> {
+    const comment = await CommentsModel.findById({_id: id});
+    if (!comment) {
       throw new RepositoryNotFoundError("Comment not found", "id");
     }
-
-    return;
+    return comment
   }
 
   async changeStatus(
@@ -47,7 +44,7 @@ export class CommentsRepository {
       obj[`likesInfo.${incrStatus}sCount`] = +1;
     }
 
-    const updatedResult = await commentsModel.updateOne({
+    const updatedResult = await CommentsModel.updateOne({
       _id: id
     }, {
       $inc: obj,
@@ -61,9 +58,7 @@ export class CommentsRepository {
   }
 
   async delete(id: string): Promise<void> {
-    const deletedComment = await commentsModel.deleteOne({
-      _id: new ObjectId(id),
-    });
+    const deletedComment = await CommentsModel.deleteOne({_id: id});
     if (deletedComment.deletedCount < 1) {
       throw new RepositoryNotFoundError("Comment not found", "id");
     }

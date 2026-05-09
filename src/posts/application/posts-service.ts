@@ -67,6 +67,12 @@ export class PostsService {
     return this._ToViewModel(post, newestLikes)
   }
 
+  async isPostExist(id: string): Promise<void> {
+    await this.postsRepo.isExist(id);
+    return;
+  }
+
+
   // FOR BLOG 
   async createForBlog(dto: CreatePostDto, blogName: string): Promise<PostViewModel> {
     const post = PostsModel.createPost(dto, blogName);

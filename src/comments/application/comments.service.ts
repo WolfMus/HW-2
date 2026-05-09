@@ -10,6 +10,7 @@ import { inject, injectable } from "inversify";
 import { LikeStatus } from "../../likes/types/likeComments.enum";
 import { LikesForCommsQwRepository } from "../../likes/forComments/repository/likes-comms-query.repository";
 import { UsersRepository } from "../../users/repository/users.repository";
+import { CommentsModel } from "../models/comments.schema";
 
 @injectable()
 export class CommentsService {
@@ -27,29 +28,16 @@ export class CommentsService {
     userId: string,
   ): Promise<string> {
     const user = await this.usersRepo.findById(userId);
+    const comment = CommentsModel.createComment(content, postId, userId, user.login);
 
-    const newComment: Comment = {
-      content: content,
-      postId: postId,
-      commentatorInfo: {
-        userId: userId,
-        userLogin: user.login,
-      },
-      createdAt: new Date(),
-      likesInfo: {
-        likesCount: 0,
-        dislikesCount: 0,
-        myStatus: LikeStatus.None,
-      },
-    };
-
-    const commentId = await this.commentsRepo.create(newComment);
-
+    const commentId = await this.commentsRepo.saveAndReturnId(comment);
     return commentId;
   }
 
   async update(commentContent: string, id: string): Promise<void> {
-    return await this.commentsRepo.update(id, commentContent);
+    const comment = await this.commentsRepo.findById(id);
+    comment.updateContent(commentContent);
+    return await this.commentsRepo.save(comment);
   }
 
   async delete(id: string): Promise<void> {
@@ -70,18 +58,19 @@ export class CommentsService {
 
     // Нашел комментарии с которыми пользователь взаимодействовал
     const statuses = await this.likesQueryRepo.findMany(commentsInfo, userId);
+
     // Если комметариев нет, то ничего не меняем
     if (!statuses) {
       return comments
     }
 
     const statusMap = Object.fromEntries(statuses);
-    const changedComments = comments.items.map(comment => {
+    const changedComments: CommentViewModel[] = comments.items.map(comment => {
         return {
           ...comment,
           likesInfo: {
             ...comment.likesInfo,
-            myStatus: statusMap[comment.id] || "None" 
+            myStatus: statusMap[comment.id] as LikeStatus || LikeStatus.None, 
         },
     }})
 
@@ -99,7 +88,7 @@ export class CommentsService {
 
     const myStatus = await this.likesQueryRepo.getStatus(commentId, userId)
     if (myStatus) {
-      comment.likesInfo.myStatus = myStatus!.toString()
+      comment.likesInfo.myStatus! = myStatus!
       return this._getToViewModel(comment);
     }
     return this._getToViewModel(comment)
