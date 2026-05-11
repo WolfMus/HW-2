@@ -77,7 +77,7 @@ postsRouters
   )
 
   // LIKES
-  .post(
+  .put(
     "/:id/like-status",
     tokenGuard,
     idValidation,

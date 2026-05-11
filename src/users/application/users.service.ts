@@ -4,6 +4,7 @@ import { UsersQwRepository } from "../repository/usersQw.repository";
 import { NodeMailerService } from "../../auth/application/nodeMailerService";
 import { inject, injectable } from "inversify";
 import { UsersDocument, UsersModel } from "../models/users.schema";
+import { UserView } from "../type/user-view.interface";
 
 @injectable()
 export class UsersService {
@@ -27,7 +28,8 @@ export class UsersService {
     // Создание User'а и смена статуса почты на true
     const user = UsersModel.createUser(login, email, saltAndHash);
     user.updateConfirmationCodeStatus();
-    return this.usersRepo.saveAndReturnId(user);
+    const userId = await this.usersRepo.saveAndReturnId(user);
+    return userId
   }
 
   async registerUser(
@@ -68,6 +70,11 @@ export class UsersService {
     return await this.usersRepo.findById(id);
   }
 
+  async findInViewModel(id: string): Promise<UserView> {
+    const user = await this.usersRepo.findById(id);
+    return this._ToViewModel(user);
+  }
+
   async changePassword(hash: string, salt: string, recoveryCode: string): Promise<void> {
     const user = await this.usersRepo.findByRecoveryCode(recoveryCode);
     user.updatePassword(hash, salt);
@@ -94,5 +101,14 @@ export class UsersService {
     const user = await this.usersQueryRepo.findLoginOrEmail(email);
     const recoveryCode = user.updateRecoveryCode();
     return recoveryCode;
+  }
+
+  _ToViewModel(user: UsersDocument): UserView {
+    return {
+      id: user._id.toString(),
+      login: user.login,
+      email: user.email,
+      createdAt: user.createdAt,
+    }
   }
 }

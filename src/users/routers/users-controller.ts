@@ -44,7 +44,7 @@ export class UsersController {
       const { login, password, email } = req.body;
 
       const userId = await this.usersService.create(login, password, email);
-      const user = await this.usersQueryRepo.findById(userId);
+      const user = await this.usersService.findInViewModel(userId);
 
       res.status(HttpStatus.Created).send(user);
     } catch (e) {

@@ -5,6 +5,7 @@ import { BlogsQueryDtoInput } from "../input/blogs-query.input";
 import { BlogsQwRepository } from "../repositories/blogs-query.repository";
 import { inject, injectable } from "inversify";
 import { BlogsDocument, BlogsModel } from "../domain/blogs.model";
+import { BlogViewModel } from "../types/blogViewModel.type";
 
 @injectable()
 export class BlogsService {
@@ -42,5 +43,21 @@ export class BlogsService {
   // Find blog by id
   async findById(id: string): Promise<BlogsDocument> {
     return await this.blogsQueryRepo.findById(id);
+  }
+
+  async findByIdinViewModel(id: string): Promise<BlogViewModel> {
+    const blog = await this.blogsQueryRepo.findById(id);
+    return await this._ToViewModel(blog)
+  }
+
+  async _ToViewModel(blog: BlogsDocument): Promise<BlogViewModel> {
+    return {
+      id: blog._id.toString(),
+      name: blog.name,
+      description: blog.description,
+      websiteUrl: blog.websiteUrl,
+      createdAt: blog.createdAt,
+      isMembership: blog.isMembership,
+    }
   }
 }

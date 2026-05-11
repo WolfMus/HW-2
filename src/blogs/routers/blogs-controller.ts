@@ -19,6 +19,7 @@ import { PostsService } from "../../posts/application/posts-service";
 import { CreateBlogDto } from "../types/createBlogDto.type";
 import { inject, injectable } from "inversify";
 import { CreatePostDto } from "../../posts/types/createPostsDto.type";
+import { PostInputForBlogModel } from "../../posts/dto/post-input-for-blog.dto";
 
 @injectable()
 export class BlogsController {
@@ -95,15 +96,20 @@ export class BlogsController {
   }
 
   async createPostForBlog(
-    req: RequestWithParamsAndBody<{ id: string }, CreatePostDto>,
+    req: RequestWithParamsAndBody<{ id: string }, PostInputForBlogModel>,
     res: Response,
   ) {
     try {
-      const id = req.params.id;
-      const postDto = req.body;
-      const blog = await this.blogsService.findById(id);
+      const blogId = req.params.id;
+      const postInputDto = req.body;
+      const createPostDto: CreatePostDto = {
+        ...postInputDto,
+        blogId,
+      }
 
-      const createdPost = await this.postsService.createForBlog(postDto, blog.name);
+      const blog = await this.blogsService.findByIdinViewModel(blogId);
+
+      const createdPost = await this.postsService.createForBlog(createPostDto, blog.name);
 
       res.status(HttpStatus.Created).send(createdPost);
     } catch (e: unknown) {

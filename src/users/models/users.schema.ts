@@ -6,14 +6,14 @@ import { BadRequestError } from "../../core/errors/bad-request.error";
 
 
 const emailConfirmationSchema = new mongoose.Schema({
-  confirmationCode: { type: String || null, required: true, default: null },
-  expirationCode: { type: Date || null, required: true, default: null },
+  confirmationCode: { type: String, required: true },
+  expirationCode: { type: Date, required: true },
   isConfirmed: { type: Boolean, required: true, default: false },
 });
 
 const recoverySchema = new mongoose.Schema({
-  recoveryCode: { type: String || null, required: true, default: null },
-  recoveryCodeExpiration: { type: Date || null, required: true, default: null },
+  recoveryCode: { type: String || null, required: false, default: null },
+  recoveryCodeExpiration: { type: Date || null, required: false, default: null },
 })
 
 interface UsersMethods {
@@ -47,8 +47,8 @@ class UsersEntity {
     public salt: string,
     public createdAt: Date,
     public emailConfirmation: {
-      confirmationCode: string | null,
-      expirationCode: Date | null,
+      confirmationCode: string,
+      expirationCode: Date,
       isConfirmed: boolean,
     },
     public recovery: {
@@ -71,17 +71,21 @@ class UsersEntity {
         }),
         isConfirmed: false,
       },
+      recovery: {
+        recoveryCode: null,
+        recoveryCodeExpiration: null,
+      }
     });
     return user;
   }
 
-  async updatePassword(hash: string, salt: string) {
+  updatePassword(hash: string, salt: string) {
     this.hash = hash;
     this.salt = salt;
     return;
   }
 
-  async updateConfirmationCodeStatus() {
+  updateConfirmationCodeStatus() {
     // проверка даты
     if (!this.emailConfirmation.expirationCode || this.emailConfirmation.expirationCode < new Date()) {
       throw new BadRequestError("Bad Request", "expirationCode");
@@ -97,13 +101,11 @@ class UsersEntity {
       throw new BadRequestError("Bad Request", "isConfirmed");
     }
 
-    this.emailConfirmation.expirationCode = null;
-    this.emailConfirmation.confirmationCode = null;
     this.emailConfirmation.isConfirmed = true;
     return;
   }
 
-  async updateConfirmStatus() {
+  updateConfirmStatus() {
     const confirmationCode = randomUUID();
     const expirationDate = add(new Date(), {
       minutes: 5,
@@ -113,7 +115,7 @@ class UsersEntity {
     return confirmationCode;
   }
 
-  async updateRecoveryCode() {
+  updateRecoveryCode() {
     const recoveryCode = randomUUID();
     const recoveryCodeExpiration = add(new Date(), {minutes: 15});
     this.recovery.recoveryCode = recoveryCode;

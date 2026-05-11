@@ -1,11 +1,8 @@
 import "reflect-metadata";
 import { inject, injectable } from "inversify";
-import { randomUUID } from "crypto";
 import jwt from "jsonwebtoken";
 import { UsersRepository } from "../../users/repository/users.repository";
 import { UsersQwRepository } from "../../users/repository/usersQw.repository";
-import { add } from "date-fns";
-import { BadRequestError } from "../../core/errors/bad-request.error";
 import { BcryptService } from "../../core/heplers/bcrypt-service";
 import { UnauthorizedError } from "../../core/errors/unauthorizedError.error";
 import { JwtService } from "./jwtService";
@@ -62,29 +59,6 @@ export class AuthService {
     return { accessToken, refreshToken, refreshTokenBody };
   }
 
-  async updateConfirmationCodeForUser(id: string): Promise<string> {
-    const confirmationCode = randomUUID();
-    const expiration = add(new Date(), {
-      minutes: 5,
-    });
-    await this.usersRepo.updateConfirmationCode(
-      id,
-      confirmationCode,
-      expiration,
-    );
-    return confirmationCode;
-  }
-
-  async isConfirmed(id: string): Promise<void> {
-    const user = await this.usersQueryRepo.findByIdInDbView(id);
-    if (user.emailConfirmation.isConfirmed === true) {
-      throw new BadRequestError("User already confirmed", "email");
-    }
-
-    return;
-  }
-
-  // RecoveyCodeRepo поменять
   async generateHashAndSalt(password: string): Promise<{hash: string, salt: string}> {
     const {hash, salt} = await this.cryptoService.generateHash(password);
     return {hash, salt};

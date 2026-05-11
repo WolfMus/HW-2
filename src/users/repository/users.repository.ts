@@ -4,6 +4,7 @@ import { UserDbView } from "../type/user.db.interface";
 import { BadRequestError } from "../../core/errors/bad-request.error";
 import { injectable } from "inversify";
 import { UsersDocument, UsersModel } from "../models/users.schema";
+import mongoose from "mongoose";
 
 @injectable()
 export class UsersRepository {
@@ -18,11 +19,22 @@ export class UsersRepository {
   }
 
   async findById(id: string): Promise<UsersDocument> {
-    const user = await UsersModel.findById({_id: id})
+
+    const user = await UsersModel.findById(id);
     if (!user) {
       throw new RepositoryNotFoundError("User not found", "id");
     }
     return user
+  }
+
+  async findByLogin(login: string): Promise<UsersDocument> {
+    const user = await UsersModel.findOne({login: login})
+    return user!
+  }
+
+  async findByEmail(email: string): Promise<UsersDocument> {
+    const user = await UsersModel.findOne({email: email})
+    return user!
   }
 
   async findByConfirmationCode(code: string): Promise<UsersDocument> {
@@ -42,12 +54,12 @@ export class UsersRepository {
   }
 
   async save(user: UsersDocument): Promise<void> {
-    user.save();
+    await user.save();
     return;
   }
 
   async saveAndReturnId(user: UsersDocument): Promise<string> {
-    user.save();
+    await user.save();
     return user._id.toString();
   }
 

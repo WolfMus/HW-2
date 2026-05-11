@@ -44,7 +44,6 @@ export class UsersQwRepository {
       .sort({ [sortBy]: sortOrder })
       .skip(skip)
       .limit(pageSize)
-      .lean();
 
     const totalCount = await UsersModel.countDocuments(filter);
 
@@ -57,20 +56,12 @@ export class UsersQwRepository {
     };
   }
 
-  async findById(id: string): Promise<UserView> {
+  async findById(id: string): Promise<UsersDocument> {
     const user = await UsersModel.findById(id);
     if (!user) {
       throw new RepositoryNotFoundError("User not found", "id");
     }
-    return this._toViewModel(user);
-  }
-
-  async findByIdInDbView(id: string): Promise<UserDb> {
-    const user = await UsersModel.findById(id);
-    if (!user) {
-      throw new RepositoryNotFoundError("User not found", "id");
-    }
-    return this._toDbModel(user);
+    return user;
   }
 
   async findLoginOrEmail(loginOrEmail: string): Promise<UsersDocument> {
@@ -134,7 +125,7 @@ export class UsersQwRepository {
     return this._toDbModel(user);
   }
 
-  _toViewModel(item: WithId<User>): UserView {
+  _toViewModel(item: UsersDocument): UserView {
     return {
       id: item._id.toString(),
       login: item.login,
