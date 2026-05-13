@@ -8,6 +8,8 @@ import { LikeStatus } from "../../likes/types/likeComments.enum";
 import { LikesForPostsQwRepository } from "../../likes/forPosts/repository/likes-posts-query.repository";
 import { LikesForPostDocument } from "../../likes/forPosts/models/like-posts.model";
 import { PostViewModel } from "../types/postViewModel";
+import { PaginatedOutput } from "../../core/types/paginated-output";
+import { PostListPaginatedOutput } from "../output/postsListPaginatedOutput";
 
 @injectable()
 export class PostsService {
@@ -36,8 +38,40 @@ export class PostsService {
   
   async findAll(
     queryDto: PostsQueryDtoInput,
-  ): Promise<{ items: PostsDocument[]; totalCount: number }> {
-    return await this.postsQueryRepo.findAll(queryDto);
+  ): Promise<{ posts: PostsDocument[]; totalCount: number }> {
+    
+    // ====== Ищу все посты и их кол-во ======
+    const {items, totalCount} = await this.postsQueryRepo.findAll(queryDto);
+
+    // ====== Создаю массив id постов и ищу для них лайки ======
+    const postIds: string[] = items.map(p => p.id);
+    const likes = await this.likesPostsQueryRepo.findNewestLikesForPosts(postIds);
+    
+    // ====== Создаю мап для поиска лайков по postId ======
+    const likesMap: Map<string, LikesForPostDocument[]> = new Map();
+    for (const like of likes) {
+      likesMap.set(like._id, like.recentLikes);
+    }
+
+    // ====== Найти статус пользователя для каждого поста ======
+
+    
+
+    // ====== Вставляю массив лайков каждому посту ======
+    // const posts = items.map(item => ({
+    //   ...item,
+    //   id: item._id.toString(),
+    //   newestLikes: likesMap.get(item.id),
+    // }))
+    
+    // ====== Вставляю массив лайков каждому посту ======
+    const posts = items.map(item => ({
+
+    }))
+    // ====== Готовлю посты для передачи в контроллер ======
+
+    console.log(posts);
+    return { posts, totalCount }
   }
   
   async findById(id: string, userId?: string): Promise<PostViewModel> {
@@ -46,12 +80,14 @@ export class PostsService {
     // Нахождение 3 последних лайков
     const lastThreeLikes: LikesForPostDocument[] = await this.likesPostsQueryRepo.findNewestLikes(id);
     const newestLikes: NewestLikes[] = [];
+
+    // Нахождение логинов
     if (newestLikes) {
       for(let i = 0; i < lastThreeLikes.length; i++) {
         newestLikes.push({
           addedAt: lastThreeLikes[i]!.addedAt,
           userId: lastThreeLikes[i]!.userId,
-          login: "ABOBA",
+          login: lastThreeLikes[i]!.login,
         })
     }
     }
@@ -108,5 +144,31 @@ export class PostsService {
           newestLikes: newestLikes || [],
       }
     }
+  }
+
+  async _ListToViewModel(queryDto: PostsQueryDtoInput, totalCount: number, posts: PostsDocument, newestLikes?: NewestLikes[], likeStatus: LikeStatus): Promise<PostListPaginatedOutput> {
+     return {
+    pagesCount: Math.ceil(queryDto.totalCount / queryDto.pageSize),
+    page: queryDto.pageNumber,
+    pageSize: queryDto.pageSize,
+    totalCount: totalCount,
+    items: posts.map(
+      (post): PostViewModel => ({
+        id: post.id,
+        title: post.title,
+        shortDescription: post.shortDescription,
+        content: post.content,
+        blogId: post.blogId,
+        blogName: post.blogName,
+        createdAt: post.createdAt,
+        extendedLikesInfo: {
+          likesCount: post.extendedLikesInfo.likesCount,
+          dislikesCount: post.extendedLikesInfo.dislikesCount,
+          myStatus: likeStatus,
+          newestLikes: newestLikes,
+      }
+      }),
+    ),
+  };
   }
 }

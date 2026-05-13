@@ -17,7 +17,7 @@ export function mapToPostsListPaginatedOutput(
     totalCount: params.totalCount,
     items: newPost.map(
       (post): PostViewModel => ({
-        id: post._id.toString(),
+        id: post.id,
         title: post.title,
         shortDescription: post.shortDescription,
         content: post.content,
@@ -28,7 +28,7 @@ export function mapToPostsListPaginatedOutput(
           likesCount: post.extendedLikesInfo.likesCount,
           dislikesCount: post.extendedLikesInfo.dislikesCount,
           myStatus: post.extendedLikesInfo.myStatus,
-          newestLikes: [],
+          newestLikes: post.extendedLikesInfo.newestLikes,
       }
       }),
     ),

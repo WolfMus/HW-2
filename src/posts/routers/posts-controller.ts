@@ -42,8 +42,8 @@ export class PostsController {
       }) as PostsQueryDtoInput;
       const queryInput = setDefaultSortAndPaginationIfNotExist(sanitizedQuery);
 
-      const { items, totalCount } = await this.postsService.findAll(queryInput);
-      const postsListOutput = mapToPostsListPaginatedOutput(items, {
+      const { posts, totalCount } = await this.postsService.findAll(queryInput);
+      const postsListOutput = mapToPostsListPaginatedOutput(posts, {
         pageNumber: queryInput.pageNumber,
         pageSize: queryInput.pageSize,
         totalCount,

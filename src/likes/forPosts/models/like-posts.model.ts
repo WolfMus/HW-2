@@ -20,7 +20,7 @@ export type LikesForPostDocument = HydratedDocument<LikesForPost, LikesForPostMe
 const likesForPostsSchema = new mongoose.Schema<LikesForPost, LikesForPostModel, LikesForPostMethods>({
     postId: {type: String, required: true},
     userId: {type: String, required: true},
-    login: {type: String, required: false},
+    login: {type: String, required: true},
     likeStatus: {type: String, required: true},
     addedAt: {type: Date, required: true},
 })
