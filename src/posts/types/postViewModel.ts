@@ -8,7 +8,7 @@ export type PostViewModel = {
   content: string;
   blogId: string;
   blogName: string;
-  createdAt: Date | null;
+  createdAt: Date;
   extendedLikesInfo: {
       likesCount: number;
       dislikesCount: number;

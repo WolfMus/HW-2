@@ -2,6 +2,7 @@ import { PostsQueryDtoInput } from "../input/post-query.input";
 import { RepositoryNotFoundError } from "../../core/errors/repository-not-found.error";
 import { injectable } from "inversify";
 import { PostsDocument, PostsModel } from "../domain/posts.model";
+
 @injectable()
 export class PostsQwRepository {
   async findAll(

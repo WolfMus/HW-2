@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { Response } from "express";
 import { errorsHandler } from "../../core/errors/errors.handler";
 import {
   HttpStatus,
@@ -7,11 +7,11 @@ import {
   RequestWithParamsAndBody,
   RequestWithParamsAndBodyAndUserId,
   RequestWithParamsAndUserId,
+  RequestWithUserId,
 } from "../../core/types/types";
 import { matchedData } from "express-validator";
 import { setDefaultSortAndPaginationIfNotExist } from "../../core/heplers/set-default-sort-and-pagination";
 import { PostsQueryDtoInput } from "../input/post-query.input";
-import { mapToPostsListPaginatedOutput } from "./mapped/mapToPostListPaginatedOutput";
 import { PostsService } from "../application/posts-service";
 import { CreatePostDto } from "../types/createPostsDto.type";
 import { BlogsService } from "../../blogs/application/blogs.service";
@@ -35,19 +35,18 @@ export class PostsController {
 
   // ==========POSTS==========
 
-  async getPostList(req: Request, res: Response) {
+  async getPostList(req: RequestWithUserId<IdType>, res: Response) {
     try {
+      const userId = req.user?.id;
+      
       const sanitizedQuery = matchedData(req, {
-        includeOptionals: true,
+        onlyValidData: true,
+        includeOptionals: false,
       }) as PostsQueryDtoInput;
+
       const queryInput = setDefaultSortAndPaginationIfNotExist(sanitizedQuery);
 
-      const { posts, totalCount } = await this.postsService.findAll(queryInput);
-      const postsListOutput = mapToPostsListPaginatedOutput(posts, {
-        pageNumber: queryInput.pageNumber,
-        pageSize: queryInput.pageSize,
-        totalCount,
-      });
+      const postsListOutput = await this.postsService.findAll(queryInput, userId);
 
       return res.status(HttpStatus.Ok).send(postsListOutput);
     } catch (e: unknown) {

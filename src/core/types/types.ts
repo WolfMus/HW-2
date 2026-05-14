@@ -36,4 +36,5 @@ export type RequestWithParamsAndBodyAndUserId<T, B, U extends IdType> = Request<
 >;
 export type RequestWithParamsAndQuery<T, B> = Request<T, {}, {}, B>;
 export type RequestWithQuery<T> = Request<{}, {}, {}, T>;
+export type RequestWithQueryAndUserId<T, U extends IdType> = Request<{}, {}, {}, T,  U>;
 export type RequestWithUserId<U extends IdType> = Request<{}, {}, {}, {}, U>;

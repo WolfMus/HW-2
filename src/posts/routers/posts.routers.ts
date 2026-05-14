@@ -19,6 +19,7 @@ export const postsRouters = Router({});
 postsRouters
   .get(
     "",
+    optionalTokenGuard,
     paginationAndSortingValidation(PostSortField),
     inputValidationResultMiddleware,
     postsController.getPostList.bind(postsController),

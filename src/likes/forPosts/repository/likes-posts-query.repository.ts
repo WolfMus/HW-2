@@ -20,6 +20,22 @@ export class LikesForPostsQwRepository {
     return like;
   }
 
+  async findStatusesForList(
+    postIds: string[],
+    userId: string,
+  ): Promise<{postId: string, likeStatus: LikeStatus}[]> {
+    const likeStatuses = await LikesForPostModel.find({
+      postId: {$in: postIds},
+      userId: userId,
+    }, {
+      _id: 0,
+      postId: 1,
+      likeStatus: 1,
+    }).lean();
+
+    return likeStatuses;
+  }
+
   async findNewestLikes(postId: string): Promise<LikesForPostDocument[]> {
     const likes: LikesForPostDocument[] = await LikesForPostModel.find({
       postId: postId,
@@ -30,12 +46,16 @@ export class LikesForPostsQwRepository {
     return likes;
   }
 
-  async findNewestLikesForPosts(
+  async findNewestLikesForList(
     postIds: string[],
   ): Promise<{ _id: string; recentLikes: LikesForPostDocument[] }[]> {
+
     const likes: { _id: string; recentLikes: LikesForPostDocument[] }[] =
       await LikesForPostModel.aggregate([
-        { $match: { postId: { $in: postIds } } },
+        { $match: { 
+          postId: { $in: postIds },
+          likeStatus: LikeStatus.Like,
+        } },
         {
           $group: {
             _id: "$postId",
@@ -46,14 +66,13 @@ export class LikesForPostsQwRepository {
                 output: {
                     addedAt: "$addedAt", 
                     userId: "$userId", 
-                    likeStatus: "$likeStatus" 
+                    login: "$login" 
                 },
               },
             },
           },
         },
       ]);
-      likes.forEach(f => {console.log(f.recentLikes)})
     return likes;
   }
 }

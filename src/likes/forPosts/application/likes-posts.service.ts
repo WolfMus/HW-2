@@ -27,7 +27,7 @@ export class LikesForPostsService {
       likeStatus as LikeStatus,
     );
     if (!isValid) {
-      throw new BadRequestError("Invalid like status", "like-status");
+      throw new BadRequestError("Invalid like status", "likeStatus");
     };
 
     // Есть ли в БД статус?
