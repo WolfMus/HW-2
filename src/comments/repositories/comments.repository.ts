@@ -1,37 +1,67 @@
 import { ObjectId } from "mongodb";
-import { commentsCollection } from "../../db/mongo.db";
-import { Comment } from "../types/comments";
 import { RepositoryNotFoundError } from "../../core/errors/repository-not-found.error";
+import { injectable } from "inversify";
+import { CommentsDocument, CommentsModel } from "../models/comments.schema";
 
-export const commentsRepository = {
-  async create(newComment: Comment): Promise<string> {
-    const insertResult = await commentsCollection.insertOne(newComment);
+@injectable()
+export class CommentsRepository {
 
-    return insertResult.insertedId.toString();
-  },
+  async save(comment: CommentsDocument): Promise<void> {
+    comment.save();
+    return;
+  }
 
-  async update(id: string, content: string): Promise<void> {
-    const updatedResult = await commentsCollection.updateOne(
-      { _id: new ObjectId(id) },
-      {
-        $set: {
-          content: content,
-        },
-      },
-    );
+  async saveAndReturnId(comment: CommentsDocument): Promise<string> {
+    comment.save();
+    return comment._id.toString();
+  }
 
-    if (updatedResult.matchedCount < 1) {
+  async findById(id: string): Promise<CommentsDocument> {
+    const comment = await CommentsModel.findById({_id: id});
+    if (!comment) {
+      throw new RepositoryNotFoundError("Comment not found", "id");
+    }
+    return comment
+  }
+
+  async changeStatus(
+    id: string,
+    incrStatus: string,
+    decrStatus: string,
+  ): Promise<void> {
+    const obj: Record<string, number> = {};
+
+    if (incrStatus !== "None" && decrStatus !== "None") {
+      obj[`likesInfo.${incrStatus}sCount`] = +1;
+      obj[`likesInfo.${decrStatus}sCount`] = -1;
+    }
+
+    if (incrStatus === "None" && decrStatus !== "None") {
+      obj[`likesInfo.${decrStatus}sCount`] = -1;
+    }
+
+    if (incrStatus !== "None" && decrStatus === "None") {
+      obj[`likesInfo.${incrStatus}sCount`] = +1;
+    }
+
+    const updatedResult = await CommentsModel.updateOne({
+      _id: id
+    }, {
+      $inc: obj,
+    });
+
+    if (updatedResult.modifiedCount < 1) {
       throw new RepositoryNotFoundError("Comment not found", "id");
     }
 
     return;
-  },
+  }
 
   async delete(id: string): Promise<void> {
-    const deletedComment = await commentsCollection.deleteOne({_id: new ObjectId(id)})
+    const deletedComment = await CommentsModel.deleteOne({_id: id});
     if (deletedComment.deletedCount < 1) {
-      throw new RepositoryNotFoundError("Comment not found", "id")
+      throw new RepositoryNotFoundError("Comment not found", "id");
     }
     return;
   }
-};
+}

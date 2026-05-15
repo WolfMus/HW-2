@@ -37,15 +37,21 @@
     "noUncheckedSideEffectImports": true,
     "moduleDetection": "force",
 
+    // Decorators
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+
     "target": "es2016",
-    "module": "commonjs",
+    "moduleResolution": "nodenext",
+    "module": "nodenext",
     "rootDir": "./src",
     "outDir": "./dist",
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "strict": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+
   },
   "files": ["src/index.d.ts"],
   "include": ["src/**/*"],

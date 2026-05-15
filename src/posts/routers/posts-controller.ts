@@ -1,0 +1,168 @@
+import { Response } from "express";
+import { errorsHandler } from "../../core/errors/errors.handler";
+import {
+  HttpStatus,
+  RequestWithBody,
+  RequestWithParams,
+  RequestWithParamsAndBody,
+  RequestWithParamsAndBodyAndUserId,
+  RequestWithParamsAndUserId,
+  RequestWithUserId,
+} from "../../core/types/types";
+import { matchedData } from "express-validator";
+import { setDefaultSortAndPaginationIfNotExist } from "../../core/heplers/set-default-sort-and-pagination";
+import { PostsQueryDtoInput } from "../input/post-query.input";
+import { PostsService } from "../application/posts-service";
+import { CreatePostDto } from "../types/createPostsDto.type";
+import { BlogsService } from "../../blogs/application/blogs.service";
+import { CommentQueryDtoInput } from "../../comments/types/commentQueryDtoInput";
+import { Post } from "../types/posts";
+import { IdType } from "../../core/types/id";
+import { CommentsService } from "../../comments/application/comments.service";
+import { inject, injectable } from "inversify";
+import { CreateLikeDto } from "../../likes/types/likesDto.type";
+import { LikesForPostsService } from "../../likes/forPosts/application/likes-posts.service";
+
+@injectable()
+export class PostsController {
+
+  constructor(
+    @inject(PostsService) protected postsService: PostsService,
+    @inject(BlogsService) protected blogsService: BlogsService,
+    @inject(CommentsService) protected commentsService: CommentsService,
+    @inject(LikesForPostsService) protected likesPostsService: LikesForPostsService,
+  ) {}
+
+  // ==========POSTS==========
+
+  async getPostList(req: RequestWithUserId<IdType>, res: Response) {
+    try {
+      const userId = req.user?.id;
+      
+      const sanitizedQuery = matchedData(req, {
+        onlyValidData: true,
+        includeOptionals: false,
+      }) as PostsQueryDtoInput;
+
+      const queryInput = setDefaultSortAndPaginationIfNotExist(sanitizedQuery);
+
+      const postsListOutput = await this.postsService.findAll(queryInput, userId);
+
+      return res.status(HttpStatus.Ok).send(postsListOutput);
+    } catch (e: unknown) {
+      errorsHandler(e, res);
+    }
+  }
+
+  async getPost(req: RequestWithParamsAndUserId<{ id: string }, IdType>, res: Response) {
+    try {
+      const userId = req.user?.id;
+      const post = await this.postsService.findById(req.params.id, userId);
+      return res.status(HttpStatus.Ok).send(post);
+    } catch (e: unknown) {
+      errorsHandler(e, res);
+    }
+  }
+
+  async createPost(req: RequestWithBody<CreatePostDto>, res: Response) {
+    try {
+      const postDto = req.body;
+      const blog = await this.blogsService.findById(req.body.blogId);
+
+      const createdPost = await this.postsService.create(postDto, blog.name);
+      res.status(HttpStatus.Created).send(createdPost);
+    } catch (e: unknown) {
+      errorsHandler(e, res);
+    }
+  }
+
+  async updatePost(
+    req: RequestWithParamsAndBody<{ id: string }, Post>,
+    res: Response,
+  ) {
+    try {
+      await this.blogsService.findById(req.body.blogId);
+      await this.postsService.update(req.params.id, req.body);
+
+      res.sendStatus(HttpStatus.NoContent);
+    } catch (e: unknown) {
+      errorsHandler(e, res);
+    }
+  }
+
+  async deletePost(req: RequestWithParams<{ id: string }>, res: Response) {
+    try {
+      await this.postsService.delete(req.params.id);
+      res.sendStatus(HttpStatus.NoContent);
+    } catch (e: unknown) {
+      errorsHandler(e, res);
+    }
+  }
+
+  // ==========COMMENTS==========
+
+  async createComment(
+    req: RequestWithParamsAndBodyAndUserId<
+      { id: string },
+      { content: string },
+      IdType
+    >,
+    res: Response,
+  ) {
+    try {
+      const postId = req.params.id;
+      const content = req.body.content;
+      const userId = req.user.id;
+
+      await this.postsService.findById(postId);
+
+      const newCommentId = await this.commentsService.create(
+        content,
+        postId,
+        userId,
+      );
+
+      const comment = await this.commentsService.getById(newCommentId, userId);
+
+      res.status(HttpStatus.Created).send(comment);
+    } catch (e) {
+      errorsHandler(e, res);
+    }
+  }
+
+  async getListOfCommentsById(req: RequestWithParamsAndUserId<{ id: string }, IdType>, res: Response) {
+    try {
+      const id = req.params.id;
+      const userId = req.user?.id;
+
+      await this.postsService.isPostExist(id);
+
+      const sanitizedQuery = matchedData(req, {
+        includeOptionals: true,
+      }) as CommentQueryDtoInput;
+      const queryInput = setDefaultSortAndPaginationIfNotExist(sanitizedQuery);
+
+      const comments = await this.commentsService.findByPostId(id, queryInput, userId);
+      res.status(HttpStatus.Ok).send(comments);
+    } catch (e) {
+      errorsHandler(e, res);
+    }
+  }
+
+  // ==========LIKES==========
+
+  async changeLikeStatus(req: RequestWithParamsAndBodyAndUserId< {id: string}, CreateLikeDto, IdType >, res: Response) {
+    try {
+      const postId = req.params.id;
+      const userId = req.user.id;
+      const likeStatus = req.body.likeStatus;
+
+      // Поменять на проверку существования поста
+      await this.postsService.findById( postId );
+      await this.likesPostsService.create( postId, userId, likeStatus );
+      res.sendStatus( HttpStatus.NoContent );
+    } catch ( e ) {
+      errorsHandler( e, res );
+    }
+  }
+}

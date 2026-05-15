@@ -1,5 +1,4 @@
-import { ObjectId, WithId} from "mongodb";
-import { usersCollection } from "../../db/mongo.db";
+import { WithId } from "mongodb";
 import { User } from "../type/user.type";
 import { UsersQueryInput } from "../input/users-query.input";
 import { UserView } from "../type/user-view.interface";
@@ -9,8 +8,11 @@ import { UnauthorizedError } from "../../core/errors/unauthorizedError.error";
 import { UserDbView } from "../type/user.db.interface";
 import { BadRequestError } from "../../core/errors/bad-request.error";
 import { UserDb } from "../type/user-db-view.interface";
+import { injectable } from "inversify";
+import { UsersDocument, UsersModel } from "../models/users.schema";
 
-export const usersQwRepository = {
+@injectable()
+export class UsersQwRepository {
   async findAll(queryInput: UsersQueryInput): Promise<Pagination<UserView[]>> {
     const {
       pageNumber,
@@ -37,51 +39,33 @@ export const usersQwRepository = {
     }
     const sortOrder = sortDirection === "asc" ? 1 : -1;
 
-    const items = await usersCollection
+    const items = await UsersModel
       .find(filter)
       .sort({ [sortBy]: sortOrder })
       .skip(skip)
       .limit(pageSize)
-      .toArray();
 
-    const totalCount = await usersCollection.countDocuments(filter);
+    const totalCount = await UsersModel.countDocuments(filter);
 
     return {
       pagesCount: Math.ceil(totalCount / pageSize),
       page: pageNumber,
       pageSize: pageSize,
       totalCount,
-      items: items.map((u) => this._toViewModel(u)),
+      items: items.map((u) => this._toViewModel(u)), 
     };
-  },
+  }
 
-  async findById(id: string): Promise<UserView> {
-    const user = await usersCollection.findOne({ _id: new ObjectId(id) });
+  async findById(id: string): Promise<UsersDocument> {
+    const user = await UsersModel.findById(id);
     if (!user) {
       throw new RepositoryNotFoundError("User not found", "id");
     }
-    return this._toViewModel(user);
-  },
-
-  async findByIdInDbView(id: string): Promise<UserDb> {
-    const user = await usersCollection.findOne({_id: new ObjectId(id)});
-    if (!user) {
-      throw new RepositoryNotFoundError("User not found", "id");
-    }
-    return this._toDbModel(user);
-  },
-
-  async findLoginOrEmail(loginOrEmail: string): Promise<WithId<User> | null> {
-    const user = await usersCollection.findOne({
-      $or: [{ email: loginOrEmail }, { login: loginOrEmail }],
-    });
-
     return user;
-  },
-  async findLoginOrEmailOrFail(
-    loginOrEmail: string,
-  ): Promise<UserDb> {
-    const user = await usersCollection.findOne({
+  }
+
+  async findLoginOrEmail(loginOrEmail: string): Promise<UsersDocument> {
+    const user = await UsersModel.findOne({
       $or: [{ email: loginOrEmail }, { login: loginOrEmail }],
     });
 
@@ -89,27 +73,38 @@ export const usersQwRepository = {
       throw new UnauthorizedError("User not found", "login or email");
     }
 
-    return this._toDbModel(user);
-  },
+    return user;
+  }
+
+  // async findLoginOrEmailOrFail(loginOrEmail: string): Promise<UserDb> {
+  //   const user = await usersModel.findOne({
+  //     $or: [{ email: loginOrEmail }, { login: loginOrEmail }],
+  //   });
+
+  //   if (!user) {
+  //     throw new UnauthorizedError("User not found", "login or email");
+  //   }
+
+  //   return this._toDbModel(user);
+  // }
 
   async doesExistByLoginAndEmail(login: string, email: string): Promise<void> {
-    const user = await usersCollection.findOne({
+    const user = await UsersModel.findOne({
       $or: [{ email: email }, { login: login }],
     });
 
     if (user?.email === email) {
       throw new BadRequestError("User with same email exists", "email");
     }
-
     if (user?.login === login) {
       throw new BadRequestError("User with same login exists", "login");
     }
 
     return;
-  },
+  }
 
   async doesExistByLoginOrEmail(loginOrEmail: string): Promise<UserDb> {
-    const user = await usersCollection.findOne({
+    const user = await UsersModel.findOne({
       $or: [{ email: loginOrEmail }, { login: loginOrEmail }],
     });
 
@@ -118,26 +113,26 @@ export const usersQwRepository = {
     }
 
     return this._toDbModel(user);
-  },
+  }
 
-  async findByConfirmationCode(code: string): Promise<UserDbView | null> {
-    const user = await usersCollection.findOne({
+  async findByConfirmationCode(code: string): Promise<UserDbView> {
+    const user = await UsersModel.findOne({
       "emailConfirmation.confirmationCode": code,
     });
     if (!user) {
       throw new BadRequestError("User not found", "code");
     }
     return this._toDbModel(user);
-  },
+  }
 
-  _toViewModel(item: WithId<User>): UserView {
+  _toViewModel(item: UsersDocument): UserView {
     return {
       id: item._id.toString(),
       login: item.login,
       email: item.email,
       createdAt: item.createdAt,
     };
-  },
+  }
 
   _toDbModel(item: WithId<User>): UserDb {
     return {
@@ -153,5 +148,5 @@ export const usersQwRepository = {
         isConfirmed: item.emailConfirmation.isConfirmed,
       },
     };
-  },
-};
+  }
+}

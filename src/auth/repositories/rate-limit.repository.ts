@@ -1,7 +1,9 @@
-import { rateLimitCollection } from "../../db/mongo.db"
-import { RateLimit } from "../types/rate-limit.type"
+import { rateLimitModel } from "../models/rateLimit.Schema";
+import { RateLimit } from "../types/rate-limit.type";
+import { injectable } from "inversify";
 
-export const rateLimitRepository = {
+@injectable()
+export class RateLimitRepository {
   async create(ip: string, url: string): Promise<void> {
     const rateBody: RateLimit = {
       ip: ip,
@@ -9,19 +11,26 @@ export const rateLimitRepository = {
       date: new Date(),
     };
 
-    await rateLimitCollection.insertOne(rateBody);
+    await rateLimitModel.insertOne(rateBody);
     return;
-  },
+  }
 
   async deleteOld(ip: string, url: string, tenSecondsAgo: Date): Promise<void> {
-    await rateLimitCollection.deleteMany({ip: ip, url: url, date: {$lte: tenSecondsAgo}});
+    await rateLimitModel.deleteMany({
+      ip: ip,
+      url: url,
+      date: { $lte: tenSecondsAgo },
+    });
     return;
-  },
+  }
 
   async find(ip: string, url: string, tenSecondsAgo: Date): Promise<number> {
-    const founded = await rateLimitCollection
-      .countDocuments({ ip: ip, url: url, date: { $gte: tenSecondsAgo } })
+    const founded = await rateLimitModel.countDocuments({
+      ip: ip,
+      url: url,
+      date: { $gte: tenSecondsAgo },
+    });
     if (!founded) return 0;
     return founded;
-  },
-};
+  }
+}

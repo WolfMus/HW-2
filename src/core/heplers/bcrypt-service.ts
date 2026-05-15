@@ -1,14 +1,15 @@
-import bcrypt from 'bcrypt'
+import bcrypt from "bcrypt";
+import { injectable } from "inversify";
 
-export const bcryptService = {
-    async generateHash(password: string) {
-        const salt = await bcrypt.genSalt(10);
-        const hash = await bcrypt.hash(password, salt);
-        return { salt, hash };
-    },
-        
+@injectable()
+export class BcryptService {
+  async generateHash(password: string) {
+    const salt = await bcrypt.genSalt(10);
+    const hash = await bcrypt.hash(password, salt);
+    return { salt, hash };
+  }
 
-    async checkPassword(password: string, hash: string) {
-        return bcrypt.compare(password, hash);
-    }
+  async checkPassword(password: string, hash: string) {
+    return bcrypt.compare(password, hash);
+  }
 }

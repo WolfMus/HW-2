@@ -1,60 +1,57 @@
-import { ObjectId, WithId } from "mongodb";
 import { PostsQueryDtoInput } from "../input/post-query.input";
-import { Post } from "../types/posts";
-import { postsCollection } from "../../db/mongo.db";
 import { RepositoryNotFoundError } from "../../core/errors/repository-not-found.error";
+import { injectable } from "inversify";
+import { PostsDocument, PostsModel } from "../domain/posts.model";
 
-export const postsQwRepository = {
+@injectable()
+export class PostsQwRepository {
   async findAll(
     queryDto: PostsQueryDtoInput,
-  ): Promise<{ items: WithId<Post>[]; totalCount: number }> {
+  ): Promise<{ items: PostsDocument[]; totalCount: number }> {
     const { pageNumber, pageSize, sortBy, sortDirection } = queryDto;
 
     const skip = (pageNumber - 1) * pageSize;
 
     const sortOrder = sortDirection === "asc" ? 1 : -1;
 
-    const items = await postsCollection
+    const items = await PostsModel
       .find()
       .sort({ [sortBy]: sortOrder })
       .skip(skip)
       .limit(pageSize)
-      .toArray();
 
-    const totalCount = await postsCollection.countDocuments();
+    const totalCount = await PostsModel.countDocuments();
 
     return { items, totalCount };
-  },
+  }
 
   async findByBlogId(
-    id: string,
+    blogId: string,
     queryDto: PostsQueryDtoInput,
-  ): Promise<{ items: WithId<Post>[]; totalCount: number }> {
+  ): Promise<{ items: PostsDocument[]; totalCount: number }> {
     const { pageNumber, pageSize, sortBy, sortDirection } = queryDto;
 
     const skip = (pageNumber - 1) * pageSize;
-    const filter = { blogId: id };
+    const filter = { blogId: blogId };
     const sortOrder = sortDirection === "asc" ? 1 : -1;
 
     const [items, totalCount] = await Promise.all([
-      postsCollection
+      PostsModel
         .find(filter)
         .sort({ [sortBy]: sortOrder })
         .skip(skip)
-        .limit(pageSize)
-        .toArray(),
-      postsCollection.countDocuments(filter),
+        .limit(pageSize),
+      PostsModel.countDocuments(filter),
     ]);
 
     return { items, totalCount };
-  },
+  }
 
-  async findById(id: string): Promise<WithId<Post>> {
-    const post = await postsCollection.findOne({ _id: new ObjectId(id) });
-
+  async findById(id: string): Promise<PostsDocument> {
+    const post = await PostsModel.findOne({ _id: id });
     if (!post) {
       throw new RepositoryNotFoundError("Post id not found", "id");
     }
     return post;
-  },
-};
+  }
+}

@@ -15,8 +15,8 @@ import { getPostId } from "../../utils/posts/get-post-by-id";
 import { updatePost } from "../../utils/posts/update-post";
 import { Post } from "../../../src/posts/types/posts";
 import { getBlogById } from "../../utils/blogs/get-blog-id";
-import { describe, beforeAll, afterAll, it, expect } from '@jest/globals';
-
+import { describe, beforeAll, afterAll, it, expect } from "@jest/globals";
+import mongoose from "mongoose";
 
 describe("Posts API", () => {
   const app = express();
@@ -32,8 +32,14 @@ describe("Posts API", () => {
   };
 
   beforeAll(async () => {
-    await runDb(SETTINGS.MONGO_URL);
+    await mongoose.connect(SETTINGS.MONGO_URL);
+    // await runDb(SETTINGS.MONGO_URL);
     await clearDb(app);
+  });
+
+    afterAll(async () => {
+    await clearDb(app);
+    mongoose.connection.close();
   });
 
   it("✅ should create new post; POST /posts", async () => {

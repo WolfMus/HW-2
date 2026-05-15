@@ -1,12 +1,17 @@
 import { Router } from "express";
 import { refreshTokenGuard } from "../../auth/middleware/refresh-token.guard";
-import { getDevicesListHandler } from "./handlers/get-list-of-devices.handler";
-import { deleteAllDevicesHandler } from "./handlers/delete-list-of-devices.handler";
-import { deleteOneDeviceHandler } from "./handlers/delete-one-device.handler";
+import { container } from "../../composition-root";
+import { SecurityController } from "./security-controller";
 
-export const securityRouter = Router({})
+const securityController = container.get(SecurityController)
+
+export const securityRouter = Router({});
 
 securityRouter
-    .get("/devices", refreshTokenGuard, getDevicesListHandler)
-    .delete("/devices", refreshTokenGuard, deleteAllDevicesHandler)
-    .delete("/devices/:deviceId", refreshTokenGuard, deleteOneDeviceHandler)
+  .get("/devices", refreshTokenGuard, securityController.getDevicesList.bind(securityController))
+  .delete("/devices", refreshTokenGuard, securityController.deleteAllDevices.bind(securityController))
+  .delete(
+    "/devices/:deviceId",
+    refreshTokenGuard,
+    securityController.deleteOneDevice.bind(securityController),
+  );

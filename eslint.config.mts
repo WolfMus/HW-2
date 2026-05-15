@@ -5,14 +5,10 @@ import { defineConfig } from "eslint/config";
 
 export default defineConfig([
   {
-    ignores: [
-      "dist/**",
-      "node_modules/**",
-      "**/__tests__/**"
-    ],
+    ignores: ["dist/**", "node_modules/**", "**/__tests__/**"],
   },
   {
-        // files: ["**/*.{js,mjs,cjs,ts,mts,cts}"],
+    // files: ["**/*.{js,mjs,cjs,ts,mts,cts}"],
     files: ["src/**/*.{js,mjs,cjs,ts,mts,cts}"],
     plugins: { js },
     extends: ["js/recommended"],

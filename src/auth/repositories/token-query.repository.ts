@@ -1,17 +1,21 @@
-import { tokensCollection } from "../../db/mongo.db";
 import { WithId } from "mongodb";
 import { Token } from "../types/tokens.types";
 import { TokenDbView } from "../types/token-db-view.type";
 import { UnauthorizedError } from "../../core/errors/unauthorizedError.error";
+import { injectable } from "inversify";
+import { tokensModel } from "../models/token.Schema";
 
-export const tokenQwRepository = {
+@injectable()
+export class TokenQwRepository {
   async findById(refreshToken: string): Promise<TokenDbView> {
-    const token = await tokensCollection.findOne({ refreshToken: refreshToken });
+    const token = await tokensModel.findOne({
+      refreshToken: refreshToken,
+    });
     if (!token) {
       throw new UnauthorizedError("Token id not found", "id");
     }
     return this._toDbViewModel(token);
-  },
+  }
 
   _toDbViewModel(token: WithId<Token>): TokenDbView {
     return {
@@ -21,5 +25,5 @@ export const tokenQwRepository = {
       createdAt: token.createdAt,
       expiresAt: token.expiresAt,
     };
-  },
-};
+  }
+}

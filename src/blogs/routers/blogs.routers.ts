@@ -1,9 +1,5 @@
+import "reflect-metadata";
 import { Router } from "express";
-import { getBlogListHandler } from "./handlers/get-Blog-list.handler";
-import { getBlogHandler } from "./handlers/get-blog.handler";
-import { createBlogHandler } from "./handlers/create-blog.handler";
-import { updateBlogHandler } from "./handlers/update-blog.handler";
-import { deleteBlogHandler } from "./handlers/delete-blog.handler";
 import { idValidation } from "../../core/middlewares/validation/params-id.validation-middleware";
 import { inputValidationResultMiddleware } from "../../core/middlewares/validation/input-validation-result.middleware";
 import { blogsInputDtoValidation } from "../validation/blogsInputDtoValidation.middleware";
@@ -11,10 +7,13 @@ import { adminAuthMiddleware } from "../../auth/middleware/super-admin.guard-mid
 import { paginationAndSortingValidation } from "../../core/middlewares/validation/query-pagination-sorting.validation-middleware";
 import { BlogSortField } from "../input/blog-sort-field";
 import { postInputDtoValidation } from "../../posts/validation/postInputDtoValidation.middleware";
-import { createPostForBlogHandler } from "./handlers/create-post-for-blog.handler";
 import { PostSortField } from "../../posts/input/post-sort-field";
-import { getPostListForBlogHandler } from "./handlers/get-post-list-for-blog.handler";
-import {searchNameTermValidation} from "../validation/searchTerm.validation"
+import { searchNameTermValidation } from "../validation/searchTerm.validation";
+import { container } from "../../composition-root";
+import { BlogsController } from "./blogs-controller";
+import { optionalTokenGuard } from "../../auth/middleware/optional-tokenGuard.guard";
+
+const blogsController = container.get(BlogsController)
 
 export const blogsRouter = Router({});
 
@@ -25,17 +24,23 @@ blogsRouter
     paginationAndSortingValidation(BlogSortField),
     searchNameTermValidation,
     inputValidationResultMiddleware,
-    getBlogListHandler,
+    blogsController.getBlogList.bind(blogsController),
   )
 
-  .get("/:id", idValidation, inputValidationResultMiddleware, getBlogHandler)
+  .get(
+    "/:id",
+    idValidation,
+    inputValidationResultMiddleware,
+    blogsController.getBlog.bind(blogsController),
+  )
 
   .get(
     "/:id/posts",
+    optionalTokenGuard,
     idValidation,
     paginationAndSortingValidation(PostSortField),
     inputValidationResultMiddleware,
-    getPostListForBlogHandler,
+    blogsController.getPostListForBlog.bind(blogsController),
   )
 
   .post(
@@ -43,7 +48,7 @@ blogsRouter
     adminAuthMiddleware,
     blogsInputDtoValidation,
     inputValidationResultMiddleware,
-    createBlogHandler,
+    blogsController.createBlog.bind(blogsController),
   )
 
   .post(
@@ -52,7 +57,7 @@ blogsRouter
     adminAuthMiddleware,
     postInputDtoValidation,
     inputValidationResultMiddleware,
-    createPostForBlogHandler,
+    blogsController.createPostForBlog.bind(blogsController),
   )
 
   .put(
@@ -61,7 +66,7 @@ blogsRouter
     idValidation,
     blogsInputDtoValidation,
     inputValidationResultMiddleware,
-    updateBlogHandler,
+    blogsController.updateBlog.bind(blogsController),
   )
 
   .delete(
@@ -69,5 +74,5 @@ blogsRouter
     adminAuthMiddleware,
     idValidation,
     inputValidationResultMiddleware,
-    deleteBlogHandler,
+    blogsController.deleteBlog.bind(blogsController),
   );

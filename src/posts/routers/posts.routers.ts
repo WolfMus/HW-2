@@ -1,39 +1,44 @@
 import { Router } from "express";
-import { getPostHandler } from "./handlers/get-post.handler";
-import { getPostListHandler } from "./handlers/get-post-list.handler";
-import { createPostHandler } from "./handlers/create-post.handler";
-import { updatePostHandler } from "./handlers/update-post.handler";
-import { deletePostHandler } from "./handlers/delete-post.handler";
 import { postInputDtoValidation } from "../validation/postInputDtoValidation.middleware";
 import { inputValidationResultMiddleware } from "../../core/middlewares/validation/input-validation-result.middleware";
 import { idValidation } from "../../core/middlewares/validation/params-id.validation-middleware";
 import { adminAuthMiddleware } from "../../auth/middleware/super-admin.guard-middleware";
 import { paginationAndSortingValidation } from "../../core/middlewares/validation/query-pagination-sorting.validation-middleware";
 import { PostSortField } from "../input/post-sort-field";
-import { createCommentHandler } from "./handlers/create-comment.handler";
-import { getListOfCommentsByIdHandler } from "./handlers/get-comments-list-by-id.handler";
 import { CommentSortField } from "../../comments/types/commentSortField";
 import { tokenGuard } from "../../auth/middleware/tokenGuard.guard";
 import { commentsDtoValidation } from "../../comments/validation/commentsDtoValidation.middleware";
+import { container } from "../../composition-root";
+import { PostsController } from "./posts-controller";
+import { optionalTokenGuard } from "../../auth/middleware/optional-tokenGuard.guard";
+
+const postsController = container.get(PostsController)
 
 export const postsRouters = Router({});
 
 postsRouters
   .get(
     "",
+    optionalTokenGuard,
     paginationAndSortingValidation(PostSortField),
     inputValidationResultMiddleware,
-    getPostListHandler,
+    postsController.getPostList.bind(postsController),
   )
 
-  .get("/:id", idValidation, inputValidationResultMiddleware, getPostHandler)
+  .get(
+    "/:id",
+    optionalTokenGuard,
+    idValidation,
+    inputValidationResultMiddleware,
+    postsController.getPost.bind(postsController),
+  )
 
   .post(
     "",
     adminAuthMiddleware,
     postInputDtoValidation,
     inputValidationResultMiddleware,
-    createPostHandler,
+    postsController.createPost.bind(postsController),
   )
 
   .put(
@@ -42,7 +47,7 @@ postsRouters
     idValidation,
     postInputDtoValidation,
     inputValidationResultMiddleware,
-    updatePostHandler,
+    postsController.updatePost.bind(postsController),
   )
 
   .delete(
@@ -50,22 +55,33 @@ postsRouters
     adminAuthMiddleware,
     idValidation,
     inputValidationResultMiddleware,
-    deletePostHandler,
+    postsController.deletePost.bind(postsController),
   )
-  
+
   // COMMENTS
-  .post("/:id/comments",
+  .post(
+    "/:id/comments",
     tokenGuard,
     idValidation,
     commentsDtoValidation,
     inputValidationResultMiddleware,
-    createCommentHandler
+    postsController.createComment.bind(postsController),
   )
 
-  .get("/:id/comments",
+  .get(
+    "/:id/comments",
+    optionalTokenGuard,
     paginationAndSortingValidation(CommentSortField),
     idValidation,
     inputValidationResultMiddleware,
-    getListOfCommentsByIdHandler,
+    postsController.getListOfCommentsById.bind(postsController),
   )
 
+  // LIKES
+  .put(
+    "/:id/like-status",
+    tokenGuard,
+    idValidation,
+    inputValidationResultMiddleware,
+    postsController.changeLikeStatus.bind(postsController),
+  )

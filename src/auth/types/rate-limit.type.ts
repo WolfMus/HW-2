@@ -1,5 +1,5 @@
 export type RateLimit = {
-    ip: string,
-    url: string,
-    date: Date,
-}
+  ip: string;
+  url: string;
+  date: Date;
+};

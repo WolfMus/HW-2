@@ -8,7 +8,10 @@ import { UserView } from "../../../src/users/type/user-view.interface";
 
 const adminToken = generateAdminAuthToken();
 
-export async function createUser(app: Express, usersDto: UserInput): Promise<UserView> {
+export async function createUser(
+  app: Express,
+  usersDto: UserInput,
+): Promise<UserView> {
   const defaultUsersData = {
     login: "8TmlEd_xQ",
     password: "string",

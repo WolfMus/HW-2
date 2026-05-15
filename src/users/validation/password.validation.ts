@@ -1,5 +1,9 @@
 import { body } from "express-validator";
-import { usersQwRepository } from "../repository/usersQw.repository";
+import { container } from "../../composition-root";
+import { UsersRepository } from "../repository/users.repository";
+import { BadRequestError } from "../../core/errors/bad-request.error";
+
+const usersRepo = container.get(UsersRepository)
 
 const LOGIN_REGEX = "^[a-zA-Z0-9_-]*$";
 const EMAIL_REGEX = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+.[A-Za-z]{2,}$";
@@ -15,11 +19,10 @@ export const emailValidation = body("email")
   .isEmail()
   .matches(EMAIL_REGEX)
   .custom(async (email: string) => {
-    const user = await usersQwRepository.findLoginOrEmail(email);
+    const user = await usersRepo.findByEmail(email);
     if (user) {
-      throw new Error("email is already exist");
+      throw new BadRequestError("User Exist", "email");
     }
-
     return true;
   });
 
@@ -34,19 +37,30 @@ export const loginValidation = body("login")
   .trim()
   .isLength({ min: 3, max: 10 })
   .matches(LOGIN_REGEX)
-  .custom(async (email: string) => {
-    const user = await usersQwRepository.findLoginOrEmail(email);
-
+  .custom(async (login: string) => {
+    const user = await usersRepo.findByLogin(login);
     if (user) {
-      throw new Error("login is already exist");
+      throw new BadRequestError("User Exist", "login");
     }
-
     return true;
-  });
+    // const user = await usersQueryRepo.findLoginOrEmail(email);
 
+    // if (user) {
+    //   throw new Error("login is already exist");
+    // }
+
+    // return true;
+  });
 
 export const loginOrEmailValidation = body("loginOrEmail")
   .isString()
   .trim()
-  .isLength({min: 3, max: 25})
-  .withMessage('Login Or email has wrong input')
+  .isLength({ min: 3, max: 25 })
+  .withMessage("Login Or email has wrong input");
+
+export const newPasswordValidation = body("newPassword")
+  .isString()
+  .trim()
+  .isLength({ min: 6, max: 20 });
+
+export const recoveryCodeValidation = body("recoveryCode").isString();

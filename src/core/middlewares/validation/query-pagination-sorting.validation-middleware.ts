@@ -46,5 +46,5 @@ export function paginationAndSortingValidation<T extends string>(
       .withMessage(
         `Sort direction must be one of: ${Object.values(SortDirection).join(", ")}`,
       ),
-  ]
+  ];
 }

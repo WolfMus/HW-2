@@ -1,27 +1,32 @@
-import { ObjectId, WithId } from "mongodb";
-import { Comment } from "../types/comments";
-import { commentsCollection } from "../../db/mongo.db";
+import { WithId } from "mongodb";
+import { Comment } from "../types/comments.type";
 import { RepositoryNotFoundError } from "../../core/errors/repository-not-found.error";
 import { CommentViewModel } from "../types/commentViewModel";
 import { Pagination } from "../../core/types/pagination.interface";
 import { CommentQueryDtoInput } from "../types/commentQueryDtoInput";
+import { injectable } from "inversify";
+import { CommentsModel } from "../models/comments.schema";
 
-export const commentsQwRepository = {
-  async findByPostId(postId: string, query: CommentQueryDtoInput): Promise<Pagination<CommentViewModel[]>> {
+@injectable()
+export class CommentsQwRepository {
+  async findByPostId(
+    postId: string,
+    query: CommentQueryDtoInput,
+  ): Promise<Pagination<CommentViewModel[]>> {
     const { pageNumber, pageSize, sortBy, sortDirection } = query;
 
     const skip = (pageNumber - 1) * pageSize;
-    const filter = {postId: postId};
-    const sortOrder = sortDirection === 'asc' ? 1 : -1;
+    const filter = { postId: postId };
+    const sortOrder = sortDirection === "asc" ? 1 : -1;
 
-    const items = await commentsCollection
-        .find(filter)
-        .sort( {[sortBy]: sortOrder} )
-        .skip(skip)
-        .limit(pageSize)
-        .toArray();
+    const items = await CommentsModel
+      .find(filter)
+      .sort({ [sortBy]: sortOrder })
+      .skip(skip)
+      .limit(pageSize)
+      .lean();
 
-    const totalCount = await commentsCollection.countDocuments(filter);
+    const totalCount = await CommentsModel.countDocuments(filter);
 
     return {
       pagesCount: Math.ceil(totalCount / pageSize),
@@ -29,28 +34,32 @@ export const commentsQwRepository = {
       pageSize: pageSize,
       totalCount,
       items: items.map((u) => this._getToViewModel(u)),
-    }
-  },
+    };
+  }
 
-  async getCommentById(id: string): Promise<CommentViewModel> {
-    const comment = await commentsCollection.findOne({ _id: new ObjectId(id) });
-
+  async getCommentById(id: string): Promise<WithId<Comment>> {
+    const comment = await CommentsModel.findOne({_id: id});
     if (!comment) {
       throw new RepositoryNotFoundError("Comment not found", "id");
     }
 
-    return this._getToViewModel(comment);
-  },
+    return comment;
+  }
 
   _getToViewModel(model: WithId<Comment>): CommentViewModel {
     return {
       id: model._id.toString(),
       content: model.content,
       commentatorInfo: {
-        userId: model.userId,
-        userLogin: model.userLogin,
+        userId: model.commentatorInfo.userId,
+        userLogin: model.commentatorInfo.userLogin,
       },
       createdAt: model.createdAt,
+      likesInfo: {
+        likesCount: model.likesInfo.likesCount,
+        dislikesCount: model.likesInfo.dislikesCount,
+        myStatus: model.likesInfo.myStatus,
+      },
     };
-  },
-};
+  }
+}

@@ -12,5 +12,4 @@ const emailValidation = query("searchEmailTerm")
   .trim()
   .withMessage("email is not correct");
 
-
-  export const loginAndEmailValidation = [loginValidation, emailValidation]
+export const loginAndEmailValidation = [loginValidation, emailValidation];

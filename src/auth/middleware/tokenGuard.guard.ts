@@ -1,7 +1,10 @@
 import { NextFunction, Request, Response } from "express";
 import { HttpStatus } from "../../core/types/types";
-import { jwtService } from "../application/jwtService";
 import { IdType } from "../../core/types/id";
+import { JwtService } from "../application/jwtService";
+import { container } from "../../composition-root";
+
+export const jwtService = container.get(JwtService)
 
 export const tokenGuard = async (
   req: Request,

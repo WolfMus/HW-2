@@ -1,6 +1,6 @@
 import request from "supertest";
 import express from "express";
-import { describe, beforeAll, afterAll, it, expect } from '@jest/globals';
+import { describe, beforeAll, afterAll, it, expect } from "@jest/globals";
 import { setupApp } from "../../../src/setup-app";
 import { BlogInputModel } from "../../../src/blogs/dto/blog-input.dto";
 import { HttpStatus } from "../../../src/core/types/types";
@@ -9,6 +9,7 @@ import { clearDb } from "../../utils/clear-db";
 import { SETTINGS } from "../../../src/core/settings/settings";
 import { runDb, stopDb } from "../../../src/db/mongo.db";
 import { BLOGS_PATH } from "../../../src/core/paths/paths";
+import mongoose from "mongoose";
 
 describe("Blogs API", () => {
   const app = express();
@@ -24,14 +25,16 @@ describe("Blogs API", () => {
   };
 
   beforeAll(async () => {
-    await runDb(SETTINGS.MONGO_URL);
+    // await runDb(SETTINGS.MONGO_URL);
+    await mongoose.connect(SETTINGS.MONGO_URL);
     await clearDb(app);
   });
 
   afterAll(async () => {
     await clearDb(app);
-    await stopDb();
-  })
+    mongoose.connection.close();
+    // await stopDb();
+  });
 
   it("should return all blogs; GET /blogs", async () => {
     await request(app).get("/blogs").expect(HttpStatus.Ok);

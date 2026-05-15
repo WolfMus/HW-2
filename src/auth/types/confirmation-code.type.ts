@@ -1,3 +1,3 @@
 export type ConfirmationCodeType = {
-    code: string,
-}
+  code: string;
+};
