@@ -11,6 +11,7 @@ import { PostSortField } from "../../posts/input/post-sort-field";
 import { searchNameTermValidation } from "../validation/searchTerm.validation";
 import { container } from "../../composition-root";
 import { BlogsController } from "./blogs-controller";
+import { optionalTokenGuard } from "../../auth/middleware/optional-tokenGuard.guard";
 
 const blogsController = container.get(BlogsController)
 
@@ -35,6 +36,7 @@ blogsRouter
 
   .get(
     "/:id/posts",
+    optionalTokenGuard,
     idValidation,
     paginationAndSortingValidation(PostSortField),
     inputValidationResultMiddleware,

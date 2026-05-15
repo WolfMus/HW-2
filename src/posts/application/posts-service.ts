@@ -141,10 +141,61 @@ export class PostsService {
   }
 
   async findByBlogId(
-    id: string,
+    blogId: string,
     queryDto: PostsQueryDtoInput,
-  ): Promise<{ items: PostsDocument[]; totalCount: number }> {
-    return await this.postsQueryRepo.findByBlogId(id, queryDto);
+    userId: string,
+  ): Promise<PostListPaginatedOutput> {
+    // ====== Ищу все посты для блога ======
+    const { items, totalCount } = await this.postsQueryRepo.findByBlogId(blogId, queryDto);
+
+    // ====== Создаю массив id постов и ищу для них лайки ======
+    const postIds: string[] = items.map((p) => p.id);
+    const likes = await this.likesPostsQueryRepo.findNewestLikesForList(postIds);
+
+    // ====== Создаю мап для поиска лайков по postId ======
+    const likesMap: Map<string, LikesForPostDocument[]> = new Map();
+    for (const like of likes) {
+      likesMap.set(like._id, like.recentLikes);
+    }
+
+    // ====== Найти статус пользователя для каждого поста ======
+    const statusesMap: Map<string, LikeStatus> = new Map();
+    console.log("userId: ", userId);
+    if (userId) {
+      const likeStatuses = await this.likesPostsQueryRepo.findStatusesForList(
+        postIds,
+        userId,
+      );
+      for (const status of likeStatuses) {
+        statusesMap.set(status.postId, status.likeStatus);
+      }
+    }
+
+    // ====== Вставляю массив лайков каждому посту ======
+    const posts = items.map((item) => ({
+      id: item.id.toString(),
+      title: item.title,
+      shortDescription: item.shortDescription,
+      content: item.content,
+      blogId: item.blogId,
+      blogName: item.blogName,
+      createdAt: item.createdAt,
+      extendedLikesInfo: {
+        likesCount: item.extendedLikesInfo.likesCount,
+        dislikesCount: item.extendedLikesInfo.dislikesCount,
+        myStatus: statusesMap.get(item.id.toString()) || LikeStatus.None,
+        newestLikes: likesMap.get(item.id) || [],
+      },
+    }));
+
+    // ====== Готовлю посты для передачи в контроллер ======
+    const postsPaginatedOutput = await this._ListToPaginatedViewModel(
+      queryDto,
+      totalCount,
+      posts,
+    );
+
+    return postsPaginatedOutput;
   }
 
   // LIKES

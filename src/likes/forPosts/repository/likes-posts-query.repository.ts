@@ -62,7 +62,7 @@ export class LikesForPostsQwRepository {
             recentLikes: {
               $topN: {
                 n: 3,
-                sortBy: { createdAt: -1 },
+                sortBy: { addedAt: -1 },
                 output: {
                     addedAt: "$addedAt", 
                     userId: "$userId", 

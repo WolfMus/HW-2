@@ -26,13 +26,13 @@ export class PostsQwRepository {
   }
 
   async findByBlogId(
-    id: string,
+    blogId: string,
     queryDto: PostsQueryDtoInput,
   ): Promise<{ items: PostsDocument[]; totalCount: number }> {
     const { pageNumber, pageSize, sortBy, sortDirection } = queryDto;
 
     const skip = (pageNumber - 1) * pageSize;
-    const filter = { blogId: id };
+    const filter = { blogId: blogId };
     const sortOrder = sortDirection === "asc" ? 1 : -1;
 
     const [items, totalCount] = await Promise.all([

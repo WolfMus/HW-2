@@ -8,18 +8,19 @@ import {
   RequestWithBody,
   RequestWithParams,
   RequestWithParamsAndBody,
+  RequestWithParamsAndUserId,
 } from "../../core/types/types";
 import { Request, Response } from "express";
 import { errorsHandler } from "../../core/errors/errors.handler";
 import { BlogsService } from "../application/blogs.service";
 import { mapToBlogViewModel } from "./mappers/mapToBlogViewModel";
 import { PostsQueryDtoInput } from "../../posts/input/post-query.input";
-import { mapToPostsListPaginatedOutput } from "../../posts/routers/mapped/mapToPostListPaginatedOutput";
 import { PostsService } from "../../posts/application/posts-service";
 import { CreateBlogDto } from "../types/createBlogDto.type";
 import { inject, injectable } from "inversify";
 import { CreatePostDto } from "../../posts/types/createPostsDto.type";
 import { PostInputForBlogModel } from "../../posts/dto/post-input-for-blog.dto";
+import { IdType } from "../../core/types/id";
 
 @injectable()
 export class BlogsController {
@@ -61,23 +62,20 @@ export class BlogsController {
     }
   }
 
-  async getPostListForBlog(req: Request<{ id: string }>, res: Response) {
+  async getPostListForBlog(req: RequestWithParamsAndUserId<{ id: string }, IdType>, res: Response) {
     try {
-      const id = req.params.id;
+      const blogId = req.params.id;
+      const userId = req.user?.id;
+      console.log(userId);
 
-      await this.blogsService.findById(id);
-
+      await this.blogsService.findById(blogId);
+      
       const sanitizedQuery = matchedData(req, { includeOptionals: true }) as PostsQueryDtoInput;
       const queryInput = setDefaultSortAndPaginationIfNotExist(sanitizedQuery);
+      
+      const postListPaginatedOutput = await this.postsService.findByBlogId(blogId, queryInput, userId);
 
-      const { items, totalCount } = await this.postsService.findByBlogId(id, queryInput);
-      const postsListOutput = mapToPostsListPaginatedOutput(items, {
-        pageNumber: queryInput.pageNumber,
-        pageSize: queryInput.pageSize,
-        totalCount,
-      });
-
-      res.status(HttpStatus.Ok).send(postsListOutput);
+      res.status(HttpStatus.Ok).send(postListPaginatedOutput);
     } catch (e) {
       errorsHandler(e, res);
     }
